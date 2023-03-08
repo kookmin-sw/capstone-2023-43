@@ -1,0 +1,31 @@
+title: |md
+  # 간단한 약 추가 시퀀스
+| {near: top-center}
+shape: sequence_diagram
+User
+App: "DrugManagerApp"
+LocalDB: {shape: cylinder}
+API
+Auth
+
+User -> App.start: "시작"
+App -> LocalDB.ReadToken: "토큰 읽어 오기"
+App -> Auth.Login: "로그인"
+App -> LocalDB.ReadTracking: "복욕약 정보 읽기"
+App.start -> User: "메인 화면 보여주기"
+
+LocalDB.ReadTracking -> APP: "읽은 정보 Component에 전달" {style: {stroke-dash: 2}}
+App -> User: "보여주기" {style: {stroke-dash: 2}}
+
+User -> App.AddPill: "약추가 버튼 클릭"
+User -> App.AddPill.SearchPill: "약 검색"
+App -> Api.SearchPill: "graphql 쿼리"
+Api.SearchPill -> App.AddPill.SearchPill: "응답"
+User -> App.AddPill.SearchPill: "약 선택"
+App.AddPill -> Api.validation: "약 적합성 테스트"
+Api.validation -> App.AddPill: "응답"
+User -> App.AddPill: "복용 규칙 선정"
+User -> App.AddPill: "확정"
+App.AddPill -> Api.AddPillToUser: "유저 DB에 약 추가"
+App.AddPill -> LocalDB.AddPill: "로컬 DB에 약 정보 및 규칙 추가"
+App -> User: "메인 페이지로 복귀"
