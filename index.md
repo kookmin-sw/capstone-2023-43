@@ -1,4 +1,4 @@
-# [이름 미정]
+# 필통 (영문명 : PillBox)
 
 ## 프로그램 설명
 
@@ -20,7 +20,9 @@ ___
 
 ### 팀원 소개 (사전 배열)
 
-><img width=300px height=300px src="" alt = "김재하의 사진">
+<br/>
+
+><img width=300px height=400px src="./images/김재하사진.jpg" alt = "김재하의 사진">
 
 >* 이름 : 김재하 
 >* 학번 : ****1593
@@ -28,7 +30,7 @@ ___
 
 <br/>
 
-><img width=300px height=300px src="https://scontent-gmp1-1.xx.fbcdn.net/v/t31.18172-8/28514446_767130580139527_1440341541300437065_o.jpg?_nc_cat=100&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=5tngj3-gjAUAX_RxDTD&_nc_ht=scontent-gmp1-1.xx&oh=00_AfCIUrWyAkiZnTHdHTFjtx9wtouf-FaW4V4nal0FPoHO5w&oe=642E9606"/>
+><img width=300px height=300px src="./images/김진석사진.jpg"/>
 
 >* 이름 : 김진석
 >* 학번 : ****1600
