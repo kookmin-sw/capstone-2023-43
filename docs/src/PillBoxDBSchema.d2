@@ -1,0 +1,60 @@
+AWS_Document: {
+  icon: https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-DocumentDB-MongoDB.svg
+  Pill: {
+    shape: sql_table
+    effectCode: int
+    name: string {constraint: primary_key}
+    tabooCase: array
+  }
+
+  tabooCase: |md
+    # tabooCase
+    복용하지 말아야할 몸상태 기재
+    * 노약자 (65세 이상 )
+    * 어린이 (18세 미만)
+    * 임신부, 수유부
+    * 혈압 (고, 저)
+    * 당뇨
+  |
+
+  MixTaboo: {
+    shape: sql_table
+    PillA: string {constraint: foreign_key}
+    PillB: string {constraint: foreign_key}
+  }
+
+  PillHistory: {
+    shape: sql_table
+    user: uuid {constraint: foreign_key}
+    pillName: string {constraint: foreign_key}
+    startDate: Date
+    endDate: Date
+  }
+
+  Pill.name -> MixTaboo.PillA
+  Pill.name -> MixTaboo.PillB
+  Pill.name -> PillHistory.PillName
+}
+
+AWS_RDS: {
+  icon: https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS.svg
+
+  User: {
+    shape: sql_table
+    id: uuid {constraint: primary_key}
+    name: string
+    sex: int
+    pregnancy: bool
+    bloodPressure: int
+    isDiabetes: bool
+  }
+  주의사항: |md
+    # bloodPressure 
+    * 고
+    * 저 
+    # pregnancy
+    임신부, 수유부를 모두 해당되는 항목 수정시 경고문구 띄울것
+  |
+}
+
+AWS_RDS.User.id -> AWS_Document.PillHistory.user: {style: {stroke-dash: 2}}
