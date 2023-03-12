@@ -1,3 +1,4 @@
+direction: right
 Client: {
   icon: https://icons.terrastruct.com/tech%2F052-smartphone-3.svg
   약력복용정보: {
@@ -6,36 +7,18 @@ Client: {
 }
 
 Servers: {
-  direction: down
-  Oauth2: {
-    icon: https://icons.terrastruct.com/social%2F038-google-drive.svg
-  }
-  OurServer: "2023년 캡스톤 최종_최종" {
-    API: {
-      Web: {
-        Auth
-        약학정보
-        적합성
-      }
-      ML: {
-        icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FMachine-Learning.svg
-      }
-    }
-    DB: {
-      shape: cylinder
-      User: {
-        shape: person
-      }
-      약: {
-        shape: oval
-      }
-    }
-  }
+  direction: left
+  Cognito: {icon: https://icons.terrastruct.com/aws%2FSecurity%2C%20Identity%2C%20&%20Compliance%2FAmazon-Cognito.svg}
+  API: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAWS-AppSync.svg}
+  ML: {icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FMachine-Learning.svg}
+  UserDB : {icon : https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS.svg}
+  PillDB : {icon : https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-DocumentDB-MongoDB.svg}
 }
 
-Client -> Servers.Oauth2: "Sign up & Sign in"
-Client -> Servers.OurServer: request
-Client -> Servers.OurServer.API.ML: "약 사진"
-Servers.OurServer.API.ML -> Client: "후보군"
-Servers.OurServer -> Client: response
-Servers.OurServer.API.Web <-> Servers.OurServer.DB: transaction {style.animated: true}
+Client <-> Servers.Cognito: "Sign up & Sign in"
+Client -> Servers.API: request
+Servers.API -> Client: response
+Client -> Servers.ML: "약 사진"
+Servers.ML -> Client: "후보군"
+Servers.API <-> Servers.UserDB: transaction {style.animated: true}
+Servers.API <-> Servers.PIllDB: transaction {style.animated: true}
