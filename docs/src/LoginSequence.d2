@@ -1,0 +1,20 @@
+title: |md
+  # 로그인 시퀸스
+| {near: top-center}
+shape: sequence_diagram
+User
+Pillbox: "Pillbox"
+LocalDB: {shape: cylinder}
+API: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAWS-AppSync.svg}
+Cognito: {icon: https://icons.terrastruct.com/aws%2FSecurity%2C%20Identity%2C%20&%20Compliance%2FAmazon-Cognito.svg}
+
+User -> Pillbox.start: "시작"
+Pillbox -> LocalDB.ReadToken: "토큰 읽어 오기"
+Pillbox -> Pillbox.TokenValiation: "토큰 유효기간 검사"
+Pillbox -> Cognito.Login: "로그인"
+Cognito.Login -> Pillbox: "로그인 허가"
+Pillbox -> LocalDB.ReadTracking: "복욕약 정보 읽기"
+Pillbox.Start -> User: "메인 화면 보여주기"
+
+LocalDB.ReadTracking -> Pillbox: "읽은 정보 Component에 전달" {style: {stroke-dash: 2}}
+Pillbox -> User: "보여주기" {style: {stroke-dash: 2}}
