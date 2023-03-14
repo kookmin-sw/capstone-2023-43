@@ -40,7 +40,7 @@ ___
 
 
 
-><img width=300px height=300px src="" alt = "박종흠의 사진">
+><img width=300px height=300px src="./images/박종흠사진.jpg" alt = "박종흠의 사진">
 
 >* 이름 : 박종흠
 >* 학번 : ****1619
