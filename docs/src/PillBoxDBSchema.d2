@@ -31,8 +31,10 @@ AWS_RDS: {
 
   Pill: {
     shape: sql_table
-    effectCode: int
-    name: string {constraint: primary_key}
+    itemSeq: string {constraint: primary_key}
+    effect: string
+    useMethod: string
+    name: string
     tabooCase: array
   }
 
@@ -45,17 +47,19 @@ AWS_RDS: {
   Pill.name -> MixTaboo.PillA
   Pill.name -> MixTaboo.PillB
 }
-주의사항: |md
+User: |md
   # bloodPressure 
   * 고
   * 저 
   # pregnancy
   임신부, 수유부를 모두 해당되는 항목 수정시 경고문구 띄울것
 |
-tabooCase: |md
+Pill: |md
+  # itemSeq
+  품목표준코드 (9자리 숫자코드)
   # tabooCase
   복용하지 말아야할 몸상태 기재
-  * 노약자 (65세 이상 )
+  * 노약자 (65세 이상)
   * 어린이 (18세 미만)
   * 임신부, 수유부
   * 혈압 (고, 저)
