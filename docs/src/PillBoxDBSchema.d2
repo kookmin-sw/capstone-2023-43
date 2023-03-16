@@ -44,20 +44,25 @@ AWS_RDS: {
     PillB: string {constraint: foreign_key}
   }
 
-  Pill.name -> MixTaboo.PillA
-  Pill.name -> MixTaboo.PillB
+  Pill.Name -> MixTaboo.PillA
+  Pill.Name -> MixTaboo.PillB
 }
+
 User: |md
-  # bloodPressure 
+  # Id
+   UUID
+  # BloodPressure 
   * 고
   * 저 
-  # pregnancy
+  # Pregnancy
   임신부, 수유부를 모두 해당되는 항목 수정시 경고문구 띄울것
+  # IsDiabetes
+  당뇨여부
 |
 Pill: |md
-  # itemSeq
+  # ItemSeq
   품목표준코드 (9자리 숫자코드)
-  # tabooCase
+  # TabooCase
   복용하지 말아야할 몸상태 기재
   * 노약자 (65세 이상)
   * 어린이 (18세 미만)
