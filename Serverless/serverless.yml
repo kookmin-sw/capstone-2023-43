@@ -1,0 +1,25 @@
+service: pillbox
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: ap-northeast-2
+
+package:
+  exclude:
+    - ./**
+  include:
+    - src/**
+
+functions:
+  hello:
+    handler: src/handler.hello
+    events:
+      - http:
+          path: /users/create
+          method: get
+          integration: lambda
+          authorizer:
+            name: authorizer
+            arn: {env:COGNITO_ARN}
