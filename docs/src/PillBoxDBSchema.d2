@@ -4,19 +4,19 @@ AWS_Document: {
 
   User: {
     shape: sql_table
-    id: uuid {constraint: foreign_key}
-    sex: int
-    pregnancy: bool
-    bloodPressure: int
-    isDiabetes: bool
+    Id: string {constraint: foreign_key}
+    Sex: int
+    Pregnancy: bool
+    BloodPressure: int
+    IsDiabetes: bool
   }
 
   PillHistory: {
     shape: sql_table
-    user: uuid {constraint: foreign_key}
-    pillName: string {constraint: foreign_key}
-    startDate: Date
-    endDate: Date
+    User: uuid {constraint: foreign_key}
+    PillName: string {constraint: foreign_key}
+    StartDate: Date
+    EndDate: Date
   }
 }
 
@@ -25,17 +25,17 @@ AWS_RDS: {
 
   User: {
     shape: sql_table
-    id: uuid {constraint: primary_key}
-    name: string
+    Id: uuid {constraint: primary_key}
+    Name: string
   }
 
   Pill: {
     shape: sql_table
-    itemSeq: string {constraint: primary_key}
-    effect: string
-    useMethod: string
-    name: string
-    tabooCase: array
+    ItemSeq: string {constraint: primary_key}
+    Effect: string
+    UseMethod: string
+    Name: string
+    TabooCase: array
   }
 
   MixTaboo: {
@@ -66,6 +66,6 @@ Pill: |md
   * 당뇨
 |
 
-AWS_RDS.User.id -> AWS_Document.User.id: {style: {stroke-dash: 2}}
-AWS_RDS.User.id -> AWS_Document.PillHistory.user: {style: {stroke-dash: 2}}
-AWS_RDS.Pill.name -> AWS_Document.PillHistory.PillName
+AWS_RDS.User.Id -> AWS_Document.User.Id: {style: {stroke-dash: 2}}
+AWS_RDS.User.Id -> AWS_Document.PillHistory.User: {style: {stroke-dash: 2}}
+AWS_RDS.Pill.Name -> AWS_Document.PillHistory.PillName
