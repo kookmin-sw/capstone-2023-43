@@ -1,11 +1,10 @@
 direction: down
-AWS_Document: {
-  icon: https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-DocumentDB-MongoDB.svg
+MongoDB: {
+  icon: https://icons.terrastruct.com/dev%2Fmongodb.svg
 
   User: {
     shape: sql_table
     Id: string {constraint: foreign_key}
-    Sex: int
     Pregnancy: bool
     BloodPressure: int
     IsDiabetes: bool
@@ -20,21 +19,25 @@ AWS_Document: {
   }
 }
 
-AWS_RDS: {
-  icon: https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS.svg
+Postgresql: {
+  icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
 
   User: {
     shape: sql_table
     Id: uuid {constraint: primary_key}
     Name: string
+    EMail: string
+    Sex: int
+    BirthDate: Date
   }
 
   Pill: {
     shape: sql_table
     ItemSeq: string {constraint: primary_key}
-    Effect: string
-    UseMethod: string
     Name: string
+    Effect: string
+    WarningMessage: string
+    UseMethod: string
     TabooCase: array
   }
 
@@ -71,6 +74,6 @@ Pill: |md
   * 당뇨
 |
 
-AWS_RDS.User.Id -> AWS_Document.User.Id: {style: {stroke-dash: 2}}
-AWS_RDS.User.Id -> AWS_Document.PillHistory.User: {style: {stroke-dash: 2}}
-AWS_RDS.Pill.Name -> AWS_Document.PillHistory.PillName
+Postgresql.User.Id -> MongoDB.User.Id: {style: {stroke-dash: 2}}
+Postgresql.User.Id -> MongoDB.PillHistory.User: {style: {stroke-dash: 2}}
+Postgresql.Pill.Name -> MongoDB.PillHistory.PillName
