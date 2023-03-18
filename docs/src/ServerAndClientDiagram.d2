@@ -1,0 +1,35 @@
+direction: right
+Client: {
+  icon: https://icons.terrastruct.com/tech%2F052-smartphone-3.svg
+  약력복용정보: {
+    shape: document
+  }
+}
+
+Servers: {
+  direction: left
+  Cognito: {icon: https://icons.terrastruct.com/aws%2FSecurity%2C%20Identity%2C%20&%20Compliance%2FAmazon-Cognito.svg}
+  API: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAWS-AppSync.svg}
+  EC2: {
+    icon: https://icons.terrastruct.com/aws%2FCompute%2F_Instance%2FAmazon-EC2_Instances_light-bg.svg
+    Postgreql: {icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg}
+    MongoDB: {icon : https://icons.terrastruct.com/dev%2Fmongodb.svg}
+  }
+  APIGateway: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAmazon-API-Gateway.svg}
+  Lambda: {icon: https://icons.terrastruct.com/aws%2FCompute%2FAWS-Lambda.svg}
+  SageMaker: {icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FAmazon-SageMaker.svg}
+}
+
+Crawler: {icon: https://icons.terrastruct.com/dev%2Fpython.svg}
+OpenAPI
+
+Servers.EC2.Postgreql <- Crawler <- OpenAPI : 약 정보
+
+Client <-> Servers.Cognito: "Sign up & Sign in"
+Client -> Servers.API: request
+Servers.API -> Client: response
+Client -> Servers.APIGateway: "약 사진"
+Servers.APIGateway -> Client: "후보군"
+Servers.APIGateway <-> Servers.Lambda <-> Servers.SageMaker
+Servers.API <-> Servers.EC2.Postgreql: transaction {style.animated: true}
+Servers.API <-> Servers.EC2.MongoDB: transaction {style.animated: true}
