@@ -1,0 +1,32 @@
+service: pillbox
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: ap-northeast-2
+
+package:
+  patterns:
+    - '!./**'
+    - 'src/**'
+    - '!src/**/*.pyc'
+
+functions:
+  pillBoxEcho:
+    handler: src/handler.echo
+    events:
+      - http:
+          path: /pill/echo
+          method: get
+          integration: lambda
+  pillBoxFindPillByImage:
+    handler: src/pill_image_handler.find_pill_by_image
+    events:
+      - http:
+          path: /pill/findByImage
+          method: post
+          integration: lambda
+          authorizer:
+            name: cognitoAuthorizer
+            arn: {env:COGNITO_ARN}
