@@ -20,14 +20,14 @@ functions:
     handler: src/handler.echo
     events:
       - http:
-          path: /pill/echo
+          path: /pillbox/echo
           method: get
           integration: lambda
   pillBoxFindPillByImage:
     handler: src/pill_image_handler.find_pill_by_image
     events:
       - http:
-          path: /pill/findByImage
+          path: /pillbox/findByImage
           method: post
           integration: lambda
           authorizer:
