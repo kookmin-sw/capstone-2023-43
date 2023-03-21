@@ -31,5 +31,4 @@ functions:
           method: post
           integration: lambda
           authorizer:
-            name: cognitoAuthorizer
-            arn: {env:COGNITO_ARN}
+            arn: ${env:COGNITO_ARN}
