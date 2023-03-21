@@ -1,0 +1,33 @@
+PillBox: {
+  icon: https://icons.terrastruct.com/tech%2F052-smartphone-3.svg
+
+  PillSchedules: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    ItemSeq: text {constraint: foreign_key}
+    Name: text
+    Effect: string
+    WarningMessage: string
+    UseMethod: string
+    StartDate: text
+    EndData: text
+  }
+
+  PillScheduleTimes: {
+    shape: sql_table
+    ScheduleId: int {constraint: foreign_key}
+    TakingTime: text
+  }
+  PillSchedules.id -> PillScheduleTimes.ScheduleId
+}
+
+readMe: |md
+  # TakingTime 
+  복용시간
+  # ItemSeq 
+  표준 품목코드
+  # sqlite는 날짜 및 시간 데이터타입
+   sqlite는 시간 데이터타입 없으므로 아래와 같이 저장할 것
+   * 날짜 YYYY:MM:DD 
+   * 시간 HH:MM:SS 
+|

@@ -1,0 +1,34 @@
+title: |md
+  # 회원가입 및 복용력 추가 시퀀스
+| {near: top-center}
+shape: sequence_diagram
+
+User
+Pillbox
+Cognito: {icon: https://icons.terrastruct.com/aws%2FSecurity%2C%20Identity%2C%20&%20Compliance%2FAmazon-Cognito.svg}
+API: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAWS-AppSync.svg}
+ML: {icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FMachine-Learning.svg}
+UserDB: {icon: https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS.svg}
+
+
+User -> Pillbox.Start: "시작"
+User -> Pillbox.SignUp: "회원가입시작"
+CognitoAuth: {
+  Pillbox.SignUp -> Cognito.Auth: "OAuth2 시작"
+  Cognito.Auth -> Pillbox.SignUp: "OAuth2 끝"
+}
+RegistUserInfo: {
+  Pillbox.SignUp -> User.InputUserInfo: "개인정보 입력 요청"
+  User.InputUserInfo -> Pillbox.SignUp: "생년월일, 성별, 임신여부, 혈압, 혈당, 병력 입력"
+  Pillbox.SignUp -> API.CreateUser: "계정 생성 및 정보 추가"
+  API.CreateUser -> UserDB.AddRow: "유저 데이터 삽입"
+  UserDB.AddRow -> API.CreateUser: "완료"
+  API.CreateUser -> Pillbox.SignUp: "응답"
+}
+
+Pillbox.SignUpCompleteMessage -> User: "가입 확인 메시지 띄우기"
+User -> Pillbox.SignUpCompleteMessage: "확인 버튼 클릭"
+Pillbox.AskPillScheldule -> User: "복용력 추가를 지금할지 질문 다이얼로그 띄우기"
+User -> Pillbox.AskPillScheldule: "Yes / No 응답"
+
+# Add Pill 프로세스 참조

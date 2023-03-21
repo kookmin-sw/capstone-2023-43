@@ -1,37 +1,53 @@
-## Welcome to GitHub Pages
+# 필통 (영문명 : PillBox)
 
-You can use the [editor on GitHub](https://github.com/kookmin-sw/cap-template/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+## 프로그램 설명
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+약의 오용을 방지하고 안전한 약 복용을 도와주는 앱으로 자신의 병력이나 먹고 있는 약의 조합을 통해 먹지 말하야하는 약도 알려줍니다.
+약을 먹은 날과 그렇지 않은 날들을 기록해주는 기능도 갖추고 있습니다.
+또한 낱알의 약을 사진을 찍어 인공지능이 어떤 약인지 알려줍니다.
 
-### Markdown
+## Abstract
+**TDB**
+## 소개영상
+**TDB**
+## 팀소개 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### 팀 이름 
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+_**2023년 캡스톤 최종 최종'진짜최종**_
+___
 
-- Bulleted
-- List
+### 팀원 소개 (사전 배열)
 
-1. Numbered
-2. List
+<br/>
 
-**Bold** and _Italic_ and `Code` text
+><img width=300px height=400px src="./images/김재하사진.jpg" alt = "김재하의 사진">
 
-[Link](url) and ![Image](src)
-```
+>* 이름 : 김재하 
+>* 학번 : ****1593
+>* 역할 : 프론트엔드
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+<br/>
 
-### Jekyll Themes
+><img width=300px height=300px src="./images/김진석사진.jpg"/>
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/kookmin-sw/cap-template/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+>* 이름 : 김진석
+>* 학번 : ****1600
+>* 역할 : PM 및 백엔드와 프론트엔드 보조
 
-### Support or Contact
+<br/>
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+
+
+><img width=300px height=300px src="./images/박종흠사진.jpg" alt = "박종흠의 사진">
+
+>* 이름 : 박종흠
+>* 학번 : ****1619
+>* 역할 : 백엔드와 ML
+
+<br/>
+
+## 사용법 
+
+**TDB**
