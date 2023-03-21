@@ -1,6 +1,9 @@
 service: pillbox
 frameworkVersion: '3'
 
+# load variables from .env file
+useDotenv: true
+
 provider:
   name: aws
   runtime: python3.8
