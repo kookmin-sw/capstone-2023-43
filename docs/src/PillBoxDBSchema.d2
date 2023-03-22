@@ -35,10 +35,14 @@ Postgresql: {
     shape: sql_table
     ItemSeq: string {constraint: primary_key}
     Name: string
+    ENTPName: string
+    Class: string
+    ETCOTCCode: string
     Effect: string
     WarningMessage: string
     UseMethod: string
-    TabooCase: array
+    TabooCase: uint32
+    ImageLink: string
   }
 
   MixTaboo: {
@@ -61,6 +65,21 @@ User: |md
   임신부, 수유부를 모두 해당되는 항목 수정시 경고문구 띄울것
   # IsDiabetes
   당뇨여부
+  # ENTPName
+  제조사
+  # ETCOTCCode
+  전문의약품, 일반의약품
+  # Class
+  약 분류 (etc: 항히스타민제, 소염제)
+  # TabooCase
+  bit 이용하여 처리
+  * 병용 금기 : A = 0x01
+  * 특정연령 금기 : B = 0x02
+  * 임부 금기 : C = 0x04 
+  * Reserved : D ~ E = 0x08, 0x10
+  * 노인금기 : F = 0x20
+  * 당뇨금기 : (자체 코드)= 0x30
+  * 혈압 : (자체코드)= 0x40
 |
 Pill: |md
   # ItemSeq
