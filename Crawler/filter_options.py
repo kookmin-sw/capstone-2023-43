@@ -2,6 +2,9 @@
     크롤러 스크립트에서 공톹적으로 사용되는 요소를 기록해놓음
 '''
 import os
+from dotenv import load_dotenv
+
+load_dotenv() # .env파일에서 환경변수 읽기
 
 # open API
 NUM_OF_ROWS: int = 100
@@ -12,7 +15,7 @@ base_url: str = 'http://apis.data.go.kr/1471000'
 
 # 환경 변수에 APITOKEN로 불러온다
 # params로 넘길때 한번 인코딩되기에 디코딩된 키로 넘긴다.
-token: str = os.environ['APITOKEN']
+token: str = os.getenv('APITOKEN')
 
 
 # 대한민국약전의 제제 총직을 참고하여 경구 투여하는 약물만 추려내었다.
