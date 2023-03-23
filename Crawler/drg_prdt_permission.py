@@ -81,7 +81,7 @@ async def main():
     '''script entry point'''
     aio_sem: Semaphore = Semaphore(TASK_PER_ONCE)
     ret = await asyncio.gather(*[
-        crawler_page(page, aio_sem) for page in range(int(TOTAL_COUNT/100) + 1)
+        crawler_page(page, aio_sem) for page in range(1, max(int(TOTAL_COUNT/100) + 1,5))
     ])
     print(ret)
     json_output = json.dumps({"items": ret})
