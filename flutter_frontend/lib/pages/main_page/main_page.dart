@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_frontend/pages/main_page/widgets/progress_item.dart';
+import 'package:flutter_frontend/pages/main_page/widgets/schedule_item.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
@@ -60,8 +62,8 @@ class MainPage extends HookWidget {
                 decoration: const BoxDecoration(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50),
                     )),
                 width: double.maxFinite,
                 height: 30,
@@ -74,14 +76,16 @@ class MainPage extends HookWidget {
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?
                   (context, index) => index == 0
-                      ? Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: BaseItem(child: Text('progress bar')),
+                      ? const Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: ProgressItem(),
                         )
                       : Padding(
                           padding: const EdgeInsets.only(bottom: 20),
-                          child:
-                              BaseItem(child: Text('test pill before $index')),
+                          child: ScheduleItem(
+                            status: '복약 완료',
+                            time: '${index + 8}:00',
+                          ),
                         ),
                   childCount: 4),
             ),
@@ -104,8 +108,10 @@ class MainPage extends HookWidget {
                         )
                       : Padding(
                           padding: const EdgeInsets.only(bottom: 20),
-                          child:
-                              BaseItem(child: Text('test pill after $index')),
+                          child: ScheduleItem(
+                            status: '복약 예정',
+                            time: '${index + 8}:00',
+                          ),
                         ),
                   childCount: 3),
             ),
