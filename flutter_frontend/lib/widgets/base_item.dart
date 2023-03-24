@@ -4,15 +4,21 @@ import 'package:flutter/material.dart';
 class BaseItem extends StatelessWidget {
   final Widget child;
   final Color? color;
+  final double? width;
+  final double? height;
   const BaseItem({
     Key? key,
     this.color,
+    this.width,
+    this.height,
     required this.child,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width,
+      height: height,
       decoration: BoxDecoration(
           color: color ?? const Color.fromRGBO(255, 255, 255, 1),
           borderRadius: BorderRadius.circular(25),
@@ -24,7 +30,8 @@ class BaseItem extends StatelessWidget {
             ),
           ]),
       // margin: const EdgeInsets.only(bottom: 20),
-      child: Padding(padding: const EdgeInsets.all(25.0), child: child),
+      child: Padding(
+          padding: const EdgeInsets.fromLTRB(25, 15, 25, 15), child: child),
     );
   }
 }
