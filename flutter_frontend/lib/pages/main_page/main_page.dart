@@ -1,9 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/progress_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/schedule_item.dart';
+import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
@@ -19,14 +17,14 @@ class MainPage extends HookWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 175,
+            expandedHeight: 200,
             backgroundColor: const Color.fromRGBO(11, 106, 227, 1),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 alignment: Alignment.bottomCenter,
-                decoration: const BoxDecoration(
-                  color: Color(0x0B6AE3),
-                ),
+                // decoration: const BoxDecoration(
+                //   color: Color(0xff0b6ae3),
+                // ),
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 50),
                   child: Row(
@@ -79,10 +77,17 @@ class MainPage extends HookWidget {
                         padding: EdgeInsets.only(bottom: 20),
                         child: ProgressItem(),
                       )
-                    : const Padding(
+                    : Padding(
                         padding:
                             EdgeInsets.only(bottom: 20, left: 20, right: 20),
-                        child: BaseItem(child: Text("picker_Item")),
+                        child: ToggleButton(
+                          width: 300,
+                          height: 85,
+                          firstName: '오늘 일정',
+                          secondName: '내일 일정',
+                          onTapFirst: () {},
+                          onTapSecond: () {},
+                        ),
                       ),
                 childCount: 2,
               ),
