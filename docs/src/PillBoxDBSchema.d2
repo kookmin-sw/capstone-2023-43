@@ -35,9 +35,12 @@ Postgresql: {
     shape: sql_table
     item_seq: int {constraint: primary_key}
     name: string
+    entp_name: string
+    class: string
     effect: string
     warning_message: string
     use_method: string
+    image_url: string
     taboo_case: array
   }
 
@@ -52,28 +55,6 @@ Postgresql: {
   pill_info.item_seq -> mix_taboo.mixture_item_seq
 }
 
-User: |md
-  # Id
-   UUID
-  # blood_pressure 
-  * 고
-  * 저 
-  # pregnancy
-  임신부, 수유부를 모두 해당되는 항목 수정시 경고문구 띄울것
-  # is_diabetes
-  당뇨여부
-|
-pill: |md
-  # item_seq
-  품목기준코드 (9자리 숫자코드)
-  # taboo_case
-  복용하지 말아야할 몸상태 기재
-  * 노약자 (65세 이상)
-  * 어린이 (18세 미만)
-  * 임신부, 수유부
-  * 혈압 (고, 저)
-  * 당뇨
-|
 
 Postgresql.User.id -> MongoDB.User.id: {style: {stroke-dash: 2}}
 Postgresql.User.id -> MongoDB.pill_history.user_id: {style: {stroke-dash: 2}}
