@@ -59,8 +59,7 @@ async def crawler_page(page: int, sem: Semaphore):
                                        ('pageNo', page)]) \
                                         as response:
 
-            body = await response.text()
-            body = json.loads(body)
+            body = await response.json()
 
             results: list = []
             for item in body['body']['items']:
@@ -91,7 +90,7 @@ async def main():
     aio_sem: Semaphore = Semaphore(TASK_PER_ONCE)
     ret = await asyncio.gather(*[
         crawler_page(page, aio_sem)
-        for page in range(1, min(int(TOTAL_COUNT/NUM_OF_ROWS) + 1, 5))
+        for page in range(1, min(int(TOTAL_COUNT/NUM_OF_ROWS) + 1, 5)) # 1~4까지만 테스트
     ])
     json_output = json.dumps({"items": [row for rows in ret for row in rows]})
     f = open('drg_prdt_permission_out.json', 'w')
