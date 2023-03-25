@@ -32,6 +32,7 @@ charts_suffix: tuple[str] = (
 charts: tuple[str] = (
     '코팅', '당의정', '다층정', '유핵', '내핵제',
     '구강붕해', '캡슐', '과립', '시럽', '엑스',
+    '층정'
 )
 
 full_charts: tuple[str] = charts_suffix + charts
