@@ -15,6 +15,7 @@ import aiohttp
 
 from filter_options import full_charts, token
 from filter_options import base_url, NUM_OF_ROWS, TASK_PER_ONCE
+from doc_parse import doc_to_html
 
 END_POINT: str = base_url + \
     '/DrugPrdtPrmsnInfoService03/getDrugPrdtPrmsnDtlInq02'
@@ -22,10 +23,12 @@ END_POINT: str = base_url + \
 
 TOTAL_COUNT: int = 51235
 
-KEYS: dict[str, str] = {'ITEM_SEQ': 'ItemSeq', 'ITEM_NAME': 'Name',
-                        'ETC_OTC_CODE': 'ETCOTCCODE', 'EE_DOC_DATA': 'Effect',
-                        'UD_DOC_DATA': 'useMethod',
-                        'NB_DOC_DATA': 'WarningMessage'
+KEYS: dict[str, str] = {'ITEM_SEQ': 'item_seq', 'ITEM_NAME': 'name',
+                        'ENTP_NAME': 'entp_name',
+                        'ETC_OTC_CODE': 'etc_otc_code',
+                        'EE_DOC_DATA': 'effect',
+                        'UD_DOC_DATA': 'use_method',
+                        'NB_DOC_DATA': 'warning_message'
                         }
 
 
@@ -59,19 +62,25 @@ async def crawler_page(page: int, sem: Semaphore):
             body = await response.text()
             body = json.loads(body)
 
-            results: dict[str, list] = {"items": []}
+            results: list = []
             for item in body['body']['items']:
                 result: dict = {}
 
                 # preprocess
-                item['CHART'] = item['CHART'].replace('\r\n', '') \
-                    .replace('\n', '')
+                for k, _ in KEYS.items():
+                    if item[k] is None:
+                        item[k] = ""
+                    item[k] = item[k].replace('\r\n', ' ') \
+                        .replace('\n', ' ')
 
                 # filter
                 if filter(item):
                     # transform
-                    result = {v: item[k] for k, v in KEYS.items()}
-                    results['items'].append(result)
+                    result: dict = {}
+                    for k, v in KEYS.items():
+                        result[v] = item[k] if not k.endswith('_DOC_DATA') \
+                            else doc_to_html(item[k])
+                    results.append(result)
 
             sem.release()
             return results
@@ -81,10 +90,10 @@ async def main():
     '''script entry point'''
     aio_sem: Semaphore = Semaphore(TASK_PER_ONCE)
     ret = await asyncio.gather(*[
-        crawler_page(page, aio_sem) for page in range(1, max(int(TOTAL_COUNT/100) + 1,5))
+        crawler_page(page, aio_sem)
+        for page in range(1, max(int(TOTAL_COUNT/NUM_OF_ROWS) + 1, 5))
     ])
-    print(ret)
-    json_output = json.dumps({"items": ret})
+    json_output = json.dumps({"items": [row for rows in ret for row in rows]})
     f = open('drg_prdt_permission_out.json', 'w')
     f.write(json_output)
     f.close()
