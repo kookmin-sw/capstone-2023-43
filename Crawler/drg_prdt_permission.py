@@ -91,7 +91,7 @@ async def main():
     aio_sem: Semaphore = Semaphore(TASK_PER_ONCE)
     ret = await asyncio.gather(*[
         crawler_page(page, aio_sem)
-        for page in range(1, max(int(TOTAL_COUNT/NUM_OF_ROWS) + 1, 5))
+        for page in range(1, min(int(TOTAL_COUNT/NUM_OF_ROWS) + 1, 5))
     ])
     json_output = json.dumps({"items": [row for rows in ret for row in rows]})
     f = open('drg_prdt_permission_out.json', 'w')
@@ -99,5 +99,4 @@ async def main():
     f.close()
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
