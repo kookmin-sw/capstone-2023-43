@@ -28,8 +28,7 @@ KEYS: dict[str, str] = {'ITEM_SEQ': 'item_seq', 'ITEM_NAME': 'name',
                         'ETC_OTC_CODE': 'etc_otc_code',
                         'EE_DOC_DATA': 'effect',
                         'UD_DOC_DATA': 'use_method',
-                        'NB_DOC_DATA': 'warning_message',
-                        'CLASS_NO': 'class'
+                        'NB_DOC_DATA': 'warning_message'
                         }
 
 
