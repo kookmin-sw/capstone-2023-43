@@ -7,13 +7,16 @@
 또한 낱알의 약을 사진을 찍어 인공지능이 어떤 약인지 알려줍니다.
 
 ## Abstract
+
 **TDB**
+
 ## 소개영상
+
 **TDB**
-## 팀소개 
 
-### 팀 이름 
+## 팀소개
 
+### 팀 이름
 
 _**2023년 캡스톤 최종 최종'진짜최종**_
 ___
@@ -22,15 +25,15 @@ ___
 
 <br/>
 
-><img width=300px height=400px src="./images/김재하사진.jpg" alt = "김재하의 사진">
+><img width=300px height=400px src="./docs/images/김재하사진.jpg" alt = "김재하의 사진">
 
->* 이름 : 김재하 
+>* 이름 : 김재하
 >* 학번 : ****1593
 >* 역할 : 프론트엔드와 ML
 
 <br/>
 
-><img width=300px height=300px src="./images/김진석사진.jpg"/>
+><img width=300px height=300px src="./docs/images/김진석사진.jpg"/>
 
 >* 이름 : 김진석
 >* 학번 : ****1600
@@ -38,9 +41,7 @@ ___
 
 <br/>
 
-
-
-><img width=300px height=300px src="./images/박종흠사진.jpg" alt = "박종흠의 사진">
+><img width=300px height=300px src="./docs/images/박종흠사진.jpg" alt = "박종흠의 사진">
 
 >* 이름 : 박종흠
 >* 학번 : ****1619
@@ -48,6 +49,6 @@ ___
 
 <br/>
 
-## 사용법 
+## 사용법
 
 **TDB**
