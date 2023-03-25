@@ -4,7 +4,8 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv() # .env파일에서 환경변수 읽기
+# .env파일에서 환경변수 읽기
+load_dotenv()
 
 # open API
 NUM_OF_ROWS: int = 100
