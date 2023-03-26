@@ -24,6 +24,15 @@ UUID
 
 ## pill_info
 
+### **item_seq**
+
+  품목기준코드
+  9자리 숫자코드
+
+### **name**
+
+  품목명
+
 ### **entp_name**
 
   제조사
@@ -66,7 +75,7 @@ UUID
 
 병용금기 약물의 쌍
 
-### **item_seq**
+### **mix_taboo.item_seq**
 
 병용될 약물 기준품목코드
 
