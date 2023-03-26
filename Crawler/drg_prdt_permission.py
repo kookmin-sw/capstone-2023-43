@@ -32,12 +32,20 @@ KEYS: dict[str, str] = {'ITEM_SEQ': 'item_seq', 'ITEM_NAME': 'name',
                         }
 
 
-def filter(item: dict):
+def drug_filter(item: dict[str, str]) -> bool:
     '''
-        완제의약품이고, 허가상태가 정상이며 경구투여인 약만 필터해준다.
+        아래 조건에 모두 부합할 때 True를 반환한다.
+        완제의약품
+        허가상태가 정상
+        경구투여인 약
+        수출용이 아닌 약
     '''
+
+    # 수출용이라고 표기되어 있는 약은 국내에서 구입이 불가능하다.
     if item['MAKE_MATERIAL_FLAG'] == '완제의약품' and \
-            item['CANCEL_NAME'] == '정상':
+            item['CANCEL_NAME'] == '정상' and \
+            item['ITEM_NAME'].find('(수출용)') == -1:
+
         for chart in full_charts:
             if item['CHART'].find(chart) != -1:
                 return True
@@ -73,7 +81,7 @@ async def crawler_page(page: int, sem: Semaphore):
                         .replace('\n', ' ')
 
                 # filter
-                if filter(item):
+                if drug_filter(item):
                     # transform
                     result: dict = {}
                     for k, v in KEYS.items():
