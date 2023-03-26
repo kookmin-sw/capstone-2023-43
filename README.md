@@ -1,77 +1,54 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=10357826&assignment_repo_type=AssignmentRepo)
-# Welcome to GitHub
+# 필통 (영문명 : PillBox)
 
-캡스톤 팀 생성을 축하합니다.
+## 프로그램 설명
 
-## 팀소개 및 페이지를 꾸며주세요.
+약의 오용을 방지하고 안전한 약 복용을 도와주는 앱으로 자신의 병력이나 먹고 있는 약의 조합을 통해 먹지 말하야하는 약도 알려줍니다.
+약을 먹은 날과 그렇지 않은 날들을 기록해주는 기능도 갖추고 있습니다.
+또한 낱알의 약을 사진을 찍어 인공지능이 어떤 약인지 알려줍니다.
 
-- 프로젝트 소개
-  - 프로젝트 설치방법 및 데모, 사용방법, 프리뷰등을 readme.md에 작성.
-  - Api나 사용방법등 내용이 많을경우 wiki에 꾸미고 링크 추가.
+## Abstract
 
-- 팀페이지 꾸미기
-  - 프로젝트 소개 및 팀원 소개
-  - index.md 예시보고 수정.
+**TDB**
 
-- GitHub Pages 리파지토리 Settings > Options > GitHub Pages 
-  - Source를 marster branch
-  - Theme Chooser에서 태마선택
-  - 수정후 팀페이지 확인하여 점검.
+## 소개영상
 
-**팀페이지 주소** -> https://kookmin-sw.github.io/ '{{자신의 리파지토리 아이디}}'
+**TDB**
 
-**예시)** 2023년 0조  https://kookmin-sw.github.io/capstone-2023-00/
+## 팀소개
 
+### 팀 이름
 
-## 내용에 아래와 같은 내용들을 추가하세요.
+_**2023년 캡스톤 최종 최종'진짜최종**_
+___
 
-### 1. 프로잭트 소개
+### 팀원 소개 (사전 배열)
 
-프로젝트
+<br/>
 
-### 2. 소개 영상
+><img width=300px height=400px src="./docs/images/김재하사진.jpg" alt = "김재하의 사진">
 
-프로젝트 소개하는 영상을 추가하세요
+>* 이름 : 김재하
+>* 학번 : ****1593
+>* 역할 : 프론트엔드와 ML
 
-### 3. 팀 소개
+<br/>
 
-팀을 소개하세요.
+><img width=300px height=300px src="./docs/images/김진석사진.jpg"/>
 
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
+>* 이름 : 김진석
+>* 학번 : ****1600
+>* 역할 : PM 및 백엔드와 프론트엔드 보조
 
-### 4. 사용법
+<br/>
 
-소스코드제출시 설치법이나 사용법을 작성하세요.
+><img width=300px height=300px src="./docs/images/박종흠사진.jpg" alt = "박종흠의 사진">
 
-### 5. 기타
+>* 이름 : 박종흠
+>* 학번 : ****1619
+>* 역할 : 백엔드와 ML
 
-추가적인 내용은 자유롭게 작성하세요.
+<br/>
 
+## 사용법
 
-## Markdown을 사용하여 내용꾸미기
-
-Markdown은 작문을 스타일링하기위한 가볍고 사용하기 쉬운 구문입니다. 여기에는 다음을위한 규칙이 포함됩니다.
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-자세한 내용은 [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Support or Contact
-
-readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
+**TDB**
