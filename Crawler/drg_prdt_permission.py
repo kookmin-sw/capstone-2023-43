@@ -1,9 +1,9 @@
 '''
     식품의약품안전처_의약품 제품 허가정보 API의 내용을 크롤링하는 스크립트
-    drg_prd_permission_out.json로 결과물이 나온다.
+    drg_prd_permission.json로 결과물이 나온다.
     형태는 {
-        'items':[{'item_seq':'', 'name':'', 'entp_name':'', 'etc_otc_code':''},
-                  'effect':'', 'use_method':'', 'warning_message':'']}
+        "data":[{"item_seq":"", "name":"", "entp_name":"", "etc_otc_code":""},
+                  "effect":"", "use_method":"", "warning_message":""]}
 
     usage:
         python drg_prd_permission.py
@@ -79,7 +79,7 @@ async def crawler_page(page: int, sem: Semaphore):
                     if item[k] is None:
                         item[k] = ""
                     item[k] = item[k].replace('\r\n', ' ') \
-                        .replace('\n', ' ')
+                        .replace('\n', ' ').strip()
 
                 # filter
                 if drug_filter(item):
@@ -99,11 +99,10 @@ async def main():
     aio_sem: Semaphore = Semaphore(TASK_PER_ONCE)
     ret = await asyncio.gather(*[
         crawler_page(page, aio_sem)
-        # 1~4까지만 테스트
-        for page in range(1, min(int(TOTAL_COUNT/NUM_OF_ROWS) + 1, 5))
+        for page in range(1, TOTAL_COUNT//NUM_OF_ROWS + 1)
     ])
-    json_output = json.dumps({"items": [row for rows in ret for row in rows]})
-    json_file = open('drg_prdt_permission_out.json', 'w', encoding='UTF-8')
+    json_output = json.dumps({"data": [row for rows in ret for row in rows]})
+    json_file = open('drg_prdt_permission.json', 'w', encoding='UTF-8')
     json_file.write(json_output)
     json_file.close()
 
