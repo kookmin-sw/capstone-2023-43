@@ -3,7 +3,6 @@ import 'package:flutter_frontend/pages/main_page/widgets/progress_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/schedule_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
-import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -40,14 +39,17 @@ class MainPage extends HookWidget {
                       BaseButton(
                         icon: const Icon(Icons.add),
                         text: '먹고있는 약 추가하기',
-                        onTap: () => print('clicked!'),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/add');
+                        },
                       ),
                       const SizedBox(width: 20),
                       BaseButton(
-                        icon: const Icon(Icons.search),
-                        text: '약 검색하기',
-                        onTap: () => print('clicked!'),
-                      ),
+                          icon: const Icon(Icons.search),
+                          text: '약 검색하기',
+                          onTap: () {
+                            Navigator.pushNamed(context, '/search');
+                          }),
                     ],
                   ),
                 ),
@@ -78,10 +80,10 @@ class MainPage extends HookWidget {
                         child: ProgressItem(),
                       )
                     : Padding(
-                        padding:
-                            EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                        padding: const EdgeInsets.only(
+                            bottom: 20, left: 20, right: 20),
                         child: ToggleButton(
-                          width: 300,
+                          width: 350,
                           height: 85,
                           firstName: '오늘 일정',
                           secondName: '내일 일정',
