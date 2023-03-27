@@ -21,7 +21,7 @@ class ToggleButton extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final align = useState(-1);
+    final align = useState(-1.0);
     final selectFirst = useState(true);
     final selectSecond = useState(false);
 
@@ -31,7 +31,7 @@ class ToggleButton extends HookWidget {
       child: Stack(
         children: [
           AnimatedAlign(
-              alignment: Alignment(align.value as double, 0),
+              alignment: Alignment(align.value, 0),
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               child: Container(
