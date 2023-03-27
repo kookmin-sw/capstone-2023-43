@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 class BaseItem extends StatelessWidget {
   final Widget child;
-  final Color? color;
+  final Color color;
   final double? width;
   final double? height;
+
   const BaseItem({
     Key? key,
-    this.color,
+    this.color = Colors.white,
     this.width,
     this.height,
     required this.child,
@@ -21,7 +22,7 @@ class BaseItem extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
           color: color ?? const Color.fromRGBO(255, 255, 255, 1),
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: const <BoxShadow>[
             BoxShadow(
               offset: Offset.zero,

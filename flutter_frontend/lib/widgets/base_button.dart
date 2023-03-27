@@ -19,10 +19,10 @@ class BaseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: const BorderRadius.all(Radius.circular(25)),
+      borderRadius: const BorderRadius.all(Radius.circular(20)),
       child: Ink(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(25)),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           color: color ?? const Color.fromRGBO(255, 255, 255, 1),
           boxShadow: hasShadow
               ? const <BoxShadow>[

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
+import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -44,7 +45,8 @@ class AddPillPage extends HookWidget {
               text: '여기를 눌러 복용하려는 약 찾기',
               icon: const Icon(Icons.search),
               onTap: () {
-                Navigator.pushNamed(context, '/search');
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchPillPage()));
               },
             ),
             const SizedBox(
