@@ -13,7 +13,7 @@ class RequestManager:
         Args:
             max_concurrent_task (int, optional): 동시에 최대로 보낼 request 수. Defaults to 16.
         """
-        self.request_queue: asyncio.Queue[tuple[str, dict[str, str], dict[str,str]]] = asyncio.Queue()
+        self.request_queue: asyncio.Queue[tuple[str, dict[str, str], dict[str,str], bool]] = asyncio.Queue()
         self.request_semaphore = asyncio.Semaphore(max_concurrent_task)
         self.response_queue: asyncio.Queue[tuple[str, dict[str,str],dict[str,str],dict[str,str]]] = asyncio.Queue()
         self.session = aiohttp.ClientSession()
@@ -31,30 +31,34 @@ class RequestManager:
         print(f"RequestManager Handler: {handler_name} Started.")
         while True:
             try:
-                request_url, params, headers = await self.request_queue.get()
+                request_url, params, headers, is_post = await self.request_queue.get()
                 if request_url is None:
                     break
-                response = await self.session.get(request_url, params=params, headers=headers)
+                if is_post:
+                    response = await self.session.post(request_url, json=params, headers=headers)
+                else:
+                    response = await self.session.get(request_url, params=params, headers=headers)
                 if response.status != 200:
-                    print(f"Request failed. Ignore Response.\n{request_url}\n{params}\n{headers}")
+                    print(f"Request failed. Ignore Response.") #\n{request_url}\n{params}\n{headers}")
                     continue
                 json_response = await response.json()
                 await self.response_queue.put((request_url, params, headers, json_response))
                 print(f"RequestManager Handler: {handler_name}: {response.url.human_repr()}")
             except Exception as e:
-                print(f"RequestManager Handler: {handler_name}: e")
+                print(f"RequestManager Handler: {handler_name}: {e}")
         print(f"RequestManager Handler: {handler_name} Finished.")
 
 
-    async def create_request(self, request_url:str, params:dict[str,str]={}, headers:dict[str,str]={}):
+    async def create_request(self, request_url:str, params:dict[str,str]={}, headers:dict[str,str]={}, is_post = False):
         """요청 큐에 넣기
 
         Args:
             request_url (str): 요청 주소
-            params (dict[str,str], optional): GET파라미터. Defaults to {}.
+            params (dict[str,str], optional): GET파라미터 혹은 POST JSON바디. Defaults to {}.
             headers (dict[str,str], optional): 헤더. Defaults to {}.
+            is_post (bool, optional): POST면 True
         """
-        await self.request_queue.put((request_url, params, headers))
+        await self.request_queue.put((request_url, params, headers, is_post))
 
     async def get_response(self) -> tuple[str, dict[str, str], dict[str, str], dict[str,str]]:
         """응답 하나 가져오기
