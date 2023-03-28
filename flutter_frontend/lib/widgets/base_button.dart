@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BaseButton extends StatelessWidget {
   final Function()? onTap;
@@ -34,13 +35,13 @@ class BaseButton extends StatelessWidget {
                 ]
               : null,
         ),
-        padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
+        padding: EdgeInsets.fromLTRB(20.w, 22.h, 20.w, 22.h),
         child: Row(
           children: [
             icon ?? const Text(''),
             Text(
               text,
-              style: const TextStyle(fontWeight: FontWeight.w700),
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15.sp),
             ),
           ],
         ),

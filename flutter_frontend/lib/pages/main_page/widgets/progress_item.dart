@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProgressItem extends StatelessWidget {
   const ProgressItem({super.key});
@@ -9,10 +10,10 @@ class ProgressItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '복약관리',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 18.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -38,18 +39,18 @@ class ProgressItem extends StatelessWidget {
             height: 10,
           ),
           Row(
-            children: const [
+            children: [
               Text(
                 'Time',
                 style: TextStyle(
-                    fontSize: 36,
+                    fontSize: 36.sp,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xff0B6AE3)),
+                    color: const Color(0xff0B6AE3)),
               ),
               Text(
                 '후 복약예정',
                 style: TextStyle(
-                  fontSize: 36,
+                  fontSize: 36.sp,
                   fontWeight: FontWeight.w700,
                 ),
               )

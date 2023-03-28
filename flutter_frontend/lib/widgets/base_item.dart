@@ -1,5 +1,6 @@
 //위젯에 들어가는 아이템의 기반.
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BaseItem extends StatelessWidget {
   final Widget child;
@@ -21,7 +22,7 @@ class BaseItem extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-          color: color ?? const Color.fromRGBO(255, 255, 255, 1),
+          color: color,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const <BoxShadow>[
             BoxShadow(
@@ -32,7 +33,7 @@ class BaseItem extends StatelessWidget {
           ]),
       // margin: const EdgeInsets.only(bottom: 20),
       child: Padding(
-          padding: const EdgeInsets.fromLTRB(25, 15, 25, 15), child: child),
+          padding: EdgeInsets.fromLTRB(25.w, 15, 25.w, 15), child: child),
     );
   }
 }
