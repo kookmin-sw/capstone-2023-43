@@ -1,0 +1,823 @@
+schema {
+  query: query_root
+  subscription: subscription_root
+}
+
+"""whether this query should be cached (Hasura Cloud only)"""
+directive @cached(
+  """measured in seconds"""
+  ttl: Int! = 60
+
+  """refresh the cache entry"""
+  refresh: Boolean! = false
+) on QUERY
+
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
+input Int_comparison_exp {
+  _eq: Int
+  _gt: Int
+  _gte: Int
+  _in: [Int!]
+  _is_null: Boolean
+  _lt: Int
+  _lte: Int
+  _neq: Int
+  _nin: [Int!]
+}
+
+"""
+Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
+"""
+input String_comparison_exp {
+  _eq: String
+  _gt: String
+  _gte: String
+
+  """does the column match the given case-insensitive pattern"""
+  _ilike: String
+  _in: [String!]
+
+  """
+  does the column match the given POSIX regular expression, case insensitive
+  """
+  _iregex: String
+  _is_null: Boolean
+
+  """does the column match the given pattern"""
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+
+  """does the column NOT match the given case-insensitive pattern"""
+  _nilike: String
+  _nin: [String!]
+
+  """
+  does the column NOT match the given POSIX regular expression, case insensitive
+  """
+  _niregex: String
+
+  """does the column NOT match the given pattern"""
+  _nlike: String
+
+  """
+  does the column NOT match the given POSIX regular expression, case sensitive
+  """
+  _nregex: String
+
+  """does the column NOT match the given SQL regular expression"""
+  _nsimilar: String
+
+  """
+  does the column match the given POSIX regular expression, case sensitive
+  """
+  _regex: String
+
+  """does the column match the given SQL regular expression"""
+  _similar: String
+}
+
+"""ordering argument of a cursor"""
+enum cursor_ordering {
+  """ascending ordering of the cursor"""
+  ASC
+
+  """descending ordering of the cursor"""
+  DESC
+}
+
+"""column ordering options"""
+enum order_by {
+  """in ascending order, nulls last"""
+  asc
+
+  """in ascending order, nulls first"""
+  asc_nulls_first
+
+  """in ascending order, nulls last"""
+  asc_nulls_last
+
+  """in descending order, nulls first"""
+  desc
+
+  """in descending order, nulls first"""
+  desc_nulls_first
+
+  """in descending order, nulls last"""
+  desc_nulls_last
+}
+
+"""cannot mix them"""
+type pb_mix_taboo {
+  item_seq: Int!
+
+  """An object relationship"""
+  mixture_info: pb_pill_info!
+  mixture_item_seq: Int!
+  prohibited_content: String!
+}
+
+"""
+aggregated selection of "pb_mix_taboo"
+"""
+type pb_mix_taboo_aggregate {
+  aggregate: pb_mix_taboo_aggregate_fields
+  nodes: [pb_mix_taboo!]!
+}
+
+input pb_mix_taboo_aggregate_bool_exp {
+  count: pb_mix_taboo_aggregate_bool_exp_count
+}
+
+input pb_mix_taboo_aggregate_bool_exp_count {
+  arguments: [pb_mix_taboo_select_column!]
+  distinct: Boolean
+  filter: pb_mix_taboo_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "pb_mix_taboo"
+"""
+type pb_mix_taboo_aggregate_fields {
+  avg: pb_mix_taboo_avg_fields
+  count(columns: [pb_mix_taboo_select_column!], distinct: Boolean): Int!
+  max: pb_mix_taboo_max_fields
+  min: pb_mix_taboo_min_fields
+  stddev: pb_mix_taboo_stddev_fields
+  stddev_pop: pb_mix_taboo_stddev_pop_fields
+  stddev_samp: pb_mix_taboo_stddev_samp_fields
+  sum: pb_mix_taboo_sum_fields
+  var_pop: pb_mix_taboo_var_pop_fields
+  var_samp: pb_mix_taboo_var_samp_fields
+  variance: pb_mix_taboo_variance_fields
+}
+
+"""
+order by aggregate values of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_aggregate_order_by {
+  avg: pb_mix_taboo_avg_order_by
+  count: order_by
+  max: pb_mix_taboo_max_order_by
+  min: pb_mix_taboo_min_order_by
+  stddev: pb_mix_taboo_stddev_order_by
+  stddev_pop: pb_mix_taboo_stddev_pop_order_by
+  stddev_samp: pb_mix_taboo_stddev_samp_order_by
+  sum: pb_mix_taboo_sum_order_by
+  var_pop: pb_mix_taboo_var_pop_order_by
+  var_samp: pb_mix_taboo_var_samp_order_by
+  variance: pb_mix_taboo_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type pb_mix_taboo_avg_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by avg() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_avg_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "pb_mix_taboo". All fields are combined with a logical 'AND'.
+"""
+input pb_mix_taboo_bool_exp {
+  _and: [pb_mix_taboo_bool_exp!]
+  _not: pb_mix_taboo_bool_exp
+  _or: [pb_mix_taboo_bool_exp!]
+  item_seq: Int_comparison_exp
+  mixture_info: pb_pill_info_bool_exp
+  mixture_item_seq: Int_comparison_exp
+  prohibited_content: String_comparison_exp
+}
+
+"""aggregate max on columns"""
+type pb_mix_taboo_max_fields {
+  item_seq: Int
+  mixture_item_seq: Int
+  prohibited_content: String
+}
+
+"""
+order by max() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_max_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+  prohibited_content: order_by
+}
+
+"""aggregate min on columns"""
+type pb_mix_taboo_min_fields {
+  item_seq: Int
+  mixture_item_seq: Int
+  prohibited_content: String
+}
+
+"""
+order by min() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_min_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+  prohibited_content: order_by
+}
+
+"""Ordering options when selecting data from "pb_mix_taboo"."""
+input pb_mix_taboo_order_by {
+  item_seq: order_by
+  mixture_info: pb_pill_info_order_by
+  mixture_item_seq: order_by
+  prohibited_content: order_by
+}
+
+"""
+select columns of table "pb_mix_taboo"
+"""
+enum pb_mix_taboo_select_column {
+  """column name"""
+  item_seq
+
+  """column name"""
+  mixture_item_seq
+
+  """column name"""
+  prohibited_content
+}
+
+"""aggregate stddev on columns"""
+type pb_mix_taboo_stddev_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by stddev() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_stddev_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type pb_mix_taboo_stddev_pop_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by stddev_pop() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_stddev_pop_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type pb_mix_taboo_stddev_samp_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by stddev_samp() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_stddev_samp_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""
+Streaming cursor of the table "pb_mix_taboo"
+"""
+input pb_mix_taboo_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: pb_mix_taboo_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input pb_mix_taboo_stream_cursor_value_input {
+  item_seq: Int
+  mixture_item_seq: Int
+  prohibited_content: String
+}
+
+"""aggregate sum on columns"""
+type pb_mix_taboo_sum_fields {
+  item_seq: Int
+  mixture_item_seq: Int
+}
+
+"""
+order by sum() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_sum_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""aggregate var_pop on columns"""
+type pb_mix_taboo_var_pop_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by var_pop() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_var_pop_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""aggregate var_samp on columns"""
+type pb_mix_taboo_var_samp_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by var_samp() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_var_samp_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""aggregate variance on columns"""
+type pb_mix_taboo_variance_fields {
+  item_seq: Float
+  mixture_item_seq: Float
+}
+
+"""
+order by variance() on columns of table "pb_mix_taboo"
+"""
+input pb_mix_taboo_variance_order_by {
+  item_seq: order_by
+  mixture_item_seq: order_by
+}
+
+"""pill information"""
+type pb_pill_info {
+  class: String
+  effect: String!
+  entp_name: String!
+  etc_otc_code: String!
+  image_url: String
+  item_seq: Int!
+
+  """An array relationship"""
+  mix_taboos(
+    """distinct select on columns"""
+    distinct_on: [pb_mix_taboo_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_mix_taboo_order_by!]
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): [pb_mix_taboo!]!
+
+  """An aggregate relationship"""
+  mix_taboos_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pb_mix_taboo_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_mix_taboo_order_by!]
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): pb_mix_taboo_aggregate!
+  name: String!
+  taboo_case: Int!
+  use_method: String
+  warning_message: String
+}
+
+"""
+aggregated selection of "pb_pill_info"
+"""
+type pb_pill_info_aggregate {
+  aggregate: pb_pill_info_aggregate_fields
+  nodes: [pb_pill_info!]!
+}
+
+"""
+aggregate fields of "pb_pill_info"
+"""
+type pb_pill_info_aggregate_fields {
+  avg: pb_pill_info_avg_fields
+  count(columns: [pb_pill_info_select_column!], distinct: Boolean): Int!
+  max: pb_pill_info_max_fields
+  min: pb_pill_info_min_fields
+  stddev: pb_pill_info_stddev_fields
+  stddev_pop: pb_pill_info_stddev_pop_fields
+  stddev_samp: pb_pill_info_stddev_samp_fields
+  sum: pb_pill_info_sum_fields
+  var_pop: pb_pill_info_var_pop_fields
+  var_samp: pb_pill_info_var_samp_fields
+  variance: pb_pill_info_variance_fields
+}
+
+"""aggregate avg on columns"""
+type pb_pill_info_avg_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+"""
+Boolean expression to filter rows from the table "pb_pill_info". All fields are combined with a logical 'AND'.
+"""
+input pb_pill_info_bool_exp {
+  _and: [pb_pill_info_bool_exp!]
+  _not: pb_pill_info_bool_exp
+  _or: [pb_pill_info_bool_exp!]
+  class: String_comparison_exp
+  effect: String_comparison_exp
+  entp_name: String_comparison_exp
+  etc_otc_code: String_comparison_exp
+  image_url: String_comparison_exp
+  item_seq: Int_comparison_exp
+  mix_taboos: pb_mix_taboo_bool_exp
+  mix_taboos_aggregate: pb_mix_taboo_aggregate_bool_exp
+  name: String_comparison_exp
+  taboo_case: Int_comparison_exp
+  use_method: String_comparison_exp
+  warning_message: String_comparison_exp
+}
+
+"""aggregate max on columns"""
+type pb_pill_info_max_fields {
+  class: String
+  effect: String
+  entp_name: String
+  etc_otc_code: String
+  image_url: String
+  item_seq: Int
+  name: String
+  taboo_case: Int
+  use_method: String
+  warning_message: String
+}
+
+"""aggregate min on columns"""
+type pb_pill_info_min_fields {
+  class: String
+  effect: String
+  entp_name: String
+  etc_otc_code: String
+  image_url: String
+  item_seq: Int
+  name: String
+  taboo_case: Int
+  use_method: String
+  warning_message: String
+}
+
+"""Ordering options when selecting data from "pb_pill_info"."""
+input pb_pill_info_order_by {
+  class: order_by
+  effect: order_by
+  entp_name: order_by
+  etc_otc_code: order_by
+  image_url: order_by
+  item_seq: order_by
+  mix_taboos_aggregate: pb_mix_taboo_aggregate_order_by
+  name: order_by
+  taboo_case: order_by
+  use_method: order_by
+  warning_message: order_by
+}
+
+"""
+select columns of table "pb_pill_info"
+"""
+enum pb_pill_info_select_column {
+  """column name"""
+  class
+
+  """column name"""
+  effect
+
+  """column name"""
+  entp_name
+
+  """column name"""
+  etc_otc_code
+
+  """column name"""
+  image_url
+
+  """column name"""
+  item_seq
+
+  """column name"""
+  name
+
+  """column name"""
+  taboo_case
+
+  """column name"""
+  use_method
+
+  """column name"""
+  warning_message
+}
+
+"""aggregate stddev on columns"""
+type pb_pill_info_stddev_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type pb_pill_info_stddev_pop_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type pb_pill_info_stddev_samp_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+"""
+Streaming cursor of the table "pb_pill_info"
+"""
+input pb_pill_info_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: pb_pill_info_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input pb_pill_info_stream_cursor_value_input {
+  class: String
+  effect: String
+  entp_name: String
+  etc_otc_code: String
+  image_url: String
+  item_seq: Int
+  name: String
+  taboo_case: Int
+  use_method: String
+  warning_message: String
+}
+
+"""aggregate sum on columns"""
+type pb_pill_info_sum_fields {
+  item_seq: Int
+  taboo_case: Int
+}
+
+"""aggregate var_pop on columns"""
+type pb_pill_info_var_pop_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+"""aggregate var_samp on columns"""
+type pb_pill_info_var_samp_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+"""aggregate variance on columns"""
+type pb_pill_info_variance_fields {
+  item_seq: Float
+  taboo_case: Float
+}
+
+type query_root {
+  """
+  fetch data from the table: "pb_mix_taboo"
+  """
+  pb_mix_taboo(
+    """distinct select on columns"""
+    distinct_on: [pb_mix_taboo_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_mix_taboo_order_by!]
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): [pb_mix_taboo!]!
+
+  """
+  fetch aggregated fields from the table: "pb_mix_taboo"
+  """
+  pb_mix_taboo_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pb_mix_taboo_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_mix_taboo_order_by!]
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): pb_mix_taboo_aggregate!
+
+  """fetch data from the table: "pb_mix_taboo" using primary key columns"""
+  pb_mix_taboo_by_pk(item_seq: Int!, mixture_item_seq: Int!): pb_mix_taboo
+
+  """
+  fetch data from the table: "pb_pill_info"
+  """
+  pb_pill_info(
+    """distinct select on columns"""
+    distinct_on: [pb_pill_info_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_pill_info_order_by!]
+
+    """filter the rows returned"""
+    where: pb_pill_info_bool_exp
+  ): [pb_pill_info!]!
+
+  """
+  fetch aggregated fields from the table: "pb_pill_info"
+  """
+  pb_pill_info_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pb_pill_info_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_pill_info_order_by!]
+
+    """filter the rows returned"""
+    where: pb_pill_info_bool_exp
+  ): pb_pill_info_aggregate!
+
+  """fetch data from the table: "pb_pill_info" using primary key columns"""
+  pb_pill_info_by_pk(item_seq: Int!): pb_pill_info
+}
+
+type subscription_root {
+  """
+  fetch data from the table: "pb_mix_taboo"
+  """
+  pb_mix_taboo(
+    """distinct select on columns"""
+    distinct_on: [pb_mix_taboo_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_mix_taboo_order_by!]
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): [pb_mix_taboo!]!
+
+  """
+  fetch aggregated fields from the table: "pb_mix_taboo"
+  """
+  pb_mix_taboo_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pb_mix_taboo_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_mix_taboo_order_by!]
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): pb_mix_taboo_aggregate!
+
+  """fetch data from the table: "pb_mix_taboo" using primary key columns"""
+  pb_mix_taboo_by_pk(item_seq: Int!, mixture_item_seq: Int!): pb_mix_taboo
+
+  """
+  fetch data from the table in a streaming manner: "pb_mix_taboo"
+  """
+  pb_mix_taboo_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [pb_mix_taboo_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: pb_mix_taboo_bool_exp
+  ): [pb_mix_taboo!]!
+
+  """
+  fetch data from the table: "pb_pill_info"
+  """
+  pb_pill_info(
+    """distinct select on columns"""
+    distinct_on: [pb_pill_info_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_pill_info_order_by!]
+
+    """filter the rows returned"""
+    where: pb_pill_info_bool_exp
+  ): [pb_pill_info!]!
+
+  """
+  fetch aggregated fields from the table: "pb_pill_info"
+  """
+  pb_pill_info_aggregate(
+    """distinct select on columns"""
+    distinct_on: [pb_pill_info_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [pb_pill_info_order_by!]
+
+    """filter the rows returned"""
+    where: pb_pill_info_bool_exp
+  ): pb_pill_info_aggregate!
+
+  """fetch data from the table: "pb_pill_info" using primary key columns"""
+  pb_pill_info_by_pk(item_seq: Int!): pb_pill_info
+
+  """
+  fetch data from the table in a streaming manner: "pb_pill_info"
+  """
+  pb_pill_info_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [pb_pill_info_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: pb_pill_info_bool_exp
+  ): [pb_pill_info!]!
+}
+

@@ -19,9 +19,22 @@ class ProgressItem extends StatelessWidget {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: const [
-              Text('percent'),
-              Text('복약완료'),
+            children: [
+              Text(
+                'percent%',
+                style: TextStyle(
+                  fontSize: 16.w,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.blue,
+                ),
+              ),
+              Text(
+                '복약완료',
+                style: TextStyle(
+                  fontSize: 16.w,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
           const SizedBox(

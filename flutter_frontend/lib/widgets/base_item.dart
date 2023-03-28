@@ -23,7 +23,7 @@ class BaseItem extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.w),
           boxShadow: const <BoxShadow>[
             BoxShadow(
               offset: Offset.zero,
@@ -33,7 +33,7 @@ class BaseItem extends StatelessWidget {
           ]),
       // margin: const EdgeInsets.only(bottom: 20),
       child: Padding(
-          padding: EdgeInsets.fromLTRB(25.w, 15, 25.w, 15), child: child),
+          padding: EdgeInsets.fromLTRB(25.w, 15.h, 25.w, 15.h), child: child),
     );
   }
 }

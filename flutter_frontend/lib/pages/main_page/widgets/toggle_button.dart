@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ToggleButton extends HookWidget {
   final double width;
-  final double height;
   final String firstName;
   final Function() onTapFirst;
   final String secondName;
@@ -13,7 +12,6 @@ class ToggleButton extends HookWidget {
 
   const ToggleButton(
       {required this.width,
-      required this.height,
       required this.firstName,
       required this.secondName,
       required this.onTapFirst,
@@ -28,72 +26,73 @@ class ToggleButton extends HookWidget {
 
     return BaseItem(
       width: width,
-      height: height,
-      child: Stack(
-        children: [
-          AnimatedAlign(
-              alignment: Alignment(align.value, 0),
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              child: Container(
-                width: ((width - 25.w) / 2),
-                height: height,
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(11, 106, 227, 1),
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                ),
-              )),
-          GestureDetector(
-            onTap: () {
-              align.value = -1;
-              selectFirst.value = true;
-              selectSecond.value = false;
-              onTapFirst();
-            },
-            child: Align(
-              alignment: const Alignment(-1, 0),
-              child: Container(
-                width: ((width - 25.w) / 2),
-                alignment: Alignment.center,
-                child: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  style: TextStyle(
-                    fontFamily: 'NoToSansKR',
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    color: selectFirst.value ? Colors.white : Colors.black,
+      child: AspectRatio(
+        aspectRatio: 15 / 3,
+        child: Stack(
+          children: [
+            AnimatedAlign(
+                alignment: Alignment(align.value, 0),
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: Container(
+                  width: ((width - 25.w) / 2),
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(11, 106, 227, 1),
+                    borderRadius: BorderRadius.all(Radius.circular(15.w)),
                   ),
-                  child: Text(firstName),
+                )),
+            GestureDetector(
+              onTap: () {
+                align.value = -1;
+                selectFirst.value = true;
+                selectSecond.value = false;
+                onTapFirst();
+              },
+              child: Align(
+                alignment: const Alignment(-1, 0),
+                child: Container(
+                  width: ((width - 25.w) / 2),
+                  alignment: Alignment.center,
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: TextStyle(
+                      fontFamily: 'NoToSansKR',
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      color: selectFirst.value ? Colors.white : Colors.black,
+                    ),
+                    child: Text(firstName),
+                  ),
                 ),
               ),
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              align.value = 1;
-              selectFirst.value = false;
-              selectSecond.value = true;
-              onTapSecond();
-            },
-            child: Align(
-              alignment: const Alignment(1, 0),
-              child: Container(
-                width: ((width - 25.w) / 2),
-                alignment: Alignment.center,
-                child: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  style: TextStyle(
-                    fontFamily: 'NoToSansKR',
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    color: selectSecond.value ? Colors.white : Colors.black,
+            GestureDetector(
+              onTap: () {
+                align.value = 1;
+                selectFirst.value = false;
+                selectSecond.value = true;
+                onTapSecond();
+              },
+              child: Align(
+                alignment: const Alignment(1, 0),
+                child: Container(
+                  width: ((width - 25.w) / 2),
+                  alignment: Alignment.center,
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: TextStyle(
+                      fontFamily: 'NoToSansKR',
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      color: selectSecond.value ? Colors.white : Colors.black,
+                    ),
+                    child: Text(secondName),
                   ),
-                  child: Text(secondName),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

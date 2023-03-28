@@ -21,7 +21,7 @@ class MainPage extends HookWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: (200.w) + 50,
             backgroundColor: const Color.fromRGBO(11, 106, 227, 1),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
@@ -92,11 +92,11 @@ class MainPage extends HookWidget {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(50),
-                      topRight: Radius.circular(50),
+                      topLeft: Radius.circular(50.w),
+                      topRight: Radius.circular(50.w),
                     )),
                 width: double.maxFinite,
                 height: 30.h,
@@ -108,16 +108,15 @@ class MainPage extends HookWidget {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => index == 0
-                    ? const Padding(
-                        padding: EdgeInsets.only(bottom: 20),
+                    ? Padding(
+                        padding: EdgeInsets.only(bottom: 20.h),
                         child: ProgressItem(),
                       )
                     : Padding(
                         padding: EdgeInsets.only(
-                            bottom: 20.w, left: 20.h, right: 20.h),
+                            bottom: 20.h, left: 20.w, right: 20.w),
                         child: ToggleButton(
                           width: 350.w,
-                          height: 85.h,
                           firstName: '오늘 일정',
                           secondName: '내일 일정',
                           onTapFirst: () {},
@@ -134,7 +133,7 @@ class MainPage extends HookWidget {
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?
                   (context, index) => Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
+                        padding: EdgeInsets.only(bottom: 20.h),
                         child: ScheduleItem(
                           status: '복약 완료',
                           time: '${index + 8}:00',
@@ -144,18 +143,18 @@ class MainPage extends HookWidget {
             ),
           ),
           SliverPadding(
-            padding: EdgeInsets.fromLTRB(50.w, 10, 50.w, 50),
+            padding: EdgeInsets.fromLTRB(50.w, 10.h, 50.w, 50.h),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?
                   (context, index) => index == 0
-                      ? const Padding(
-                          padding: EdgeInsets.only(bottom: 30),
+                      ? Padding(
+                          padding: EdgeInsets.only(bottom: 30.h),
                           child: Center(
                             child: Text(
                               '오늘도 열심히 드시고 계시네요! 💪 ',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.w,
                                 fontWeight: FontWeight.w700,
                                 color: Color.fromRGBO(165, 165, 165, 1),
                               ),
@@ -163,7 +162,7 @@ class MainPage extends HookWidget {
                           ),
                         )
                       : Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
+                          padding: EdgeInsets.only(bottom: 20.h),
                           child: ScheduleItem(
                             status: '복약 예정',
                             time: '${index + 8}:00',
