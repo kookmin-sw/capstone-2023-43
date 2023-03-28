@@ -18,6 +18,9 @@ base_url: str = 'http://apis.data.go.kr/1471000'
 # params로 넘길때 한번 인코딩되기에 디코딩된 키로 넘긴다.
 token: str = os.getenv('APITOKEN')
 
+# Hasura Admin Secret
+hasura_admin_secret: str = os.getenv('HASURA_ADMIN_SECRET')
+
 
 # 대한민국약전의 제제 총직을 참고하여 경구 투여하는 약물만 추려내었다.
 # https://nedrug.mfds.go.kr/pbp/CCEKP12/selectPopupList?phcpaLclasCode=EKP2#
