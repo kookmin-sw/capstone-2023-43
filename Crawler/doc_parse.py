@@ -50,8 +50,6 @@ def doc_to_html(doc: str) -> str:
 
                     # table
                     if paragraph['@tagName'] == 'table':
-                        if not ('#text' in paragraph.keys()):
-                            continue
                         out += '<table>'
                         out += paragraph['#text']
                         out += '</table>'
