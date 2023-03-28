@@ -10,16 +10,11 @@
 '''
 
 import asyncio
-from asyncio import Semaphore
 import json
-import aiohttp
 
-from filter_options import full_charts, token
-from filter_options import base_url, NUM_OF_ROWS
+from async_request_manager import RequestManager
+import filter_options
 from doc_parse import doc_to_html
-
-END_POINT: str = base_url + \
-    '/DrugPrdtPrmsnInfoService03/getDrugPrdtPrmsnDtlInq02'
 
 
 TOTAL_COUNT: int = 51235
@@ -47,63 +42,59 @@ def drug_filter(item: dict[str, str]) -> bool:
             item['CANCEL_NAME'] == '정상' and \
             item['ITEM_NAME'].find('(수출용)') == -1:
 
-        for chart in full_charts:
+        for chart in filter_options.full_charts:
             if item['CHART'].find(chart) != -1:
                 return True
     return False
 
 
-async def crawler_page(page: int, sem: Semaphore):
-    '''
-        한페이지를 리퀘스트 하는 크롤러
-    '''
-    await sem.acquire()
+async def main():
+    request_manager = RequestManager()
+    await request_manager.start()
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(END_POINT,
-                               headers={'Content-type': 'text/json'},
-                               params=[('serviceKey', token),
-                                       ('type', 'json'),
-                                       ('numOfRows', NUM_OF_ROWS),
-                                       ('pageNo', page)]) \
-                as response:
+    result_url = filter_options.base_url + \
+        '/DrugPrdtPrmsnInfoService03/getDrugPrdtPrmsnDtlInq02'
 
-            body = await response.json()
+    for page in range(1, TOTAL_COUNT//filter_options.NUM_OF_ROWS + 1):
+        await request_manager.create_request(result_url, {
+            'serviceKey': filter_options.token, 'type': 'json',
+            'numOfRows': filter_options.NUM_OF_ROWS, 'pageNo': page
+        })
 
-            results: list = []
-            for item in body['body']['items']:
+    response_none_count = 0
+
+    results: list = []
+    while response_none_count < 5:
+        url, _, _, response_json = await request_manager.get_response()
+
+        if url is None:
+            response_none_count += 1
+            continue
+
+        result: dict = {}
+        for item in response_json['body']['items']:
+            # preprocess
+            for k, _ in KEYS.items():
+                if item[k] is None:
+                    item[k] = ""
+                item[k] = item[k].replace('\r\n', ' ') \
+                    .replace('\n', ' ').strip()
+
+            # filter
+            if drug_filter(item):
+                # transform
+                print(f"{item['ITEM_SEQ']} -> {item['ITEM_NAME']},\
+{item['UD_DOC_DATA']}")
+
                 result: dict = {}
-
-                # preprocess
-                for k, _ in KEYS.items():
-                    if item[k] is None:
-                        item[k] = ""
-                    item[k] = item[k].replace('\r\n', ' ') \
-                        .replace('\n', ' ').strip()
-
-                # filter
-                if drug_filter(item):
-                    # transform
-                    result: dict = {}
-                    for k, v in KEYS.items():
-                        result[v] = item[k] if not k.endswith('_DOC_DATA') \
+                for k, v in KEYS.items():
+                    result[v] = item[k] if not k.endswith('_DOC_DATA') \
                             else doc_to_html(item[k])
                     results.append(result)
+    await request_manager.stop()
 
-            sem.release()
-            return results
-
-
-async def main():
-    '''script entry point'''
-    aio_sem: Semaphore = Semaphore(50)
-    ret = await asyncio.gather(*[
-        crawler_page(page, aio_sem) for page in range(1, TOTAL_COUNT//NUM_OF_ROWS + 1)
-    ])
-    json_output = json.dumps({"data": [row for rows in ret for row in rows]})
-    json_file = open('drg_prdt_permission.json', 'w', encoding='UTF-8')
-    json_file.write(json_output)
-    json_file.close()
+    with open('drg_prtd_permission.json', 'w', encoding="UTF-8") as file:
+        json.dump({'data': results}, file)
 
 if __name__ == '__main__':
     asyncio.run(main())
