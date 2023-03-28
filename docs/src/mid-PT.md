@@ -9,10 +9,7 @@ header: 팀 2023년_캡스톤_최종_최종'진짜최종 PillBox
 
 # PillBox
 
-<br/>
-<br/>
-<br/>
-<br/>
+![bg h:20% left:10](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/PillBox%20icon.jpg?raw=true)
 
 ## 팀 2023년_캡스톤_최종_최종'진짜최종 (팀 43)
 
@@ -54,14 +51,16 @@ ___
 
 ![bg](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/%EB%B0%95%EC%A2%85%ED%9D%A0%EC%82%AC%EC%A7%84.jpg?raw=true)
 
-김재하 프론트 엔드
+김재하 프론트 엔드 & ML
 김진석 기획 및 보조
-박종흠 백 엔드
+박종흠 백 엔드 & ML
 ___
+
+<!-- _backgroundColor: white -->
 
 # 앱구조
 
-![bg h:80%](https://raw.githubusercontent.com/kookmin-sw/capstone-2023-43/e517524221c76dbeb190f10f69778190d3b5528d/docs/images/ServerAndClientDiagram.svg)
+![bg w:100%](../images/ServerAndClientDiagram.svg)
 
 <!-- 서버리스 하게 작업을 진행 -->
 <!-- 이후 얄약 낱알 인식 기능 추가 예정-->
