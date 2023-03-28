@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SearchItem extends StatelessWidget {
   final String title;
@@ -16,13 +17,13 @@ class SearchItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 10.h),
       leading: const CircleAvatar(
         backgroundColor: Colors.grey,
       ),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,17 +31,17 @@ class SearchItem extends StatelessWidget {
           Text(subTitle),
           Text(
             company,
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12.sp),
           ),
         ],
       ),
       trailing: Container(
         color: Colors.grey,
-        child: const Padding(
-          padding: EdgeInsets.all(4.0),
+        child: Padding(
+          padding: EdgeInsets.all(4.0.w),
           child: Text(
             'pill',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
           ),
         ),
       ),

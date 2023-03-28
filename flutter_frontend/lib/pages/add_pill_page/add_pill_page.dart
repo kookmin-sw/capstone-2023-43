@@ -4,6 +4,7 @@ import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddPillPage extends HookWidget {
   const AddPillPage({super.key});
@@ -14,7 +15,7 @@ class AddPillPage extends HookWidget {
       body: Container(
         child: Center(
             child: Padding(
-          padding: const EdgeInsets.fromLTRB(40, 40, 40, 0),
+          padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
           child: Column(
             children: [
               Row(
@@ -23,24 +24,24 @@ class AddPillPage extends HookWidget {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back,
-                        size: 28,
+                        size: 28.w,
                       )),
                   const SizedBox(
                     width: 10,
                   ),
-                  const Text(
+                  Text(
                     "먹고있는 약 추가하기",
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.w700,
                     ),
                   )
                 ],
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               BaseButton(
                 text: '여기를 눌러 복용하려는 약 찾기',
@@ -52,18 +53,18 @@ class AddPillPage extends HookWidget {
                           builder: (context) => SearchPillPage()));
                 },
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
-              const SizedBox(
-                width: 25,
+              SizedBox(
+                width: 25.w,
               ),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(width: 0.5),
                   borderRadius: const BorderRadius.all(Radius.circular(15)),
                 ),
-                height: 100,
+                height: 100.h,
                 child: const Center(
                     child: Text(
                   "복용 하고자 하는 약을 스케쥴에 올려  편리하게 관리하세요!",
@@ -71,8 +72,8 @@ class AddPillPage extends HookWidget {
                       fontWeight: FontWeight.w700, color: Color(0xffd2d2d2)),
                 )),
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               Row(
                 children: [
@@ -83,81 +84,80 @@ class AddPillPage extends HookWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     flex: 1,
                     child: SizedBox(
-                      height: 50,
+                      height: 50.h,
                     ),
                   ),
                   Expanded(
                       flex: 5,
                       child: Container(
-                        height: 50,
+                        height: 50.h,
                         color: Colors.grey,
                       )),
-                  const Expanded(
+                  Expanded(
                     flex: 1,
                     child: SizedBox(
-                      height: 50,
+                      height: 50.h,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               Row(
                 children: [
                   Text(
                     "복용시간",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   Expanded(
                     flex: 1,
                     child: SizedBox(
-                      height: 50,
+                      height: 50.h,
                     ),
                   ),
                   Expanded(
                       flex: 5,
                       child: Container(
-                        height: 50,
+                        height: 50.h,
                         color: Colors.grey,
                       )),
                   Expanded(
                     flex: 1,
                     child: SizedBox(
-                      height: 50,
+                      height: 50.h,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
-              const Text(
+              Text(
                 "복용 주기",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               SizedBox(
-                height: 20,
+                height: 20.h,
               ),
               ToggleButton(
-                width: 300,
-                height: 75,
+                width: 300.w,
                 firstName: "요일",
                 secondName: "주기",
                 onTapFirst: () {},
                 onTapSecond: () {},
               ),
               SizedBox(
-                height: 20,
+                height: 20.h,
               ),
               Container(
                 color: Colors.blueGrey,

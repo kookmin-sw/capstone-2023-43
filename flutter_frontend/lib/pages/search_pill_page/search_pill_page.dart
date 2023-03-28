@@ -3,6 +3,7 @@ import 'package:flutter_frontend/pages/search_pill_page/dummy_model.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../pill_infomation_page/pill_infomation.dart';
 
@@ -21,7 +22,7 @@ class SearchPillPage extends HookWidget {
 
     return BaseWidget(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(40, 40, 40, 0),
+        padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,10 +33,10 @@ class SearchPillPage extends HookWidget {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back),
-                  iconSize: 28,
+                  iconSize: 28.sp,
                 ),
-                const SizedBox(
-                  width: 10,
+                SizedBox(
+                  width: 10.w,
                 ),
                 Expanded(
                   flex: 1,
@@ -63,23 +64,23 @@ class SearchPillPage extends HookWidget {
                 )
               ],
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             isSearched.value
                 ? Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           '검색결과',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            fontSize: 18,
+                            fontSize: 18.sp,
                           ),
                         ),
-                        const SizedBox(
-                          height: 10,
+                        SizedBox(
+                          height: 10.h,
                         ),
                         const Divider(
                           thickness: 1,
