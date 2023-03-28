@@ -93,7 +93,7 @@ async def main():
                     results.append(result)
     await request_manager.stop()
 
-    with open('drg_prtd_permission.json', 'w', encoding="UTF-8") as file:
+    with open('drg_prdt_permission.json', 'w', encoding="UTF-8") as file:
         json.dump({'data': results}, file)
 
 if __name__ == '__main__':
