@@ -47,6 +47,21 @@ def drug_filter(item: dict[str, str]) -> bool:
                 return True
     return False
 
+def json_dump(data, file_number:int) -> int:
+    """json 파일로 저장
+    file_number 단위로 분할해서 저장
+
+    Args:
+        data (_type_): 저장할 json 데이터
+        file_number (int): 파일 번호
+
+    Returns:
+        int: 다음 파일 번호
+    """
+    filename = f"drg_prdt_permission/{file_number}.json"
+    with open(filename, 'w') as file:
+        json.dump(data, file)
+    return file_number + 1
 
 async def main():
     request_manager = RequestManager()
@@ -64,6 +79,7 @@ async def main():
     response_none_count = 0
 
     results: list = []
+    file_number = 0
     while response_none_count < 5:
         url, _, _, response_json = await request_manager.get_response()
 
@@ -71,7 +87,6 @@ async def main():
             response_none_count += 1
             continue
 
-        result: dict = {}
         for item in response_json['body']['items']:
             # preprocess
             for k, _ in KEYS.items():
@@ -83,18 +98,26 @@ async def main():
             # filter
             if drug_filter(item):
                 # transform
-                print(f"{item['ITEM_SEQ']} -> {item['ITEM_NAME']},\
-{item['UD_DOC_DATA']}")
+                print(f"{item['ITEM_SEQ']} -> {item['ITEM_NAME']}")
 
                 result: dict = {}
                 for k, v in KEYS.items():
                     result[v] = item[k] if not k.endswith('_DOC_DATA') \
                             else doc_to_html(item[k])
-                    results.append(result)
+                results.append(result)
+        
+        if len(results) > 100:
+            file_number = json_dump(results, file_number)
+            results.clear()
+
+    if len(results) > 0:
+        file_number = json_dump(results, file_number)
+        results.clear()
+
     await request_manager.stop()
 
-    with open('drg_prdt_permission.json', 'w', encoding="UTF-8") as file:
-        json.dump({'data': results}, file)
+    # with open('drg_prdt_permission.json', 'w', encoding="UTF-8") as file:
+    #     json.dump({'data': results}, file)
 
 if __name__ == '__main__':
     asyncio.run(main())
