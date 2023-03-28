@@ -17,16 +17,16 @@ Servers: {
   Lambda: {icon: https://icons.terrastruct.com/aws%2FCompute%2FAWS-Lambda.svg}
   SageMaker: {icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FAmazon-SageMaker.svg}
   APIGateway -> Cognito
-  APIGateway <-> EC2.Postgreql: transaction {style.animated: true}
-  APIGateway <-> EC2.MongoDB: transaction {style.animated: true}
+  APIGateway <-> EC2.Postgreql: transaction
+  APIGateway <-> EC2.MongoDB: transaction
   Cognito -> Lambda
   Lambda -> SageMaker
 }
 
 Crawler: {icon: https://icons.terrastruct.com/dev%2Fpython.svg}
-OpenAPI
+공공데이터
+
+Client <-> Servers.APIGateway: request & response
 
 Client <-> Servers.Cognito: "Sign up & Sign in"
-Servers.EC2.Postgreql <- Crawler <- OpenAPI: 약 정보
-Client -> Servers.APIGateway: request
-Servers.APIGateway -> Client: response
+Servers.EC2.Postgreql <- Crawler <- 공공데이터: 약 정보
