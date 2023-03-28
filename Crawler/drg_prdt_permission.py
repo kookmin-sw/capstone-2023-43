@@ -15,7 +15,7 @@ import json
 import aiohttp
 
 from filter_options import full_charts, token
-from filter_options import base_url, NUM_OF_ROWS, TASK_PER_ONCE
+from filter_options import base_url, NUM_OF_ROWS
 from doc_parse import doc_to_html
 
 END_POINT: str = base_url + \
@@ -66,7 +66,7 @@ async def crawler_page(page: int, sem: Semaphore):
                                        ('type', 'json'),
                                        ('numOfRows', NUM_OF_ROWS),
                                        ('pageNo', page)]) \
-                                        as response:
+                as response:
 
             body = await response.json()
 
@@ -96,10 +96,9 @@ async def crawler_page(page: int, sem: Semaphore):
 
 async def main():
     '''script entry point'''
-    aio_sem: Semaphore = Semaphore(TASK_PER_ONCE)
+    aio_sem: Semaphore = Semaphore(50)
     ret = await asyncio.gather(*[
-        crawler_page(page, aio_sem)
-        for page in range(1, TOTAL_COUNT//NUM_OF_ROWS + 1)
+        crawler_page(page, aio_sem) for page in range(1, TOTAL_COUNT//NUM_OF_ROWS + 1)
     ])
     json_output = json.dumps({"data": [row for rows in ret for row in rows]})
     json_file = open('drg_prdt_permission.json', 'w', encoding='UTF-8')
