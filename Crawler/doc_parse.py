@@ -22,15 +22,18 @@ def doc_to_html(doc: str) -> str:
     # 아래 부터는 식품안전처_의약품 제품 허가정보 API에서 작성한 포맷을 파싱한다.
 
     # 비어 있는 태그
-    docs = docs['DOC']['SECTION']
+    docs: list[dict] = docs['DOC']['SECTION']
 
     # 한약에 제제가 여러개인 경우 처리
     if not isinstance(docs, list):
         docs = [docs]
 
+    doc: dict = {}
+
     for doc in docs:
         out += doc['@title']
-
+        if not ('ARTICLE' in doc.keys()):
+            continue
         # 소제목
         if not isinstance(doc['ARTICLE'], list):
             doc['ARTICLE'] = [doc['ARTICLE']]
@@ -47,11 +50,15 @@ def doc_to_html(doc: str) -> str:
 
                     # table
                     if paragraph['@tagName'] == 'table':
+                        if not ('#text' in paragraph.keys()):
+                            continue
                         out += '<table>'
                         out += paragraph['#text']
                         out += '</table>'
                     # 일반 글
                     if paragraph['@tagName'] == 'p':
+                        if not ('#text' in paragraph.keys()):
+                            continue
                         out += '<p>'
                         out += paragraph['#text']
                         out += '</p>'
