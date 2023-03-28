@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ScheduleItem extends StatelessWidget {
   final String time;
@@ -15,16 +16,16 @@ class ScheduleItem extends StatelessWidget {
             children: [
               Text(
                 time,
-                style: const TextStyle(fontSize: 32),
+                style: TextStyle(fontSize: 32.sp),
               ),
               const SizedBox(
                 width: 10,
               ),
               Text(
                 status,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Color.fromRGBO(11, 106, 227, 1),
-                  fontSize: 32,
+                  fontSize: 32.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),

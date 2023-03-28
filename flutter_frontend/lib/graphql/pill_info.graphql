@@ -1,0 +1,11 @@
+query pb_pill_info {
+    pb_pill_info(name: NAME){
+        item_seq
+        name
+        entp_name
+        etc_otc_code
+        class
+        image_url
+        taboo_case
+    }
+}

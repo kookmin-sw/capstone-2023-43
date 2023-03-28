@@ -6,6 +6,7 @@ import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../pill_infomation_page/pill_infomation.dart';
 import '../search_pill_page/search_pill_page.dart';
@@ -29,13 +30,16 @@ class MainPage extends HookWidget {
                 //   color: Color(0xff0b6ae3),
                 // ),
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 50),
+                  padding: EdgeInsets.only(bottom: 50.h),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       BaseButton(
-                        icon: const Icon(Icons.calendar_month),
+                        icon: Icon(
+                          Icons.calendar_month,
+                          size: 16.w,
+                        ),
                         text: '달력보기',
                         onTap: () {
                           Navigator.push(
@@ -49,9 +53,12 @@ class MainPage extends HookWidget {
                           );
                         },
                       ),
-                      const SizedBox(width: 20),
+                      SizedBox(width: 20.w),
                       BaseButton(
-                        icon: const Icon(Icons.add),
+                        icon: Icon(
+                          Icons.add,
+                          size: 16.w,
+                        ),
                         text: '먹고있는 약 추가하기',
                         onTap: () {
                           Navigator.push(
@@ -60,9 +67,12 @@ class MainPage extends HookWidget {
                                   builder: (context) => AddPillPage()));
                         },
                       ),
-                      const SizedBox(width: 20),
+                      SizedBox(width: 20.w),
                       BaseButton(
-                          icon: const Icon(Icons.search),
+                          icon: Icon(
+                            Icons.search,
+                            size: 16.w,
+                          ),
                           text: '약 검색하기',
                           onTap: () {
                             Navigator.push(
@@ -75,7 +85,10 @@ class MainPage extends HookWidget {
                 ),
               ),
             ),
-            title: const Text('PillBox'),
+            title: Text(
+              'PillBox',
+              style: TextStyle(fontSize: 16.w),
+            ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(0),
               child: Container(
@@ -86,12 +99,12 @@ class MainPage extends HookWidget {
                       topRight: Radius.circular(50),
                     )),
                 width: double.maxFinite,
-                height: 30,
+                height: 30.h,
               ),
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(50, 20, 50, 0),
+            padding: EdgeInsets.fromLTRB(50.w, 20.h, 50.w, 0),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => index == 0
@@ -100,11 +113,11 @@ class MainPage extends HookWidget {
                         child: ProgressItem(),
                       )
                     : Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: 20, left: 20, right: 20),
+                        padding: EdgeInsets.only(
+                            bottom: 20.w, left: 20.h, right: 20.h),
                         child: ToggleButton(
-                          width: 350,
-                          height: 85,
+                          width: 350.w,
+                          height: 85.h,
                           firstName: '오늘 일정',
                           secondName: '내일 일정',
                           onTapFirst: () {},
@@ -116,7 +129,7 @@ class MainPage extends HookWidget {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+            padding: EdgeInsets.fromLTRB(50.w, 0, 50.w, 0),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?
@@ -131,7 +144,7 @@ class MainPage extends HookWidget {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(50, 10, 50, 50),
+            padding: EdgeInsets.fromLTRB(50.w, 10, 50.w, 50),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?

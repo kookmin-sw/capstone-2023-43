@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ToggleButton extends HookWidget {
   final double width;
@@ -35,7 +36,7 @@ class ToggleButton extends HookWidget {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               child: Container(
-                width: (width - 25) / 2,
+                width: ((width - 25.w) / 2),
                 height: height,
                 decoration: const BoxDecoration(
                   color: Color.fromRGBO(11, 106, 227, 1),
@@ -52,13 +53,13 @@ class ToggleButton extends HookWidget {
             child: Align(
               alignment: const Alignment(-1, 0),
               child: Container(
-                width: (width - 25) / 2,
+                width: ((width - 25.w) / 2),
                 alignment: Alignment.center,
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 300),
                   style: TextStyle(
                     fontFamily: 'NoToSansKR',
-                    fontSize: 18,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                     color: selectFirst.value ? Colors.white : Colors.black,
                   ),
@@ -77,13 +78,13 @@ class ToggleButton extends HookWidget {
             child: Align(
               alignment: const Alignment(1, 0),
               child: Container(
-                width: (width - 25) / 2,
+                width: ((width - 25.w) / 2),
                 alignment: Alignment.center,
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 300),
                   style: TextStyle(
                     fontFamily: 'NoToSansKR',
-                    fontSize: 18,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                     color: selectSecond.value ? Colors.white : Colors.black,
                   ),

@@ -1,5 +1,5 @@
 overwite: true
-schema: 'https://sda6wcx8qj.execute-api.ap-northeast-2.amazonaws.com/dev/graphql'
+schema: 'https://graphqlzero.almansi.me/api'
 generates:
   ./lib/schema.graphql:
     plugins:

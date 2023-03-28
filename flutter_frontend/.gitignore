@@ -46,3 +46,6 @@ app.*.map.json
 
 #npm modules
 node_modules
+
+#ignore schema
+/lib/schema.graphql
