@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
 import 'package:flutter_frontend/pages/main_page/main_page.dart';
+import 'package:flutter_frontend/pages/main_page/widgets/pill_infomation.dart';
+import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 
 import 'demo.dart';
 
@@ -15,6 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      initialRoute: '/',
       theme: ThemeData(
           fontFamily: 'NotoSansKR',
           scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1)),

@@ -1,7 +1,4 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -24,7 +21,7 @@ class ToggleButton extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final align = useState(-1);
+    final align = useState(-1.0);
     final selectFirst = useState(true);
     final selectSecond = useState(false);
 
@@ -34,11 +31,11 @@ class ToggleButton extends HookWidget {
       child: Stack(
         children: [
           AnimatedAlign(
-              alignment: Alignment(align.value as double, 0),
+              alignment: Alignment(align.value, 0),
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               child: Container(
-                width: width / 2,
+                width: (width - 25) / 2,
                 height: height,
                 decoration: const BoxDecoration(
                   color: Color.fromRGBO(11, 106, 227, 1),
@@ -55,10 +52,10 @@ class ToggleButton extends HookWidget {
             child: Align(
               alignment: const Alignment(-1, 0),
               child: Container(
-                width: width / 2,
+                width: (width - 25) / 2,
                 alignment: Alignment.center,
                 child: AnimatedDefaultTextStyle(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   style: TextStyle(
                     fontFamily: 'NoToSansKR',
                     fontSize: 18,
@@ -78,12 +75,12 @@ class ToggleButton extends HookWidget {
               onTapSecond();
             },
             child: Align(
-              alignment: Alignment(1, 0),
+              alignment: const Alignment(1, 0),
               child: Container(
-                width: width / 2,
+                width: (width - 25) / 2,
                 alignment: Alignment.center,
                 child: AnimatedDefaultTextStyle(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   style: TextStyle(
                     fontFamily: 'NoToSansKR',
                     fontSize: 18,

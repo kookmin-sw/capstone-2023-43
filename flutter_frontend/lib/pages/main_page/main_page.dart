@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/progress_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/schedule_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
-import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+import '../pill_infomation_page/pill_infomation.dart';
+import '../search_pill_page/search_pill_page.dart';
 
 // 나중에 서비스가 생성되면 HookWidget 에서 HookConsumerWidget으로 변경 필요.
 class MainPage extends HookWidget {
@@ -34,20 +37,39 @@ class MainPage extends HookWidget {
                       BaseButton(
                         icon: const Icon(Icons.calendar_month),
                         text: '달력보기',
-                        onTap: () => print('clicked!'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PillInfomationPage(
+                                title: 'dumy',
+                                company: 'dummy title',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(width: 20),
                       BaseButton(
                         icon: const Icon(Icons.add),
                         text: '먹고있는 약 추가하기',
-                        onTap: () => print('clicked!'),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddPillPage()));
+                        },
                       ),
                       const SizedBox(width: 20),
                       BaseButton(
-                        icon: const Icon(Icons.search),
-                        text: '약 검색하기',
-                        onTap: () => print('clicked!'),
-                      ),
+                          icon: const Icon(Icons.search),
+                          text: '약 검색하기',
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SearchPillPage()));
+                          }),
                     ],
                   ),
                 ),
@@ -78,10 +100,10 @@ class MainPage extends HookWidget {
                         child: ProgressItem(),
                       )
                     : Padding(
-                        padding:
-                            EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                        padding: const EdgeInsets.only(
+                            bottom: 20, left: 20, right: 20),
                         child: ToggleButton(
-                          width: 300,
+                          width: 350,
                           height: 85,
                           firstName: '오늘 일정',
                           secondName: '내일 일정',
