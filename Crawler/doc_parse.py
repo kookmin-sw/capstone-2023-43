@@ -28,11 +28,9 @@ def doc_to_html(doc: str) -> str:
     if not isinstance(docs, list):
         docs = [docs]
 
-    doc: dict = {}
-
     for doc in docs:
         out += doc['@title']
-        if not ('ARTICLE' in doc.keys()):
+        if 'ARTICLE' not in doc.keys():
             continue
         # 소제목
         if not isinstance(doc['ARTICLE'], list):
@@ -55,7 +53,7 @@ def doc_to_html(doc: str) -> str:
                         out += '</table>'
                     # 일반 글
                     if paragraph['@tagName'] == 'p':
-                        if not ('#text' in paragraph.keys()):
+                        if '#text' not in paragraph.keys():
                             continue
                         out += '<p>'
                         out += paragraph['#text']
