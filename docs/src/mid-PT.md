@@ -60,7 +60,7 @@ ___
 
 # 앱구조
 
-![bg w:100%](../images/ServerAndClientDiagram.svg)
+![bg w:100%](https://github.com/kookmin-sw/capstone-2023-43/raw/main/docs/images/ServerAndClientDiagram.svg)
 
 <!-- 서버리스 하게 작업을 진행 -->
 <!-- 이후 얄약 낱알 인식 기능 추가 예정-->
