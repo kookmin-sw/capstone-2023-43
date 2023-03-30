@@ -26,18 +26,15 @@ class PbPillInfo$QueryRoot$PbPillInfo extends JsonSerializable
   @JsonKey(name: 'etc_otc_code')
   late String etcOtcCode;
 
-  @JsonKey(name: 'class')
-  String? kw$class;
+  @JsonKey(name: 'class_name')
+  String? className;
 
   @JsonKey(name: 'image_url')
   String? imageUrl;
 
-  @JsonKey(name: 'taboo_case')
-  late int tabooCase;
-
   @override
   List<Object?> get props =>
-      [itemSeq, name, entpName, etcOtcCode, kw$class, imageUrl, tabooCase];
+      [itemSeq, name, entpName, etcOtcCode, className, imageUrl];
   @override
   Map<String, dynamic> toJson() =>
       _$PbPillInfo$QueryRoot$PbPillInfoToJson(this);
@@ -59,12 +56,38 @@ class PbPillInfo$QueryRoot extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$PbPillInfo$QueryRootToJson(this);
 }
 
+@JsonSerializable(explicitToJson: true)
+class PbPillInfoArguments extends JsonSerializable with EquatableMixin {
+  PbPillInfoArguments({this.searchName});
+
+  @override
+  factory PbPillInfoArguments.fromJson(Map<String, dynamic> json) =>
+      _$PbPillInfoArgumentsFromJson(json);
+
+  final String? searchName;
+
+  @override
+  List<Object?> get props => [searchName];
+  @override
+  Map<String, dynamic> toJson() => _$PbPillInfoArgumentsToJson(this);
+}
+
 final PB_PILL_INFO_QUERY_DOCUMENT_OPERATION_NAME = 'pb_pill_info';
 final PB_PILL_INFO_QUERY_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
     name: NameNode(value: 'pb_pill_info'),
-    variableDefinitions: [],
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'searchName')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: false,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
     directives: [],
     selectionSet: SelectionSetNode(selections: [
       FieldNode(
@@ -72,8 +95,18 @@ final PB_PILL_INFO_QUERY_DOCUMENT = DocumentNode(definitions: [
         alias: null,
         arguments: [
           ArgumentNode(
-            name: NameNode(value: 'name'),
-            value: EnumValueNode(name: NameNode(value: 'NAME')),
+            name: NameNode(value: 'where'),
+            value: ObjectValueNode(fields: [
+              ObjectFieldNode(
+                name: NameNode(value: 'name'),
+                value: ObjectValueNode(fields: [
+                  ObjectFieldNode(
+                    name: NameNode(value: '_like'),
+                    value: VariableNode(name: NameNode(value: 'searchName')),
+                  )
+                ]),
+              )
+            ]),
           )
         ],
         directives: [],
@@ -107,7 +140,7 @@ final PB_PILL_INFO_QUERY_DOCUMENT = DocumentNode(definitions: [
             selectionSet: null,
           ),
           FieldNode(
-            name: NameNode(value: 'class'),
+            name: NameNode(value: 'class_name'),
             alias: null,
             arguments: [],
             directives: [],
@@ -120,13 +153,6 @@ final PB_PILL_INFO_QUERY_DOCUMENT = DocumentNode(definitions: [
             directives: [],
             selectionSet: null,
           ),
-          FieldNode(
-            name: NameNode(value: 'taboo_case'),
-            alias: null,
-            arguments: [],
-            directives: [],
-            selectionSet: null,
-          ),
         ]),
       )
     ]),
@@ -134,8 +160,8 @@ final PB_PILL_INFO_QUERY_DOCUMENT = DocumentNode(definitions: [
 ]);
 
 class PbPillInfoQuery
-    extends GraphQLQuery<PbPillInfo$QueryRoot, JsonSerializable> {
-  PbPillInfoQuery();
+    extends GraphQLQuery<PbPillInfo$QueryRoot, PbPillInfoArguments> {
+  PbPillInfoQuery({required this.variables});
 
   @override
   final DocumentNode document = PB_PILL_INFO_QUERY_DOCUMENT;
@@ -144,7 +170,10 @@ class PbPillInfoQuery
   final String operationName = PB_PILL_INFO_QUERY_DOCUMENT_OPERATION_NAME;
 
   @override
-  List<Object?> get props => [document, operationName];
+  final PbPillInfoArguments variables;
+
+  @override
+  List<Object?> get props => [document, operationName, variables];
   @override
   PbPillInfo$QueryRoot parse(Map<String, dynamic> json) =>
       PbPillInfo$QueryRoot.fromJson(json);

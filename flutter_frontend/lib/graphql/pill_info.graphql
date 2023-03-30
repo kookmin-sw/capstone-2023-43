@@ -1,11 +1,10 @@
-query pb_pill_info {
-    pb_pill_info(name: NAME){
-        item_seq
-        name
-        entp_name
-        etc_otc_code
-        class
-        image_url
-        taboo_case
-    }
+query pb_pill_info($searchName: String){
+  pb_pill_info(where: {name: { _like: $searchName } } ) {
+    item_seq
+    name
+    entp_name
+    etc_otc_code
+    class_name
+    image_url
+  }
 }

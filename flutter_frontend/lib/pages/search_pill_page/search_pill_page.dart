@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/pages/search_pill_page/dummy_model.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
+import 'package:flutter_frontend/pages/search_pill_page/widgets/search_result_list.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,8 +55,13 @@ class SearchPillPage extends HookWidget {
                         child: IconButton(
                           icon: const Icon(Icons.search),
                           onPressed: () {
-                            isSearched.value = true;
                             print(textController.text);
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SearchResultList(
+                                          search: textController.text,
+                                        )));
                           },
                         ),
                       )
@@ -67,53 +73,7 @@ class SearchPillPage extends HookWidget {
             SizedBox(
               height: 20.h,
             ),
-            isSearched.value
-                ? Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '검색결과',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 18.sp,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        const Divider(
-                          thickness: 1,
-                          height: 1,
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                              itemCount: dummySearchItem.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return SearchItem(
-                                  title: dummySearchItem[index].title,
-                                  subTitle: dummySearchItem[index].subTitle,
-                                  company: dummySearchItem[index].company,
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PillInfomationPage(
-                                                  title: dummySearchItem[index]
-                                                      .title,
-                                                  company:
-                                                      dummySearchItem[index]
-                                                          .company,
-                                                )));
-                                  },
-                                );
-                              }),
-                        ),
-                      ],
-                    ),
-                  )
-                : const Text('not searched'),
+            const Text('not searched'),
           ],
         ),
       ),
