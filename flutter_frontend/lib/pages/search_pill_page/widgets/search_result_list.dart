@@ -20,9 +20,9 @@ class SearchResultList extends HookWidget {
   Widget build(BuildContext context) {
     final textController = useTextEditingController();
     final searchText = useState(search);
-    final query = PbPillInfoQuery(
+    final query = SearchPillListQuery(
         variables:
-            PbPillInfoArguments(searchName: '%' + searchText.value + '%'));
+            SearchPillListArguments(searchName: '%' + searchText.value + '%'));
     return Query(
       options: QueryOptions(
         document: query.document,
@@ -116,6 +116,15 @@ class SearchResultList extends HookWidget {
                                   title: data[index]['name'],
                                   subTitle: data[index]['class_name'] ?? 'none',
                                   company: data[index]['entp_name'],
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PillInfomationPage(
+                                                    itemSeq: data[index]
+                                                        ['item_seq'])));
+                                  },
                                 );
                               }),
                         ),

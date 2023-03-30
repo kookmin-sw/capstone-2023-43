@@ -1,4 +1,4 @@
-query pb_pill_info($searchName: String){
+query search_pill_list($searchName: String){
   pb_pill_info(where: {name: { _like: $searchName } } ) {
     item_seq
     name

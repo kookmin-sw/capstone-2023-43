@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/model/pill_infomation.dart';
 import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/progress_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/schedule_item.dart';
@@ -46,8 +47,7 @@ class MainPage extends HookWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => PillInfomationPage(
-                                title: 'dumy',
-                                company: 'dummy title',
+                                itemSeq: '1111',
                               ),
                             ),
                           );
