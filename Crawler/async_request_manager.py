@@ -43,7 +43,7 @@ class RequestManager:
                     continue
                 json_response = await response.json()
                 await self.response_queue.put((request_url, params, headers, json_response))
-                print(f"RequestManager Handler: {handler_name}: {response.url.human_repr()}")
+                # print(f"RequestManager Handler: {handler_name}: {response.url.human_repr()}", end='\r')
             except Exception as e:
                 print(f"RequestManager Handler: {handler_name}: {e}")
         print(f"RequestManager Handler: {handler_name} Finished.")
@@ -80,7 +80,7 @@ class RequestManager:
         사용 종료시 반드시 호출하세요
         """
         for _ in range(self._max_concurrent_task):
-            await self.request_queue.put((None, None, None))
+            await self.request_queue.put((None, None, None, None))
         done, pending = await asyncio.wait(self._tasks, return_when=asyncio.ALL_COMPLETED)
         for t in done:
             await t
