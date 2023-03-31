@@ -9,7 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class PillInfomationPage extends HookWidget {
-  final String itemSeq;
+  final int itemSeq;
   const PillInfomationPage({
     required this.itemSeq,
     super.key,
@@ -17,59 +17,42 @@ class PillInfomationPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final query = PillInfomationQuery(
-        variables: PillInfomationArguments(itemSeq: itemSeq));
     return BaseWidget(
       body: SingleChildScrollView(
-        child: Query(
-          options: QueryOptions(
-            document: query.document,
-            variables: query.variables.toJson(),
-          ),
-          builder: (result, {fetchMore, refetch}) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              size: 28,
-                            )),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "약 정보",
-                          style: TextStyle(
-                            fontSize: 28.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      ],
+          child: Center(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        size: 28,
+                      )),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    "약 정보",
+                    style: TextStyle(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.w700,
                     ),
-                    if (result.isLoading)
-                      CircularProgressIndicator()
-                    else if (result.hasException)
-                      Text(result.exception.toString())
-                    else
-                      PillInfomationContext(
-                        name: result.data!['pb_pill_info']['name'],
-                        entpName: result.data!['pb_pill_info']['entp_name'],
-                      ),
-                  ],
-                ),
+                  )
+                ],
               ),
-            );
-          },
+              PillInfomationContext(
+                itemSeq: itemSeq,
+              ),
+            ],
+          ),
         ),
-      ),
+      )),
     );
   }
 }

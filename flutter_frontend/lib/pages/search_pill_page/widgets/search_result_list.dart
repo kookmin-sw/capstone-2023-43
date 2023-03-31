@@ -7,7 +7,6 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../widgets/base_widget.dart';
 import '../../pill_infomation_page/pill_infomation.dart';
-import '../dummy_model.dart';
 
 class SearchResultList extends HookWidget {
   final String search;
@@ -20,6 +19,7 @@ class SearchResultList extends HookWidget {
   Widget build(BuildContext context) {
     final textController = useTextEditingController();
     final searchText = useState(search);
+
     final query = SearchPillListQuery(
         variables:
             SearchPillListArguments(searchName: '%' + searchText.value + '%'));

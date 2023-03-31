@@ -70,15 +70,15 @@ Map<String, dynamic> _$PillInfomation$QueryRoot$PbPillInfoToJson(
 PillInfomation$QueryRoot _$PillInfomation$QueryRootFromJson(
         Map<String, dynamic> json) =>
     PillInfomation$QueryRoot()
-      ..pbPillInfo = (json['pb_pill_info'] as List<dynamic>)
-          .map((e) => PillInfomation$QueryRoot$PbPillInfo.fromJson(
-              e as Map<String, dynamic>))
-          .toList();
+      ..pbPillInfoByPk = json['pb_pill_info_by_pk'] == null
+          ? null
+          : PillInfomation$QueryRoot$PbPillInfo.fromJson(
+              json['pb_pill_info_by_pk'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$PillInfomation$QueryRootToJson(
         PillInfomation$QueryRoot instance) =>
     <String, dynamic>{
-      'pb_pill_info': instance.pbPillInfo.map((e) => e.toJson()).toList(),
+      'pb_pill_info_by_pk': instance.pbPillInfoByPk?.toJson(),
     };
 
 SearchPillListArguments _$SearchPillListArgumentsFromJson(
@@ -96,7 +96,7 @@ Map<String, dynamic> _$SearchPillListArgumentsToJson(
 PillInfomationArguments _$PillInfomationArgumentsFromJson(
         Map<String, dynamic> json) =>
     PillInfomationArguments(
-      itemSeq: json['itemSeq'] as String?,
+      itemSeq: json['itemSeq'] as int,
     );
 
 Map<String, dynamic> _$PillInfomationArgumentsToJson(

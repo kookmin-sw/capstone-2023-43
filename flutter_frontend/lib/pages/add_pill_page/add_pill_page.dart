@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_infomation.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
+import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
 import 'package:flutter_frontend/service/add_pill_service.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
@@ -14,7 +15,7 @@ class AddPillPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    PillInfomation pill = ref.watch(AddPillServiceProvider).pill;
+    late PillInfomation pill = ref.watch(AddPillServiceProvider).pill;
     bool isSearched = ref.watch(AddPillServiceProvider).isSearched;
 
     return BaseWidget(
@@ -54,6 +55,12 @@ class AddPillPage extends HookConsumerWidget {
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => SearchPillPage()));
+                ref.read(AddPillServiceProvider).addPill(PillInfomation(
+                    name: 'dummy',
+                    entpName: 'dummy Company',
+                    etcOtcCode: 1122,
+                    className: 'dummy',
+                    imageUrl: 'none'));
               },
             ),
             SizedBox(
@@ -67,13 +74,28 @@ class AddPillPage extends HookConsumerWidget {
                 border: Border.all(width: 0.5),
                 borderRadius: const BorderRadius.all(Radius.circular(15)),
               ),
-              height: 100.h,
-              child: const Center(
-                  child: Text(
-                "복용 하고자 하는 약을 스케쥴에 올려  편리하게 관리하세요!",
-                style: TextStyle(
-                    fontWeight: FontWeight.w700, color: Color(0xffd2d2d2)),
-              )),
+              child: isSearched
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SearchItem(
+                          title: pill.name,
+                          subTitle: pill.className,
+                          company: pill.entpName,
+                          isSingleContent: true,
+                        ),
+                      ),
+                    )
+                  : SizedBox(
+                      height: 75.h,
+                      child: const Center(
+                        child: Text(
+                          "복용 하고자 하는 약을 스케쥴에 올려  편리하게 관리하세요!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xffd2d2d2)),
+                        ),
+                      )),
             ),
             SizedBox(
               height: 20.h,

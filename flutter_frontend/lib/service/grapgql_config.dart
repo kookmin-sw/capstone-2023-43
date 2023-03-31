@@ -5,8 +5,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:gql/ast.dart';
 
 class GraphQLConfig {
-  static final _httpLink = HttpLink(
-      'https://g1rj1dd4j1.execute-api.ap-northeast-2.amazonaws.com/dev/graphql');
+  static final _httpLink = HttpLink('http://64.110.79.49:8080/v1/graphql');
 
   static ValueNotifier<GraphQLClient> initCLient() {
     ValueNotifier<GraphQLClient> client = ValueNotifier(GraphQLClient(

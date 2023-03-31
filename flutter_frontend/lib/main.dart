@@ -5,6 +5,7 @@ import 'package:flutter_frontend/generated/graphql_api.graphql.dart';
 import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
 import 'package:flutter_frontend/pages/main_page/main_page.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
+import 'package:flutter_frontend/service/dummy_data.dart';
 import 'package:flutter_frontend/service/grapgql_config.dart';
 import 'package:flutter_frontend/service/pb_graph_client.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,10 +19,12 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
+    final dummyData = DummyData();
+
     return ScreenUtilInit(
       designSize: const Size(500, 860),
       builder: (BuildContext context, Widget? child) {

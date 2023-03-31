@@ -6,18 +6,21 @@ class SearchItem extends StatelessWidget {
   final String subTitle;
   final String company;
   final Function()? onTap;
+  final bool isSingleContent;
 
   const SearchItem(
       {super.key,
       required this.title,
       required this.subTitle,
       required this.company,
-      this.onTap});
+      this.onTap,
+      this.isSingleContent = false});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 10.h),
+      contentPadding:
+          isSingleContent ? null : EdgeInsets.fromLTRB(0, 0, 0, 10.h),
       leading: const CircleAvatar(
         backgroundColor: Colors.grey,
       ),
@@ -45,7 +48,7 @@ class SearchItem extends StatelessWidget {
           ),
         ),
       ),
-      onTap: onTap ?? () {},
+      onTap: onTap,
     );
   }
 }

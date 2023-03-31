@@ -14,6 +14,7 @@ class AddPillService extends ChangeNotifier {
 
   void initState() {
     isSearched = false;
+    notifyListeners();
   }
 }
 
