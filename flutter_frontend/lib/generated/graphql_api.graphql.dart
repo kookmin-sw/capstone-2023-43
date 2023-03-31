@@ -111,11 +111,11 @@ class PillInfomation$QueryRoot extends JsonSerializable with EquatableMixin {
   factory PillInfomation$QueryRoot.fromJson(Map<String, dynamic> json) =>
       _$PillInfomation$QueryRootFromJson(json);
 
-  @JsonKey(name: 'pb_pill_info')
-  late List<PillInfomation$QueryRoot$PbPillInfo> pbPillInfo;
+  @JsonKey(name: 'pb_pill_info_by_pk')
+  PillInfomation$QueryRoot$PbPillInfo? pbPillInfoByPk;
 
   @override
-  List<Object?> get props => [pbPillInfo];
+  List<Object?> get props => [pbPillInfoByPk];
   @override
   Map<String, dynamic> toJson() => _$PillInfomation$QueryRootToJson(this);
 }
@@ -245,13 +245,13 @@ class SearchPillListQuery
 
 @JsonSerializable(explicitToJson: true)
 class PillInfomationArguments extends JsonSerializable with EquatableMixin {
-  PillInfomationArguments({this.itemSeq});
+  PillInfomationArguments({required this.itemSeq});
 
   @override
   factory PillInfomationArguments.fromJson(Map<String, dynamic> json) =>
       _$PillInfomationArgumentsFromJson(json);
 
-  final String? itemSeq;
+  late int itemSeq;
 
   @override
   List<Object?> get props => [itemSeq];
@@ -268,8 +268,8 @@ final PILL_INFOMATION_QUERY_DOCUMENT = DocumentNode(definitions: [
       VariableDefinitionNode(
         variable: VariableNode(name: NameNode(value: 'itemSeq')),
         type: NamedTypeNode(
-          name: NameNode(value: 'String'),
-          isNonNull: false,
+          name: NameNode(value: 'Int'),
+          isNonNull: true,
         ),
         defaultValue: DefaultValueNode(value: null),
         directives: [],
@@ -278,22 +278,12 @@ final PILL_INFOMATION_QUERY_DOCUMENT = DocumentNode(definitions: [
     directives: [],
     selectionSet: SelectionSetNode(selections: [
       FieldNode(
-        name: NameNode(value: 'pb_pill_info'),
+        name: NameNode(value: 'pb_pill_info_by_pk'),
         alias: null,
         arguments: [
           ArgumentNode(
-            name: NameNode(value: 'where'),
-            value: ObjectValueNode(fields: [
-              ObjectFieldNode(
-                name: NameNode(value: 'item_seq'),
-                value: ObjectValueNode(fields: [
-                  ObjectFieldNode(
-                    name: NameNode(value: '_eq'),
-                    value: VariableNode(name: NameNode(value: 'itemSeq')),
-                  )
-                ]),
-              )
-            ]),
+            name: NameNode(value: 'item_seq'),
+            value: VariableNode(name: NameNode(value: 'itemSeq')),
           )
         ],
         directives: [],
