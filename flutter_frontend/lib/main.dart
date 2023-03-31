@@ -9,10 +9,11 @@ import 'package:flutter_frontend/service/grapgql_config.dart';
 import 'package:flutter_frontend/service/pb_graph_client.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 PbGraphQlClient gq = PbGraphQlClient();
 void main() async {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
