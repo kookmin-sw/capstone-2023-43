@@ -13,6 +13,8 @@ header: 팀 2023년_캡스톤_최종_최종'진짜최종 PillBox
 
 ## 팀 2023년_캡스톤_최종_최종'진짜최종 (팀 43)
 
+<!---->
+
 ___
 
 # 개발동기
@@ -22,8 +24,8 @@ ___
 적합성 테스트
 복용관리
 
-![bg vertical h:80% w:70% right:50% 100%](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/%EC%95%BD%EB%B4%89%ED%88%AC.jpg?raw=true)
-![bg h:80% w:70% 100% ](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/%EC%95%BD%EB%B0%95%EC%8A%A4.jpg?raw=true)
+![bg vertical h:80% w:70% right:50% 100%](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/mid-PT/%EC%95%BD%EB%B4%89%ED%88%AC.jpg?raw=true)
+![bg h:80% w:70% 100% ](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/mid-PT/%EC%95%BD%EB%B0%95%EC%8A%A4.jpg?raw=true)
 ___
 
 # 목표
@@ -39,7 +41,7 @@ ___
 <!-- 이미지를 한줄로 나열 하면 화면에서도 한줄로 나온다  -->
 <!-- 이미지 개행하면 세로로 배열된다 -->
 
-![w:100 h: 100 right](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/%EB%B0%95%EC%A2%85%ED%9D%A0%EC%82%AC%EC%A7%84.jpg?raw=true)  ![w:100 h: 100 right](https://raw.githubusercontent.com/kookmin-sw/capstone-2023-43/main/docs/images/%EA%B9%80%EC%9E%AC%ED%95%98%EC%82%AC%EC%A7%84.jpg)
+![bg h:400px](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/mid-PT/main_page.jpg?raw=true) ![bg h:400px](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/mid-PT/add_pill.jpg?raw=true)   ![bg h:400px](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/mid-PT/search_pill.jpg?raw=true)  ![bg h:400px](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/mid-PT/product_detail.jpg?raw=true)
 
 ___
 
