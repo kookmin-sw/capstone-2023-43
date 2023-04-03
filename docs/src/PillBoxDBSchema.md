@@ -74,11 +74,11 @@ UUID
 
 ### **mix_taboo.item_seq**
 
-병용될 약물 기준품목코드
+비교할 약물 품목기준코드
 
 ### **mixture_item_seq**
 
-병용할 약물 기준품목코드
+병용금기 약물 품목기준코드
 
 ### **prohibited_content**
 
