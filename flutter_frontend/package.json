@@ -1,0 +1,21 @@
+{
+  "name": "flutter_frontend",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "codegen": "graphql-codegen --config codegen.yml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/schema-ast": "^3.0.1"
+  }
+}

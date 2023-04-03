@@ -1,0 +1,10 @@
+query search_pill_list($searchName: String){
+  pb_pill_info(where: {name: { _like: $searchName } } ) {
+    item_seq
+    name
+    entp_name
+    etc_otc_code
+    class_name
+    image_url
+  }
+}

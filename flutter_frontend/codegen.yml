@@ -1,0 +1,6 @@
+overwite: true
+schema: 'https://g1rj1dd4j1.execute-api.ap-northeast-2.amazonaws.com/dev/graphql'
+generates:
+  ./lib/schema.graphql:
+    plugins:
+      - schema-ast
