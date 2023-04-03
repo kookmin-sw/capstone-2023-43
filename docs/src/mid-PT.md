@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: gaia
-header: 팀 2023년_캡스톤_최종_최종'진짜최종 PillBox
+header: 팀 2023년_캡스톤_최종_최종_진짜최종_final PillBox
 ---
 <!-- _header: "" -->
 
@@ -11,7 +11,7 @@ header: 팀 2023년_캡스톤_최종_최종'진짜최종 PillBox
 
 ![bg h:20% left:10](https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/PillBox%20icon.jpg?raw=true)
 
-## 2023년_캡스톤_최종_최종'진짜최종_final
+## 2023년_캡스톤_최종_최종_진짜최종_final
 
 ## (팀 43)
 
