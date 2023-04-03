@@ -57,13 +57,13 @@ resources:
           - StatusCode: 200
         Integration:
           IntegrationHttpMethod: POST
-          Type: HTTP_PROXY
+          Type: HTTP
           Uri: ${env:HASURA_ENDPOINT_URL}
           IntegrationResponses:
             - StatusCode: 200
-        AuthorizationType: COGNITO_USER_POOLS
-        AuthorizerId: 
-          Ref: AuthorizersCognitoUserPools
+        AuthorizationType: NONE
+        # AuthorizerId: 
+        #   Ref: AuthorizersCognitoUserPools
     AuthorizersCognitoUserPools:
       Type: AWS::ApiGateway::Authorizer
       Properties:
