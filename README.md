@@ -1,4 +1,4 @@
-# 필통 (영문명 : PillBox)
+# PillBox
 
 <img width=200px height=200px src="https://github.com/kookmin-sw/capstone-2023-43/blob/main/docs/images/PillBox%20icon.jpg?raw=true">
 
