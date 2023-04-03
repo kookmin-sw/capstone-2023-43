@@ -1,6 +1,9 @@
 service: pillbox
 frameworkVersion: '3'
 
+# load variables from .env file
+useDotenv: true
+
 provider:
   name: aws
   runtime: python3.8
@@ -17,16 +20,57 @@ functions:
     handler: src/handler.echo
     events:
       - http:
-          path: /pill/echo
+          path: /pillbox/echo
           method: get
           integration: lambda
   pillBoxFindPillByImage:
     handler: src/pill_image_handler.find_pill_by_image
     events:
       - http:
-          path: /pill/findByImage
+          path: /pillbox/findByImage
           method: post
           integration: lambda
           authorizer:
-            name: cognitoAuthorizer
-            arn: {env:COGNITO_ARN}
+            arn: ${env:COGNITO_ARN}
+
+resources:
+  Resources:
+    HasuraProxyResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        ParentId: 
+          Fn::GetAtt:
+            - ApiGatewayRestApi
+            - RootResourceId
+        PathPart: graphql
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+    HasuraProxyMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        ResourceId: 
+          Ref: HasuraProxyResource
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        HttpMethod: POST
+        MethodResponses:
+          - StatusCode: 200
+        Integration:
+          IntegrationHttpMethod: POST
+          Type: HTTP
+          Uri: ${env:HASURA_ENDPOINT_URL}
+          IntegrationResponses:
+            - StatusCode: 200
+        AuthorizationType: NONE
+        # AuthorizerId: 
+        #   Ref: AuthorizersCognitoUserPools
+    AuthorizersCognitoUserPools:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: CognitoAuthorizer
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.authorization
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ProviderARNs:
+          - ${env:COGNITO_ARN}
