@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/pages/search_pill_page/dummy_model.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_result_list.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
@@ -15,11 +14,6 @@ class SearchPillPage extends HookWidget {
   Widget build(BuildContext context) {
     final isSearched = useState(false);
     final textController = useTextEditingController(text: '');
-    final dummySearchItem = [
-      for (int i = 0; i < 15; i++)
-        DummyModel(
-            title: 'title $i', subTitle: 'sub_title $i', company: 'company$i')
-    ];
 
     return BaseWidget(
       body: Padding(

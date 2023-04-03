@@ -46,7 +46,7 @@ class MainPage extends HookWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PillInfomationPage(
+                              builder: (context) => const PillInfomationPage(
                                 itemSeq: 202005623,
                               ),
                             ),
