@@ -12,7 +12,7 @@ async def main():
     request_manager = RequestManager(3)
     await request_manager.start()
 
-    request_url = "http://3.38.95.79:8080/v1/graphql"
+    request_url = "http://64.110.79.49:8080/v1/graphql"
     headers = {"x-hasura-admin-secret":filter_options.hasura_admin_secret,
                "Content-Type":"application/json"}
     mutation = """
