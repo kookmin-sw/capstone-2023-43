@@ -54,6 +54,14 @@ class SearchResultList extends HookWidget {
                         alignment: Alignment.center,
                         children: [
                           TextField(
+                            textInputAction: TextInputAction.go,
+                            onSubmitted: (value) {
+                              searchText.value = textController.text;
+                              if (result.hasException &&
+                                  searchText.value == textController.text) {
+                                refetch!();
+                              }
+                            },
                             controller: textController,
                             decoration: const InputDecoration(
                               hintText: '먹고있는 약을 입력하세요',
