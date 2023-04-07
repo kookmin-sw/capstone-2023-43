@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/generated/graphql_api.graphql.dart';
 import 'package:flutter_frontend/pages/pill_infomation_page/pill_infomation_context.dart';
-import 'package:flutter_frontend/widgets/base_button.dart';
-import 'package:flutter_frontend/widgets/base_item.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 
 class PillInfomationPage extends HookWidget {
   final int itemSeq;
