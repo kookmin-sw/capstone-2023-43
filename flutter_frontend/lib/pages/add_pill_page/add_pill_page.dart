@@ -58,7 +58,7 @@ class AddPillPage extends HookConsumerWidget {
                 ref.read(AddPillServiceProvider).addPill(PillInfomation(
                     name: 'dummy',
                     entpName: 'dummy Company',
-                    etcOtcCode: 1122,
+                    etcOtcCode: '1122',
                     className: 'dummy',
                     imageUrl: 'none'));
               },

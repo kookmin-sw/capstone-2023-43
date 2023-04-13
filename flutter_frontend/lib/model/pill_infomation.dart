@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class PillInfomation {
   final String name;
   final String entpName;
-  final int etcOtcCode;
+  final String etcOtcCode;
   final String className;
   final String imageUrl;
 
@@ -20,7 +20,7 @@ class PillInfomation {
   PillInfomation copyWith({
     String? name,
     String? entpName,
-    int? etcOtcCode,
+    String? etcOtcCode,
     String? className,
     String? imageUrl,
   }) {
@@ -47,7 +47,7 @@ class PillInfomation {
     return PillInfomation(
       name: map['name'] ?? '',
       entpName: map['entpName'] ?? '',
-      etcOtcCode: map['etcOtcCode']?.toInt() ?? 0,
+      etcOtcCode: map['etcOtcCode'] ?? 0,
       className: map['className'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
     );

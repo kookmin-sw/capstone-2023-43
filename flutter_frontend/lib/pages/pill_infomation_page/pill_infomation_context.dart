@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_frontend/generated/graphql_api.dart';
+import 'package:flutter_frontend/service/add_pill_service.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../model/pill_infomation.dart';
 import '../../widgets/base_button.dart';
 import '../../widgets/base_item.dart';
 
-class PillInfomationContext extends HookWidget {
+class PillInfomationContext extends HookConsumerWidget {
   final int itemSeq;
   const PillInfomationContext({super.key, required this.itemSeq});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final query = PillInfomationQuery(
         variables: PillInfomationArguments(itemSeq: itemSeq));
     return Query(
@@ -28,6 +31,8 @@ class PillInfomationContext extends HookWidget {
               child: CircularProgressIndicator(),
             );
           }
+
+          var data = result.data!['pb_pill_info_by_pk'];
 
           return Column(
             children: [
@@ -69,7 +74,16 @@ class PillInfomationContext extends HookWidget {
                       Icons.medication,
                       size: 18.w,
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      ref.read(AddPillServiceProvider).addPill(PillInfomation(
+                            className: data['clss_name'] ?? 'none',
+                            entpName: data['entp_name'] ?? 'none',
+                            etcOtcCode: data['etc_otc_code'] ?? 'none',
+                            imageUrl: data['image_url'] ?? 'none',
+                            name: data['name'] ?? 'none',
+                          ));
+                      Navigator.pop(context);
+                    },
                   )
                 ],
               ),
