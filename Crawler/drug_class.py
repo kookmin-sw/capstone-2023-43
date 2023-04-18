@@ -29,8 +29,14 @@ async def main():
             response_none_count += 1
             continue
         for item in response_json['body']['items']:
-            print(f"{item['ITEM_SEQ']} {item['ITEM_NAME']} {item['CLASS_NO']}")
-            item_class[item['ITEM_SEQ']] = item['CLASS_NO']
+            if '수출용' in item['ITEM_NAME']:
+                break
+
+            for chart in filter_options.full_charts:
+                if chart in item['CHART']:
+                    print(f"{item['ITEM_SEQ']} {item['ITEM_NAME']} {item['CLASS_NO']}")
+                    item_class[item['ITEM_SEQ']] = item['CLASS_NO']
+                    break
     with open('drug_class.json', 'w') as file:
         json.dump(item_class, file)
 
