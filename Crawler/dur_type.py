@@ -36,7 +36,7 @@ async def main():
         })
 
     response_none_count = 0
-    type_items: list[dict[str, int]] = []
+    type_items: dict[int, int] = {}
 
     while response_none_count < 5:
         url, _, _, response_json = await request_manager.get_response()
@@ -60,7 +60,7 @@ async def main():
                     print(f"{item['ITEM_SEQ']} : {item['ITEM_NAME'].strip()} \
 {item['TYPE_CODE']} {item['CHART']}")
 
-                    type_items.append({item['ITEM_SEQ']: taboo_case})
+                    type_items[int(item['ITEM_SEQ'])] = taboo_case
                     break
     await request_manager.stop()
 
