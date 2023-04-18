@@ -10,7 +10,7 @@ import json
 from async_request_manager import RequestManager
 import filter_options
 
-TOTAL_COUNT: int = 27551
+TOTAL_COUNT: int = 26726
 
 BITMASKS: dict[str, int] = {'A': 0x001, 'B': 0x002,
                             'C': 0x004, 'D': 0x008,

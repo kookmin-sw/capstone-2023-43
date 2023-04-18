@@ -13,8 +13,8 @@ async def main():
 
     # DUR 허가정보를 사용해보기로 함
     request_url = filter_options.base_url + "/DURPrdlstInfoService02/getDurPrdlstInfoList2"
-    # DUR 허가정보는 총 27545건
-    for page in range(1, 27545//filter_options.NUM_OF_ROWS + 1):
+    # DUR 허가정보는 총 26726건
+    for page in range(1, 26726//filter_options.NUM_OF_ROWS + 1):
         await request_manager.create_request(request_url, 
                                              {'serviceKey': filter_options.token,
                                               'type': 'json',
