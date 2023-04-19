@@ -1,23 +1,17 @@
 direction: down
-MongoDB: {
-  icon: https://icons.terrastruct.com/dev%2Fmongodb.svg
-
+MongoDB: |json
   User: {
-    shape: sql_table
-    id: string {constraint: foreign_key}
-    is_pregnancy: bool
-    blood_pressure: int
-    is_diabetes: bool
-  }
-
-  pill_history: {
-    shape: sql_table
-    user_id: uuid {constraint: foreign_key}
-    pill_name: string {constraint: foreign_key}
-    start_date: Date
-    end_date: Date
-  }
-}
+    "id": UUID,
+    "is_pregnancy": false,
+    "blood_pressure": 1,
+    "is_diabetes": false,
+    "pill_histories": [{
+      "pills": ["item_seq"],
+      "start_date": "Date",
+      "end_date": "Date",
+    },
+  ]
+|
 
 Postgresql: {
   icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
@@ -54,7 +48,3 @@ Postgresql: {
   pill_info.item_seq -> mix_taboo.item_seq
   pill_info.item_seq -> mix_taboo.mixture_item_seq
 }
-
-Postgresql.User.id -> MongoDB.User.id: {style: {stroke-dash: 2}}
-Postgresql.User.id -> MongoDB.pill_history.user_id: {style: {stroke-dash: 2}}
-Postgresql.pill_info.name -> MongoDB.pill_history.pill_name
