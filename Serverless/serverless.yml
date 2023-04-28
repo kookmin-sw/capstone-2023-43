@@ -9,11 +9,23 @@ provider:
   runtime: python3.8
   region: ap-northeast-2
 
+plugins:
+  - serverless-python-requirements
+
 package:
   patterns:
     - '!./**'
     - 'src/**'
     - '!src/**/*.pyc'
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    layer:
+      name: mangum-layer
+      description: python mangum layer
+      compatibleRuntimes:
+        - python3.8
 
 functions:
   pillBoxEcho:
@@ -28,6 +40,17 @@ functions:
     events:
       - http:
           path: /pillbox/findByImage
+          method: post
+          integration: lambda
+          authorizer:
+            arn: ${env:COGNITO_ARN}
+  pillBoxMangum:
+    handler: src/pillbox_mangum.handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - http:
+          path: /pillbox/{proxy+}
           method: post
           integration: lambda
           authorizer:
