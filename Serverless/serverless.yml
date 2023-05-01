@@ -34,14 +34,16 @@ functions:
       - http:
           path: /pillbox/echo
           method: get
-          integration: lambda
+          integration: lambda-proxy
+          authorizer:
+            arn: ${env:COGNITO_ARN}
   pillBoxFindPillByImage:
     handler: src/pill_image_handler.find_pill_by_image
     events:
       - http:
           path: /pillbox/findByImage
           method: post
-          integration: lambda
+          integration: lambda-proxy
           authorizer:
             arn: ${env:COGNITO_ARN}
   pillBoxMangum:
@@ -51,7 +53,13 @@ functions:
     events:
       - http:
           path: /pillbox/{proxy+}
-          method: post
-          integration: lambda
+          method: any
+          integration: lambda-proxy
+          authorizer:
+            arn: ${env:COGNITO_ARN}
+      - http:
+          path: /pillbox
+          method: any
+          integration: lambda-proxy
           authorizer:
             arn: ${env:COGNITO_ARN}
