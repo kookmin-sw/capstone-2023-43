@@ -1,7 +1,4 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/generated/graphql_api.graphql.dart';
 import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
 import 'package:flutter_frontend/pages/main_page/main_page.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
@@ -30,8 +27,8 @@ class MyApp extends StatelessWidget {
           child: MaterialApp(
             title: 'Flutter Demo',
             routes: {
-              '/search': (context) => SearchPillPage(),
-              '/add': (context) => AddPillPage(),
+              '/search': (context) => const SearchPillPage(),
+              '/add': (context) => const AddPillPage(),
             },
             theme: ThemeData(
                 fontFamily: 'NotoSansKR',

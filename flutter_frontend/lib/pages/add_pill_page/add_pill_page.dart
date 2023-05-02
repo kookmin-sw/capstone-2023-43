@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_infomation.dart';
-import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
 import 'package:flutter_frontend/service/add_pill_service.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -15,7 +13,7 @@ class AddPillPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    late PillInfomation pill = ref.watch(AddPillServiceProvider).pill;
+    late List<PillInfomation> pills = ref.watch(AddPillServiceProvider).pills;
     bool isSearched = ref.watch(AddPillServiceProvider).isSearched;
 
     return BaseWidget(
@@ -49,18 +47,13 @@ class AddPillPage extends HookConsumerWidget {
             SizedBox(
               height: 20.h,
             ),
+            // 단일 복용약 -> 복수의 복용약으로 변경 필요 컴포넌트 재설계 필수.
             BaseButton(
               text: '여기를 눌러 복용하려는 약 찾기',
               icon: const Icon(Icons.search),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => SearchPillPage()));
-                ref.read(AddPillServiceProvider).addPill(PillInfomation(
-                    name: 'dummy',
-                    entpName: 'dummy Company',
-                    etcOtcCode: '1122',
-                    className: 'dummy',
-                    imageUrl: 'none'));
               },
             ),
             SizedBox(
@@ -78,11 +71,17 @@ class AddPillPage extends HookConsumerWidget {
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.all(10),
-                        child: SearchItem(
-                          title: pill.name,
-                          subTitle: pill.className,
-                          company: pill.entpName,
-                          isSingleContent: true,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: pills.length,
+                          itemBuilder: (context, index) {
+                            return SearchItem(
+                              title: pills[index].name,
+                              subTitle: pills[index].className,
+                              company: pills[index].entpName,
+                              isSingleContent: pills.length == 1 ? true : false,
+                            );
+                          },
                         ),
                       ),
                     )
@@ -132,62 +131,6 @@ class AddPillPage extends HookConsumerWidget {
             SizedBox(
               height: 20.h,
             ),
-            Row(
-              children: [
-                Text(
-                  "복용시간",
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: SizedBox(
-                    height: 50.h,
-                  ),
-                ),
-                Expanded(
-                    flex: 5,
-                    child: Container(
-                      height: 50.h,
-                      color: Colors.grey,
-                    )),
-                Expanded(
-                  flex: 1,
-                  child: SizedBox(
-                    height: 50.h,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Text(
-              "복용 주기",
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            ToggleButton(
-              width: 300.w,
-              firstName: "요일",
-              secondName: "주기",
-              onTapFirst: () {},
-              onTapSecond: () {},
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Container(
-              color: Colors.blueGrey,
-              height: 100,
-            )
           ],
         ),
       )),
