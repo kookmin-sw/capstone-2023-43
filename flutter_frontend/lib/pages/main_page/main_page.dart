@@ -13,6 +13,8 @@ class MainPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final itemsBefore = useState(List<int>.generate(5, (i) => i + 6));
+    final itemsAfter = useState(List<int>.generate(5, (i) => i + 1));
     return BaseWidget(
       body: CustomScrollView(
         slivers: [
@@ -53,14 +55,26 @@ class MainPage extends HookWidget {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?
-                  (context, index) => Padding(
-                        padding: EdgeInsets.only(bottom: 20.h),
-                        child: ScheduleItem(
-                          status: '복약 완료',
-                          time: '${index + 8}:00',
+                  (context, index) => Dismissible(
+                        key: UniqueKey(),
+                        onDismissed: (Direction) {
+                          itemsAfter.value = [
+                            ...itemsAfter.value,
+                            itemsBefore.value[index]
+                          ];
+                          itemsBefore.value = [
+                            ...itemsBefore.value..removeAt(index)
+                          ];
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 20.h),
+                          child: ScheduleItem(
+                            status: '복약 예정',
+                            time: '${itemsBefore.value[index]}:00',
+                          ),
                         ),
                       ),
-                  childCount: 4),
+                  childCount: itemsBefore.value.length),
             ),
           ),
 
@@ -87,11 +101,11 @@ class MainPage extends HookWidget {
                       : Padding(
                           padding: EdgeInsets.only(bottom: 20.h),
                           child: ScheduleItem(
-                            status: '복약 예정',
-                            time: '${index + 8}:00',
+                            status: '복약 완료',
+                            time: '${itemsAfter.value[index]}:00',
                           ),
                         ),
-                  childCount: 3),
+                  childCount: itemsAfter.value.length),
             ),
           ),
         ],

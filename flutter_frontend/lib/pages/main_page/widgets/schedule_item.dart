@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/widgets/base_item.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ScheduleItem extends StatelessWidget {
+class ScheduleItem extends HookWidget {
   final String time;
   final String status;
   const ScheduleItem({super.key, required this.time, required this.status});
