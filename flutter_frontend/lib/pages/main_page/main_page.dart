@@ -13,8 +13,8 @@ class MainPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final itemsBefore = useState(List<int>.generate(5, (i) => i + 6));
-    final itemsAfter = useState(List<int>.generate(5, (i) => i + 1));
+    final itemsBefore = useState(List<int>.generate(3, (i) => i + 6));
+    final itemsAfter = useState(List<int>.generate(4, (i) => i + 1));
     return BaseWidget(
       body: CustomScrollView(
         slivers: [
@@ -102,10 +102,10 @@ class MainPage extends HookWidget {
                           padding: EdgeInsets.only(bottom: 20.h),
                           child: ScheduleItem(
                             status: '복약 완료',
-                            time: '${itemsAfter.value[index]}:00',
+                            time: '${itemsAfter.value[index - 1]}:00',
                           ),
                         ),
-                  childCount: itemsAfter.value.length),
+                  childCount: itemsAfter.value.length + 1),
             ),
           ),
         ],

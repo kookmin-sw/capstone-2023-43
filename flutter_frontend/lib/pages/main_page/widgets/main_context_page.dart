@@ -39,7 +39,7 @@ class MainContextPage extends HookWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const PillInfomationPage(
-                          itemSeq: 202005623,
+                          itemSeq: 199700810,
                         ),
                       ),
                     );
