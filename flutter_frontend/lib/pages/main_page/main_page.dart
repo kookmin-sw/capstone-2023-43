@@ -11,6 +11,54 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class MainPage extends HookWidget {
   const MainPage({super.key});
 
+  Widget? getToggleSwitch(
+    context,
+    index,
+  ) {
+    return index == 0
+        ? Padding(
+            padding: EdgeInsets.only(bottom: 20.h),
+            child: ProgressItem(),
+          )
+        : Padding(
+            padding: EdgeInsets.only(bottom: 20.h, left: 20.w, right: 20.w),
+            child: ToggleButton(
+              width: 350.w,
+              firstName: '오늘 일정',
+              secondName: '내일 일정',
+              onTapFirst: () {},
+              onTapSecond: () {},
+            ),
+          );
+  }
+
+  Widget? listTakeList(
+    context,
+    index,
+    itemList, [
+    Function(DismissDirection)? onDismissed,
+  ]) {
+    return onDismissed != null
+        ? Dismissible(
+            key: UniqueKey(),
+            onDismissed: onDismissed,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 20.h),
+              child: ScheduleItem(
+                status: '복약 예정',
+                time: '${itemList.value[index]}:00',
+              ),
+            ),
+          )
+        : Padding(
+            padding: EdgeInsets.only(bottom: 20.h),
+            child: ScheduleItem(
+              status: '복약 완료',
+              time: '${itemList.value[index - 1]}:00',
+            ),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     final itemsBefore = useState(List<int>.generate(3, (i) => i + 6));
@@ -25,22 +73,7 @@ class MainPage extends HookWidget {
             padding: EdgeInsets.fromLTRB(50.w, 20.h, 50.w, 0),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => index == 0
-                    ? Padding(
-                        padding: EdgeInsets.only(bottom: 20.h),
-                        child: ProgressItem(),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(
-                            bottom: 20.h, left: 20.w, right: 20.w),
-                        child: ToggleButton(
-                          width: 350.w,
-                          firstName: '오늘 일정',
-                          secondName: '내일 일정',
-                          onTapFirst: () {},
-                          onTapSecond: () {},
-                        ),
-                      ),
+                (context, index) => getToggleSwitch(context, index),
                 childCount: 2,
               ),
             ),
@@ -55,25 +88,17 @@ class MainPage extends HookWidget {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                   // message 구현을 위한 모델 필요 -> isMessage?
-                  (context, index) => Dismissible(
-                        key: UniqueKey(),
-                        onDismissed: (Direction) {
-                          itemsAfter.value = [
-                            ...itemsAfter.value,
-                            itemsBefore.value[index]
-                          ];
-                          itemsBefore.value = [
-                            ...itemsBefore.value..removeAt(index)
-                          ];
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 20.h),
-                          child: ScheduleItem(
-                            status: '복약 예정',
-                            time: '${itemsBefore.value[index]}:00',
-                          ),
-                        ),
-                      ),
+                  (context, index) =>
+                      listTakeList(context, index, itemsBefore, (Direction) {
+                        itemsAfter.value = [
+                          ...itemsAfter.value,
+                          itemsBefore.value[index]
+                        ]..sort();
+
+                        itemsBefore.value = [
+                          ...itemsBefore.value..removeAt(index)
+                        ];
+                      }),
                   childCount: itemsBefore.value.length),
             ),
           ),
@@ -98,13 +123,7 @@ class MainPage extends HookWidget {
                             ),
                           ),
                         )
-                      : Padding(
-                          padding: EdgeInsets.only(bottom: 20.h),
-                          child: ScheduleItem(
-                            status: '복약 완료',
-                            time: '${itemsAfter.value[index - 1]}:00',
-                          ),
-                        ),
+                      : listTakeList(context, index, itemsAfter),
                   childCount: itemsAfter.value.length + 1),
             ),
           ),

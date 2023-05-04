@@ -8,6 +8,43 @@ import 'package:gql/ast.dart';
 part 'graphql_api.graphql.g.dart';
 
 @JsonSerializable(explicitToJson: true)
+class SearchByKeyword$QueryRoot$PbPillInfo extends JsonSerializable
+    with EquatableMixin {
+  SearchByKeyword$QueryRoot$PbPillInfo();
+
+  factory SearchByKeyword$QueryRoot$PbPillInfo.fromJson(
+          Map<String, dynamic> json) =>
+      _$SearchByKeyword$QueryRoot$PbPillInfoFromJson(json);
+
+  @JsonKey(name: 'entp_name')
+  late String entpName;
+
+  late String name;
+
+  @override
+  List<Object?> get props => [entpName, name];
+  @override
+  Map<String, dynamic> toJson() =>
+      _$SearchByKeyword$QueryRoot$PbPillInfoToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class SearchByKeyword$QueryRoot extends JsonSerializable with EquatableMixin {
+  SearchByKeyword$QueryRoot();
+
+  factory SearchByKeyword$QueryRoot.fromJson(Map<String, dynamic> json) =>
+      _$SearchByKeyword$QueryRootFromJson(json);
+
+  @JsonKey(name: 'pb_pill_info')
+  late List<SearchByKeyword$QueryRoot$PbPillInfo> pbPillInfo;
+
+  @override
+  List<Object?> get props => [pbPillInfo];
+  @override
+  Map<String, dynamic> toJson() => _$SearchByKeyword$QueryRootToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
 class SearchPillList$QueryRoot$PbPillInfo extends JsonSerializable
     with EquatableMixin {
   SearchPillList$QueryRoot$PbPillInfo();
@@ -118,6 +155,130 @@ class PillInfomation$QueryRoot extends JsonSerializable with EquatableMixin {
   List<Object?> get props => [pbPillInfoByPk];
   @override
   Map<String, dynamic> toJson() => _$PillInfomation$QueryRootToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class SearchByKeywordArguments extends JsonSerializable with EquatableMixin {
+  SearchByKeywordArguments({required this.keyword});
+
+  @override
+  factory SearchByKeywordArguments.fromJson(Map<String, dynamic> json) =>
+      _$SearchByKeywordArgumentsFromJson(json);
+
+  late String keyword;
+
+  @override
+  List<Object?> get props => [keyword];
+  @override
+  Map<String, dynamic> toJson() => _$SearchByKeywordArgumentsToJson(this);
+}
+
+final SEARCH_BY_KEYWORD_QUERY_DOCUMENT_OPERATION_NAME = 'search_by_keyword';
+final SEARCH_BY_KEYWORD_QUERY_DOCUMENT = DocumentNode(definitions: [
+  OperationDefinitionNode(
+    type: OperationType.query,
+    name: NameNode(value: 'search_by_keyword'),
+    variableDefinitions: [
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'keyword')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'String'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      )
+    ],
+    directives: [],
+    selectionSet: SelectionSetNode(selections: [
+      FieldNode(
+        name: NameNode(value: 'pb_pill_info'),
+        alias: null,
+        arguments: [
+          ArgumentNode(
+            name: NameNode(value: 'where'),
+            value: ObjectValueNode(fields: [
+              ObjectFieldNode(
+                name: NameNode(value: '_or'),
+                value: ListValueNode(values: [
+                  ObjectValueNode(fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'effect'),
+                      value: ObjectValueNode(fields: [
+                        ObjectFieldNode(
+                          name: NameNode(value: '_like'),
+                          value: VariableNode(name: NameNode(value: 'keyword')),
+                        )
+                      ]),
+                    )
+                  ]),
+                  ObjectValueNode(fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'class_name'),
+                      value: ObjectValueNode(fields: [
+                        ObjectFieldNode(
+                          name: NameNode(value: '_like'),
+                          value: VariableNode(name: NameNode(value: 'keyword')),
+                        )
+                      ]),
+                    )
+                  ]),
+                  ObjectValueNode(fields: [
+                    ObjectFieldNode(
+                      name: NameNode(value: 'name'),
+                      value: ObjectValueNode(fields: [
+                        ObjectFieldNode(
+                          name: NameNode(value: '_like'),
+                          value: VariableNode(name: NameNode(value: 'keyword')),
+                        )
+                      ]),
+                    )
+                  ]),
+                ]),
+              )
+            ]),
+          )
+        ],
+        directives: [],
+        selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'entp_name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+          FieldNode(
+            name: NameNode(value: 'name'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
+        ]),
+      )
+    ]),
+  )
+]);
+
+class SearchByKeywordQuery
+    extends GraphQLQuery<SearchByKeyword$QueryRoot, SearchByKeywordArguments> {
+  SearchByKeywordQuery({required this.variables});
+
+  @override
+  final DocumentNode document = SEARCH_BY_KEYWORD_QUERY_DOCUMENT;
+
+  @override
+  final String operationName = SEARCH_BY_KEYWORD_QUERY_DOCUMENT_OPERATION_NAME;
+
+  @override
+  final SearchByKeywordArguments variables;
+
+  @override
+  List<Object?> get props => [document, operationName, variables];
+  @override
+  SearchByKeyword$QueryRoot parse(Map<String, dynamic> json) =>
+      SearchByKeyword$QueryRoot.fromJson(json);
 }
 
 @JsonSerializable(explicitToJson: true)

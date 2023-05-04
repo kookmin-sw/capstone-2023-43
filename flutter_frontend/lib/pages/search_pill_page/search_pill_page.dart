@@ -61,11 +61,13 @@ class SearchPillPage extends HookWidget {
                           onPressed: () {
                             print(textController.text);
                             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SearchResultList(
-                                          search: textController.text,
-                                        )));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SearchResultList(
+                                  search: textController.text,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       )

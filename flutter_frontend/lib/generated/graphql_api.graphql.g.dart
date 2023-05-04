@@ -7,6 +7,33 @@ part of 'graphql_api.graphql.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+SearchByKeyword$QueryRoot$PbPillInfo
+    _$SearchByKeyword$QueryRoot$PbPillInfoFromJson(Map<String, dynamic> json) =>
+        SearchByKeyword$QueryRoot$PbPillInfo()
+          ..entpName = json['entp_name'] as String
+          ..name = json['name'] as String;
+
+Map<String, dynamic> _$SearchByKeyword$QueryRoot$PbPillInfoToJson(
+        SearchByKeyword$QueryRoot$PbPillInfo instance) =>
+    <String, dynamic>{
+      'entp_name': instance.entpName,
+      'name': instance.name,
+    };
+
+SearchByKeyword$QueryRoot _$SearchByKeyword$QueryRootFromJson(
+        Map<String, dynamic> json) =>
+    SearchByKeyword$QueryRoot()
+      ..pbPillInfo = (json['pb_pill_info'] as List<dynamic>)
+          .map((e) => SearchByKeyword$QueryRoot$PbPillInfo.fromJson(
+              e as Map<String, dynamic>))
+          .toList();
+
+Map<String, dynamic> _$SearchByKeyword$QueryRootToJson(
+        SearchByKeyword$QueryRoot instance) =>
+    <String, dynamic>{
+      'pb_pill_info': instance.pbPillInfo.map((e) => e.toJson()).toList(),
+    };
+
 SearchPillList$QueryRoot$PbPillInfo
     _$SearchPillList$QueryRoot$PbPillInfoFromJson(Map<String, dynamic> json) =>
         SearchPillList$QueryRoot$PbPillInfo()
@@ -79,6 +106,18 @@ Map<String, dynamic> _$PillInfomation$QueryRootToJson(
         PillInfomation$QueryRoot instance) =>
     <String, dynamic>{
       'pb_pill_info_by_pk': instance.pbPillInfoByPk?.toJson(),
+    };
+
+SearchByKeywordArguments _$SearchByKeywordArgumentsFromJson(
+        Map<String, dynamic> json) =>
+    SearchByKeywordArguments(
+      keyword: json['keyword'] as String,
+    );
+
+Map<String, dynamic> _$SearchByKeywordArgumentsToJson(
+        SearchByKeywordArguments instance) =>
+    <String, dynamic>{
+      'keyword': instance.keyword,
     };
 
 SearchPillListArguments _$SearchPillListArgumentsFromJson(

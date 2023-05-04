@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_infomation.dart';
+import 'package:flutter_frontend/pages/add_pill_page/widget/list_tile/pill_group_list_tile.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
-import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
 import 'package:flutter_frontend/service/add_pill_service.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
@@ -14,7 +14,7 @@ class AddPillPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     late List<PillInfomation> pills = ref.watch(AddPillServiceProvider).pills;
-    bool isSearched = ref.watch(AddPillServiceProvider).isSearched;
+    var stage = ref.watch(AddPillServiceProvider).stage;
 
     return BaseWidget(
       body: Center(
@@ -27,6 +27,7 @@ class AddPillPage extends HookConsumerWidget {
                 IconButton(
                     onPressed: () {
                       Navigator.pop(context);
+                      ref.read(AddPillServiceProvider).initState();
                     },
                     icon: Icon(
                       Icons.arrow_back,
@@ -52,8 +53,11 @@ class AddPillPage extends HookConsumerWidget {
               text: '여기를 눌러 복용하려는 약 찾기',
               icon: const Icon(Icons.search),
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SearchPillPage()));
+                ref.read(AddPillServiceProvider).changeSelectState();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SearchPillPage()));
               },
             ),
             SizedBox(
@@ -67,32 +71,34 @@ class AddPillPage extends HookConsumerWidget {
                 border: Border.all(width: 0.5),
                 borderRadius: const BorderRadius.all(Radius.circular(15)),
               ),
-              child: isSearched
+              child: stage == AddPillState.addPill
                   ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: pills.length,
-                          itemBuilder: (context, index) {
-                            return SearchItem(
-                              title: pills[index].name,
-                              subTitle: pills[index].className,
-                              company: pills[index].entpName,
-                              isSingleContent: pills.length == 1 ? true : false,
-                            );
-                          },
-                        ),
+                      child: ListView.builder(
+                        padding: EdgeInsets.all(10),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: pills.length,
+                        itemBuilder: (context, index) {
+                          return PillGroupListItem(
+                            title: pills[index].name,
+                            subTitle: pills[index].className,
+                            company: pills[index].entpName,
+                            index: index + 1,
+                          );
+                        },
                       ),
                     )
                   : SizedBox(
                       height: 75.h,
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          "복용 하고자 하는 약을 스케쥴에 올려  편리하게 관리하세요!",
+                          "복용 하고자 하는 약을 스케쥴에 올려\n편리하게 관리하세요!",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xffd2d2d2)),
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xffd2d2d2),
+                            fontSize: 20.sp,
+                          ),
                         ),
                       )),
             ),

@@ -83,7 +83,7 @@ class PillInfomationContext extends HookConsumerWidget {
                           imageUrl: data['image_url'] ?? 'none',
                           name: data['name'] ?? 'none',
                         ));
-                    Navigator.pop(context);
+                    Navigator.popUntil(context, ModalRoute.withName('/add'));
                   },
                 ),
               ],

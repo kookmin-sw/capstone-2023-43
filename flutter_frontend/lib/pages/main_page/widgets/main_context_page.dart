@@ -19,9 +19,6 @@ class MainContextPage extends HookWidget {
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           alignment: Alignment.bottomCenter,
-          // decoration: const BoxDecoration(
-          //   color: Color(0xff0b6ae3),
-          // ),
           child: Padding(
             padding: EdgeInsets.only(bottom: 50.h),
             child: Row(
@@ -53,8 +50,7 @@ class MainContextPage extends HookWidget {
                   ),
                   text: '먹고있는 약 추가하기',
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => AddPillPage()));
+                    Navigator.pushNamed(context, '/add');
                   },
                 ),
                 SizedBox(width: 20.w),

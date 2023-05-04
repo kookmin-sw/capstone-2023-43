@@ -117,24 +117,25 @@ class SearchResultList extends HookWidget {
                         ),
                         Expanded(
                           child: ListView.builder(
-                              itemCount: result.data!['pb_pill_info'].length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final data = result.data!['pb_pill_info'];
-                                return SearchItem(
-                                  title: data[index]['name'],
-                                  subTitle: data[index]['class_name'] ?? 'none',
-                                  company: data[index]['entp_name'],
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PillInfomationPage(
-                                                    itemSeq: data[index]
-                                                        ['item_seq'])));
-                                  },
-                                );
-                              }),
+                            itemCount: result.data!['pb_pill_info'].length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final data = result.data!['pb_pill_info'];
+                              return SearchItem(
+                                title: data[index]['name'],
+                                subTitle: data[index]['class_name'] ?? 'none',
+                                company: data[index]['entp_name'],
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PillInfomationPage(
+                                          itemSeq: data[index]['item_seq']),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),

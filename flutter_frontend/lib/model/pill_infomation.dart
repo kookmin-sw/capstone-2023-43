@@ -47,7 +47,7 @@ class PillInfomation {
     return PillInfomation(
       name: map['name'] ?? '',
       entpName: map['entpName'] ?? '',
-      etcOtcCode: map['etcOtcCode'] ?? 0,
+      etcOtcCode: map['etcOtcCode'] ?? '',
       className: map['className'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
     );
