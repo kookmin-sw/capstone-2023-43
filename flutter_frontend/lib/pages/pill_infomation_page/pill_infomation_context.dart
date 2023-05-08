@@ -51,14 +51,17 @@ class PillInfomationContext extends HookConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  flex: 1,
+                  flex: 9,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         '${result.data!['pb_pill_info_by_pk']['name']}',
                         style: TextStyle(
-                            fontSize: 24.sp, fontWeight: FontWeight.w700),
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
+                            overflow: TextOverflow.ellipsis),
+                        maxLines: 1,
                       ),
                       Text(
                         '${result.data!['pb_pill_info_by_pk']['entp_name']}',
@@ -68,24 +71,33 @@ class PillInfomationContext extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                BaseButton(
-                  text: '약 추가',
-                  color: Colors.amber,
-                  icon: Icon(
-                    Icons.medication,
-                    size: 18.w,
-                  ),
-                  onTap: () {
-                    ref.read(AddPillServiceProvider).addPill(PillInfomation(
-                          className: data['clss_name'] ?? 'none',
-                          entpName: data['entp_name'] ?? 'none',
-                          etcOtcCode: data['etc_otc_code'] ?? 'none',
-                          imageUrl: data['image_url'] ?? 'none',
-                          name: data['name'] ?? 'none',
-                        ));
-                    Navigator.popUntil(context, ModalRoute.withName('/add'));
-                  },
+                const Spacer(
+                  flex: 1,
                 ),
+                ref.read(AddPillServiceProvider).stage ==
+                        AddPillState.selectPill
+                    ? BaseButton(
+                        text: '약 추가',
+                        color: Colors.amber,
+                        icon: Icon(
+                          Icons.medication,
+                          size: 18.w,
+                        ),
+                        onTap: () {
+                          ref
+                              .read(AddPillServiceProvider)
+                              .addPill(PillInfomation(
+                                className: data['clss_name'] ?? 'none',
+                                entpName: data['entp_name'] ?? 'none',
+                                etcOtcCode: data['etc_otc_code'] ?? 'none',
+                                imageUrl: data['image_url'] ?? 'none',
+                                name: data['name'] ?? 'none',
+                              ));
+                          Navigator.popUntil(
+                              context, ModalRoute.withName('/add'));
+                        },
+                      )
+                    : Spacer(),
               ],
             ),
             SizedBox(
