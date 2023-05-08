@@ -48,7 +48,6 @@ class AddPillPage extends HookConsumerWidget {
             SizedBox(
               height: 20.h,
             ),
-            // 단일 복용약 -> 복수의 복용약으로 변경 필요 컴포넌트 재설계 필수.
             BaseButton(
               text: '여기를 눌러 복용하려는 약 찾기',
               icon: const Icon(Icons.search),

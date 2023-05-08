@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../widgets/base_button.dart';
-import '../../add_pill_page/add_pill_page.dart';
-import '../../pill_infomation_page/pill_infomation.dart';
+import '../../calender_page/calender_page.dart';
 import '../../search_pill_page/search_pill_page.dart';
 
 class MainContextPage extends HookWidget {
@@ -34,11 +32,7 @@ class MainContextPage extends HookWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const PillInfomationPage(
-                          itemSeq: 199700810,
-                        ),
-                      ),
+                      MaterialPageRoute(builder: (context) => CalenderPage()),
                     );
                   },
                 ),

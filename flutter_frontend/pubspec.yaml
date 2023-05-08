@@ -43,6 +43,7 @@ dependencies:
   flutter_html: ^2.2.1
   calendar_view: ^1.0.3
   flutter_native_splash: '>=2.2.0 <=2.2.19'
+  table_calendar: ^3.0.9
 
 
 dependency_overrides:
