@@ -256,7 +256,7 @@ def delete_pill_history_by_id(request: Request, history_id: str):
     return {"result": "ok"}
 
 @app.get('/pillbox/pills/{item_seq}', response_class=HTMLResponse)
-async def get_pill_data(item_seq: str = ""):
+async def get_pill_data(item_seq: int = 0):
     html_404 = """
 <html>
     <body>
@@ -277,31 +277,23 @@ async def get_pill_data(item_seq: str = ""):
     </body>
 </html>
     """
-    query = """
-query MyQuery($item_seq: Int!) {
-  pb_pill_info(where: {item_seq: {_eq: $item_seq}}) {
-    name
-    use_method
-    warning_message
-    effect
-  }
-}
-    """
+    query = """query pill($item_seq: Int!) {pb_pill_info(where: {item_seq: {_eq: $item_seq}}) {name use_method warning_message effect}}"""
     variable = {"item_seq": item_seq}
     hasura_endpoint = os.environ.get('HASURA_ENDPOINT_URL')
-    if len(item_seq) != 9:
+    if len(str(item_seq)) != 9:
         return HTMLResponse(content=html_404, status_code=404)
 
     # python 3.8이라 문제가 생기는 듯
     async with aiohttp.ClientSession() as session:
-        async with session.post(hasura_endpoint, data={"query": query, "variables": variable}) as response:
-            if response.start != 200:
+        async with session.post(hasura_endpoint, json={"query": query, "variables": variable}) as response:
+            if response.status != 200:
                 return HTMLResponse("""dddd""")
             body = await response.json()
-            if "error" in body.items():
+            if "errors" in body.items():
                 return HTMLResponse("""error""")
-            body = body["data"]["pb_pill_info"][0]
-            html = html.format(body['name'], body['effect'], body['use_method'], body['warning_message'])
+            data = body["data"]["pb_pill_info"][0]
+            html = html.format(name=data['name'], effect=data['effect'],
+                               use_method=data['use_method'], warning_message=data['warning_message'])
     return HTMLResponse(html)
 
 
