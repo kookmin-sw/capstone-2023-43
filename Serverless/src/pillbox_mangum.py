@@ -138,7 +138,7 @@ def get_pill_history_by_id(request: Request, history_id: str):
 
     if user_id is None:
         return {"result": "Unauthorization"}
-    
+
     history_id = ObjectId(history_id)
 
     result_out = pillbox_db.find_one({"_id": user_id, 
@@ -165,10 +165,10 @@ def post_pill_history(request: Request, pill_history: PillHistory):
     pill_history.name = pill_history.name.strip()
     if pill_history.name is None or len(pill_history.name) < 0:
         return {"result": "Need history name"}
-    
+
     if pill_history.end_date is None or pill_history.start_date is None:
-        return {"result": "Need start_date or end_date"}
-    
+        return {"result": "Need start_date and end_date"}
+
     if pill_history.end_date <= pill_history.start_date:
         return {"result": "start_date less then end_date"}
 
@@ -185,7 +185,7 @@ def post_pill_history(request: Request, pill_history: PillHistory):
 
     pillbox_db.update_one({"_id": user_id}, {"$push": {"pill_histories": pill_history_dict}})
 
-    return {"result": "ok"}
+    return {"result": "ok", "id": str(pill_history_dict["_id"])}
 
 # 검증 및 request body 확인 코드 필요
 @app.patch('/pillbox/users/pill_histories/{history_id}')
