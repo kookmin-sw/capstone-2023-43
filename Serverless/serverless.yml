@@ -6,7 +6,7 @@ useDotenv: true
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.10
   region: ap-northeast-2
 
 plugins:
@@ -25,7 +25,7 @@ custom:
       name: mangum-layer
       description: python mangum layer
       compatibleRuntimes:
-        - python3.8
+        - python3.10
 
 functions:
   pillBoxEcho:
