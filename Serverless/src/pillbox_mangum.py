@@ -204,20 +204,29 @@ def update_pill_history_by_id(request: Request, pill_history: PillHistory, histo
 
     elif pill_history.start_date is not None:
         # pill_histories.start_date가 end_date on documents 보다 크면 유효하다.
-        result = pillbox_db.find_one({"_id": user_id, "pill_histories._id": history_id,
-                                      "pill_histories.end_date": {"$lt": pill_history.start_date}})
+        result = pillbox_db.find_one({"_id": user_id, "pill_histories":
+                                      {"$elemMatch":
+                                       {"_id": history_id, "end_date": {"$gt": pill_history.start_date}}}})
         if result is None:
             return {"result": "start_date must be less then end_date"}
 
     elif pill_history.end_date is not None:
         # pill_histories.end_date가 start_date on document보다 크면 유효하다.
-        result = pillbox_db.find_one({"_id": user_id, "pill_histories._id": history_id,
-                                      "pill_histories.start_date": {"$gt": pill_history.end_date}})
+        result = pillbox_db.find_one({"_id": user_id, "pill_histories":
+                                      {"$elemMatch":
+                                       {"_id": history_id, "start_date": {"$lt": pill_history.end_date}}}})
         if result is None:
             return {"result": "end_date must be greater than start_date"}
 
     if pill_history.pills is not None and len(pill_history.pills) < 0:
         return {"result": "Need pill list"}
+
+    if pill_history.name is not None:
+        # history_id는 다른데 이름은 같은 기록을 찾는다.
+        result = pillbox_db.find_one({"_id": user_id, "pill_histories":
+                                      {"$elemMatch": {"_id": {"$ne": history_id}, "name": pill_history.name}}})
+        if result is not None:
+            return {"result": "history name already exist"}
 
     update_query = pill_history.__dict__
     update_query = {"pill_histories.$."+k: v for k, v in update_query.items() if v is not None}
