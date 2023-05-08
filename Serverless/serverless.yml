@@ -63,3 +63,5 @@ functions:
           integration: lambda-proxy
           authorizer:
             arn: ${env:COGNITO_ARN}
+    environment:
+      ${file(.env.yml)}
