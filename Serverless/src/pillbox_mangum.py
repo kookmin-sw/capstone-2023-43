@@ -14,6 +14,20 @@ from pymongo import MongoClient
 from bson import ObjectId, json_util
 
 
+mix_taboo_query = '''query validation($item_seqs: [Int]!, $mixture_item_seq: Int!) {
+  pb_mix_taboo(where: {_and: [{item_seq: {_in: $item_seqs}}, {mixture_item_seq: {_eq: $mixture_item_seq}}]}) {
+    item_seq
+    mixture_item_seq
+    prohibited_content
+  }
+}'''
+
+
+taboo_case_query = '''query taboo_list($item_seq: Int!) {
+    pb_pill_info_by_pk(item_seq: $item_seq)
+}
+'''
+
 class PillHistory(BaseModel):
     name: Union[str, None] = None
     pills: Union[List[int], None] = None
@@ -169,6 +183,7 @@ def get_pill_histories(request: Request, name: str = None, all_histories: bool =
                                         group,
                                         {"$project": {"_id": 0}}
                                         ])
+    # todo 반환 코드를 다시 짜야할 듯
     results = json.loads(json_util.dumps(results_out))
     results = results[0]['datas'] if len(results) > 0 else []
     return {"result": "ok", "datas": results}
