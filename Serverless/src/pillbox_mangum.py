@@ -1,7 +1,7 @@
 import os
 import json
 import aiohttp
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Union, List
 from pydantic import BaseModel
 from fastapi import FastAPI
@@ -26,6 +26,11 @@ class User(BaseModel):
     is_diabetes: Union[bool, None] = False
     is_pregnancy: Union[bool, None] = False
     pill_histories: Union[List[PillHistory], None] = None
+
+class Validation(BaseModel):
+    pills: List[int]
+    start_date: datetime = datetime.utcnow()
+    end_date: datetime = datetime.utcnow() + timedelta(days=10)
 
 
 host = os.environ.get('MONGODB_HOST')
@@ -97,6 +102,42 @@ def put_user(user: User, request: Request):
         return {"result": "not updated"}
     else:
         return {"result": "ok"}
+
+@app.post('/pillbox/users/validation')
+def validation(request: Request, validation: Validation):
+    user_id = get_user_id(request.scope)
+
+    if user_id is None:
+        return {"result": "Unauthorization"}
+
+    if not is_exist(user_id):
+        return {"result": "No User Data"}
+
+    if validation.end_date <= validation.start_date:
+        return {"result": "start_date must be less than end_date"}
+
+    # 요청의 복용기간내에 존재하는 복용기록의 의약품들의 품목기준코드를 가져오는 aggregate pipeline
+    pipeline: List[dict[str, any]] = [{"$match": {"_id": user_id}}]
+    pipeline.append({"$unwind": "$pill_histories"})
+    pipeline.append({"$unwind": "$pill_histories.pills"})
+    pipeline.append({"$match": {"pill_histories.end_date": {"$gte": validation.start_date},
+                                "pill_histories.start_date": {"$lte": validation.end_date}}})
+    pipeline.append({"$group": {"_id": "$_id", "pills": {"$push": "$pill_histories.pills"}}})
+
+    result_out = pillbox_db.aggregate(pipeline=pipeline)
+
+    pills = [result for result in result_out]
+    print(pills)
+
+    if len(pills) > 0:
+        pills = pills[0]
+    else:
+        return {"result": "ok"}
+
+    if 'pills' not in pills.keys() or len(pills['pills']) == 0:
+        return {"result": "ok"}
+    pills = pills['pills']
+    return {"result": "ok", "datas": pills}
 
 @app.get('/pillbox/users/pill_histories')
 def get_pill_histories(request: Request, name: str = None, all_histories: bool = False,
