@@ -33,7 +33,6 @@ class MyAppState extends State<MyApp> {
   }
 
   void _configure() async {
-    final configured;
     final auth = AmplifyAuthCognito();
     final analytics = AmplifyAnalyticsPinpoint();
 

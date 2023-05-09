@@ -10,7 +10,7 @@ packages:
     source: hosted
     version: "38.0.0"
   amplify_analytics_pinpoint:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: amplify_analytics_pinpoint
       sha256: b4a02cd8621374080f4194f4df5a1a3df139137e27efb4eb91340737002219b7
@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "0.6.13"
   amplify_auth_cognito:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: amplify_auth_cognito
       sha256: "006c31e92ca15c6cb08f4a92d751a2feb0f03c945ebefb752b6cc872ad44317c"
@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "0.6.13"
   amplify_core:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: amplify_core
       sha256: dc4d489e661cf5cb127a449045f9ed164475c7c128bfa41df46895411069827b
@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "0.6.13"
   amplify_flutter:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: amplify_flutter
       sha256: "1993a8bb4c10f0354fc79c4abe0afeccfc0fb867d3d480bc29ee9dcc14f66de5"
