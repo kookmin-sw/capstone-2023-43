@@ -49,6 +49,8 @@ class RequestManager:
                 # print(f"RequestManager Handler: {handler_name}: {response.url.human_repr()}", end='\r')
             except Exception as e:
                 print(f"RequestManager Handler: {handler_name}: {e}")
+                # 재시도하기 위해 다시 큐에 넣음
+                await self.create_request(request_url, params, headers, is_post)
         print(f"RequestManager Handler: {handler_name} Finished.")
 
 
