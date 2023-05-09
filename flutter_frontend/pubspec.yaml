@@ -48,6 +48,7 @@ dependencies:
   amplify_core: '>0.6.0 <=1.0.1'
   amplify_analytics_pinpoint: '>0.6.0 <=1.0.1'
   amplify_auth_cognito: '>0.6.0 <=1.0.1'
+  http: '^0.13.6'
 
 
 dependency_overrides:

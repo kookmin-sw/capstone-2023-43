@@ -14,7 +14,7 @@ import 'package:flutter_frontend/amplifyconfiguration.dart';
 
 PbGraphQlClient gq = PbGraphQlClient();
 void main() async {
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -34,10 +34,9 @@ class MyAppState extends State<MyApp> {
 
   void _configure() async {
     final auth = AmplifyAuthCognito();
-    final analytics = AmplifyAnalyticsPinpoint();
 
     try {
-      Amplify.addPlugins([auth, analytics]);
+      Amplify.addPlugins([auth]);
       await Amplify.configure(amplifyconfig);
       print('Successfully configured Amplify 🎉');
     } catch (e) {

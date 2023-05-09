@@ -13,10 +13,12 @@
     },
     "categories": {
       "auth": {
-        "flutterfrontendd5a040fd": {}
-      },
-      "analytics": {
-        "flutterfrontend": {}
+        "flutterfrontend90968b06": {
+          "userPoolId": "ap-northeast-2_jaJDgT3l0",
+          "userPoolName": "pillbox-userpool",
+          "webClientId": "1t447sthqm3unmsmk0l3k203u4",
+          "nativeClientId": "1t447sthqm3unmsmk0l3k203u4"
+        }
       }
     }
   }

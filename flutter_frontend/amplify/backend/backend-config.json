@@ -1,36 +1,46 @@
 {
-  "analytics": {
-    "flutterfrontend": {
-      "providerPlugin": "awscloudformation",
-      "service": "Pinpoint"
-    }
-  },
+  "analytics": {},
   "auth": {
-    "flutterfrontendd5a040fd": {
+    "flutterfrontend90968b06": {
       "customAuth": false,
       "dependsOn": [],
-      "frontendAuthConfig": {
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [],
-          "passwordPolicyMinLength": 8
-        },
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      },
       "providerPlugin": "awscloudformation",
-      "service": "Cognito"
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_flutterfrontend90968b06_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend90968b06"
+        }
+      ]
+    },
+    "AMPLIFY_auth_flutterfrontend90968b06_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend90968b06"
+        }
+      ]
+    },
+    "AMPLIFY_auth_flutterfrontend90968b06_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend90968b06"
+        }
+      ]
+    },
+    "AMPLIFY_auth_flutterfrontend90968b06_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend90968b06"
+        }
+      ]
     }
   }
 }

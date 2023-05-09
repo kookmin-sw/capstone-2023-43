@@ -7,8 +7,8 @@ enum ResposeStage { notready, ready, loading, finish, error }
 
 //서비스 스켈레톤 코드 -> url 및 동작 도큐멘테이션을 받는대로 데이터 생성
 class HttpResponseService extends ChangeNotifier {
-  final url = '';
-  late var oauthToken;
+  late final url = 'url을 여기에...';
+  late var OauthToken;
   late List<SchduleData> data;
   ResposeStage stage = ResposeStage.notready;
 
