@@ -142,48 +142,58 @@ def error_handler(request: Request, _):
         content={"error": "not found"}
     )
 
-@app.get('/pillbox/users')
+
+@app.get('/pillbox/users', response_model=Result)
 def get_user(request: Request):
     user_id = get_user_id(request.scope)
     if user_id is None:
-        return {"result": "Unauthoriazation"}
+        raise HTTPException(status_code=401)
     user_doc = pillbox_db.find_one({"_id": user_id})
+    if user_doc is None:
+        raise HTTPException(status_code=404, detail="user not found")
     user_doc = json.loads(json_util.dumps(user_doc))
-    return {"result": "ok", "datas": user_doc}
+    try:
+        user = UserOut(user_doc)
+    except KeyError as key_error:
+        raise HTTPException(status_code=500, detail="internal error key error") from key_error
+    except ValidationError as valid:
+        print(valid)
+        raise HTTPException(status_code=500, detail="internal error") from valid
 
-@app.post('/pillbox/users')
-def post_user(user: User, request: Request):
+    return Result(result="ok", data=user)
+
+
+@app.post('/pillbox/users', status_code=201)
+def post_user(user: UserPost, request: Request):
     user_id = get_user_id(request.scope)
 
     if user_id is None:
-        return {"result": "Unauthoriazation"}
+        raise HTTPException(status_code=401, detail="Unauthoized")
 
     if is_exist(user_id):
-        return {"result": "already exists"}
+        raise HTTPException(status_code=400, detail="already exist")
 
     user_doc = {'_id': user_id, 'blood_pressure': user.blood_pressure,
                 'is_pregnancy': user.is_pregnancy, 'is_diabetes': user.is_diabetes}
     pillbox_db.insert_one(user_doc)
-    return {"result": "ok"}
+    return Result(result="ok")
+
 
 @app.patch('/pillbox/users')
-def put_user(user: User, request: Request):
+def put_user(user: UserPatch, request: Request):
     user_id = get_user_id(request.scope)
     if user_id is None:
-        return {"result": "Unauthoriazation"}
+        raise HTTPException(status_code=401)
     if not is_exist(user_id):
-        return {"result": "not exist User"}
+        raise HTTPException(status_code=400, detail="not exist")
 
-    # todo if not updated?
-    result = pillbox_db.update_one({"_id": user_id}, {"$set": user.__dict__})
+    pillbox_db.update_one({"_id": user_id}, {"$set": user.__dict__})
 
-    if result.matched_count < 0:
-        return {"result": "not updated"}
-    else:
-        return {"result": "ok"}
+    return Result(result="ok")
+
 
 @app.post('/pillbox/users/validation')
-def validation(request: Request, validation: Validation):
+def validation(request: Request, valid: Validation):
     user_id = get_user_id(request.scope)
 
     if user_id is None:
@@ -196,11 +206,11 @@ def validation(request: Request, validation: Validation):
         return {"result": "start_date must be less than end_date"}
 
     # 요청의 복용기간내에 존재하는 복용기록의 의약품들의 품목기준코드를 가져오는 aggregate pipeline
-    pipeline: List[dict[str, any]] = [{"$match": {"_id": user_id}}]
+    pipeline: list[dict[str, any]] = [{"$match": {"_id": user_id}}]
     pipeline.append({"$unwind": "$pill_histories"})
     pipeline.append({"$unwind": "$pill_histories.pills"})
-    pipeline.append({"$match": {"pill_histories.end_date": {"$gte": validation.start_date},
-                                "pill_histories.start_date": {"$lte": validation.end_date}}})
+    pipeline.append({"$match": {"pill_histories.end_date": {"$gte": valid.start_date},
+                                "pill_histories.start_date": {"$lte": valid.end_date}}})
     pipeline.append({"$group": {"_id": "$_id", "pills": {"$push": "$pill_histories.pills"}}})
 
     result_out = pillbox_db.aggregate(pipeline=pipeline)
@@ -217,6 +227,7 @@ def validation(request: Request, validation: Validation):
         return {"result": "ok"}
     pills = pills['pills']
     return {"result": "ok", "datas": pills}
+
 
 @app.get('/pillbox/users/pill_histories')
 def get_pill_histories(request: Request, name: str = None, all_histories: bool = False,
@@ -253,6 +264,7 @@ def get_pill_histories(request: Request, name: str = None, all_histories: bool =
     results = results[0]['datas'] if len(results) > 0 else []
     return {"result": "ok", "datas": results}
 
+
 @app.get('/pillbox/users/pill_histories/{history_id}')
 def get_pill_history_by_id(request: Request, history_id: str):
     user_id = get_user_id(request.scope)
@@ -262,7 +274,7 @@ def get_pill_history_by_id(request: Request, history_id: str):
 
     history_id = ObjectId(history_id)
 
-    result_out = pillbox_db.find_one({"_id": user_id, 
+    result_out = pillbox_db.find_one({"_id": user_id,
                                       "pill_histories._id": history_id})
     if len(result_out) < 0:
         return {"result": f"there is no data with {history_id}"}
@@ -272,9 +284,10 @@ def get_pill_history_by_id(request: Request, history_id: str):
 
     return {"result": "ok", "datas": result}
 
+
 # 검증 및 request body 확인 코드 필요
-@app.post('/pillbox/users/pill_histories')
-def post_pill_history(request: Request, pill_history: PillHistory):
+@app.post('/pillbox/users/pill_histories', status_code=201)
+def post_pill_history(request: Request, pill_history: PillHistoryPost):
     user_id = get_user_id(request.scope)
 
     print(pill_history)
@@ -308,9 +321,10 @@ def post_pill_history(request: Request, pill_history: PillHistory):
 
     return {"result": "ok", "id": str(pill_history_dict["_id"])}
 
+
 # 검증 및 request body 확인 코드 필요
 @app.patch('/pillbox/users/pill_histories/{history_id}')
-def update_pill_history_by_id(request: Request, pill_history: PillHistory, history_id: str):
+def update_pill_history_by_id(request: Request, pill_history: PillHistoryPatch, history_id: str):
     user_id = get_user_id(request.scope)
 
     if user_id is None:
@@ -358,6 +372,7 @@ def update_pill_history_by_id(request: Request, pill_history: PillHistory, histo
 
     return {"result": "ok"}
 
+
 @app.delete('/pillbox/users/pill_histories/{history_id}')
 def delete_pill_history_by_id(request: Request, history_id: str):
     user_id = get_user_id(request.scope)
@@ -375,6 +390,7 @@ def delete_pill_history_by_id(request: Request, history_id: str):
     pillbox_db.update_one({"_id": user_id}, {"$pull": {"pill_histories": {"_id": history_id}}})
 
     return {"result": "ok"}
+
 
 @app.get('/pillbox/pills/{item_seq}', response_class=HTMLResponse)
 async def get_pill_data(item_seq: int = 0):
@@ -398,7 +414,13 @@ async def get_pill_data(item_seq: int = 0):
     </body>
 </html>
     """
-    query = """query pill($item_seq: Int!) {pb_pill_info(where: {item_seq: {_eq: $item_seq}}) {name use_method warning_message effect}}"""
+    query = """query pill($item_seq: Int!) {
+    pb_pill_info(where: {item_seq: {_eq: $item_seq}}) {
+        name
+        use_method
+        warning_message
+        effect
+}}"""
     variable = {"item_seq": item_seq}
     hasura_endpoint = os.environ.get('HASURA_ENDPOINT_URL')
     if len(str(item_seq)) != 9:
