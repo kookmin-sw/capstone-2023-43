@@ -1,10 +1,10 @@
 import os
 import json
-import aiohttp
 from datetime import datetime, timedelta
-from typing import Union, List
+import aiohttp
 from pydantic import BaseModel
-from fastapi import FastAPI
+from pydantic.error_wrappers import ValidationError
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -14,7 +14,8 @@ from pymongo import MongoClient
 from bson import ObjectId, json_util
 
 
-mix_taboo_query = '''query validation($item_seqs: [Int]!, $mixture_item_seq: Int!) {
+# graphql query define section
+MIX_TABOO_QUERY = '''query validation($item_seqs: [Int]!, $mixture_item_seq: Int!) {
   pb_mix_taboo(where: {_and: [{item_seq: {_in: $item_seqs}}, {mixture_item_seq: {_eq: $mixture_item_seq}}]}) {
     item_seq
     mixture_item_seq
@@ -23,29 +24,89 @@ mix_taboo_query = '''query validation($item_seqs: [Int]!, $mixture_item_seq: Int
 }'''
 
 
-taboo_case_query = '''query taboo_list($item_seq: Int!) {
+TABOO_CASE_QUERY = '''query taboo_list($item_seq: Int!) {
     pb_pill_info_by_pk(item_seq: $item_seq)
 }
 '''
 
-class PillHistory(BaseModel):
-    name: Union[str, None] = None
-    pills: Union[List[int], None] = None
-    start_date: Union[datetime, None] = None
-    end_date: Union[datetime, None] = None
+
+# Model define section
+class PillHistoryOut(BaseModel):
+    id: str
+    name: str
+    pills: list[int]
+    start_date: datetime
+    end_date: datetime
+
+    @staticmethod
+    def from_dict(json_dict: dict[str, any]):
+        '''
+            inputs data from bson to json dict
+        '''
+        id_ = json_dict['_id']['$oid']
+        name = json_dict['name']
+        pills = json_dict['pills']
+        start_date = json_dict['stat_date']['$date']
+        end_date = json_dict['end_date']['$date']
+        return PillHistoryOut(id=id_, name=name, pills=pills, start_date=start_date, end_date=end_date)
 
 
-class User(BaseModel):
-    blood_pressure: Union[int, None] = None
-    is_diabetes: Union[bool, None] = False
-    is_pregnancy: Union[bool, None] = False
-    pill_histories: Union[List[PillHistory], None] = None
+class PillHistoryPatch(BaseModel):
+    name: str | None = None
+    pills: list[int] | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+
+
+class PillHistoryPost(BaseModel):
+    name: str
+    pills: list[int]
+    start_date: datetime
+    end_date: datetime
+
+
+class UserOut(BaseModel):
+    id: str
+    blood_pressure: int
+    is_diabetes: bool
+    is_pregnancy: bool
+    pill_histories: list[PillHistoryOut]
+
+    @staticmethod
+    def from_dict(json_dict: dict[str, any]):
+        id_ = json_dict['id']
+        blood_pressure = json_dict['blood_pressure']
+        is_diabetes = json_dict['is_diabetes']
+        is_pregnancy = json_dict['is_pregnancy']
+        pill_histories = [PillHistoryOut(pill_history) for pill_history in json_dict['pill_histories']]
+        return UserOut(id=id_, blood_pressure=blood_pressure, is_diabetes=is_diabetes,
+                       is_pregnancy=is_pregnancy, pill_histories=pill_histories)
+
+
+class UserPost(BaseModel):
+    blood_pressure: int = None
+    is_diabetes: bool = False
+    is_pregnancy: bool = False
+
+
+class UserPatch(BaseModel):
+    blood_pressure: int | None = None
+    is_diabetes: bool | None = False
+    is_pregnancy: bool | None = False
+
 
 class Validation(BaseModel):
-    pills: List[int]
+    pills: list[int]
     start_date: datetime = datetime.utcnow()
     end_date: datetime = datetime.utcnow() + timedelta(days=10)
 
+
+class Result(BaseModel):
+    result: str
+    data: str | UserOut | list[PillHistoryOut] | PillHistoryOut
+
+
+# mongodb Connection section
 
 host = os.environ.get('MONGODB_HOST')
 username = os.environ.get('MONGODB_USERNAME')
@@ -55,7 +116,10 @@ authSource = os.environ.get('MONGODB_AUTHSOURCE')
 client = MongoClient(host, username=username, port=27017, password=password, authSource=authSource)
 pillbox_db = client['pillbox']['pillbox']
 
+
+# asgi section
 app = FastAPI()
+
 
 def get_user_id(scope):
     try:
@@ -63,6 +127,7 @@ def get_user_id(scope):
     except KeyError:
         user_id = None
     return user_id
+
 
 def is_exist(user_id: str):
     result = pillbox_db.find_one({"_id": user_id})
