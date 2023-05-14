@@ -80,14 +80,10 @@ class MainPage extends HookWidget {
           ),
 
           // 약 복용 리스트
-          // 데이터를 관리하는 store 서비스 구축하지 않은 상태 -> 아직 완성된 코드가 아님!
-          // 따라서 서비스가 어느정도 구축된 이후에 정리하자!
-
           SliverPadding(
             padding: EdgeInsets.fromLTRB(50.w, 0, 50.w, 0),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                  // message 구현을 위한 모델 필요 -> isMessage?
                   (context, index) =>
                       listTakeList(context, index, itemsBefore, (Direction) {
                         itemsAfter.value = [

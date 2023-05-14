@@ -13,11 +13,12 @@
     },
     "categories": {
       "auth": {
-        "flutterfrontend90968b06": {
-          "userPoolId": "ap-northeast-2_jaJDgT3l0",
-          "userPoolName": "pillbox-userpool",
-          "webClientId": "1t447sthqm3unmsmk0l3k203u4",
-          "nativeClientId": "1t447sthqm3unmsmk0l3k203u4"
+        "flutterfrontend64ebd937": {},
+        "flutterfrontend9a12e897": {
+          "userPoolId": "ap-northeast-2_kDv29EFfM",
+          "userPoolName": "pillbox_userpool",
+          "webClientId": "kjl8u2ps4e75jdptc9js7absm",
+          "nativeClientId": "kjl8u2ps4e75jdptc9js7absm"
         }
       }
     }

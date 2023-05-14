@@ -1,17 +1,16 @@
 {
   "authSelections": "userPoolOnly",
-  "resourceName": "flutterfrontend90968b06",
+  "resourceName": "flutterfrontend9a12e897",
   "serviceType": "imported",
   "region": "ap-northeast-2",
   "aliasAttributes": [
     "email"
   ],
-  "authProvidersUserPool": [],
+  "authProvidersUserPool": [
+    "Google"
+  ],
   "requiredAttributes": [
-    "name",
-    "email",
-    "gender",
-    "birthdate"
+    "email"
   ],
   "passwordPolicyMinLength": 8,
   "passwordPolicyCharacters": [

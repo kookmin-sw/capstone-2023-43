@@ -1,7 +1,7 @@
 {
   "analytics": {},
   "auth": {
-    "flutterfrontend90968b06": {
+    "flutterfrontend9a12e897": {
       "customAuth": false,
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
@@ -10,35 +10,35 @@
     }
   },
   "parameters": {
-    "AMPLIFY_auth_flutterfrontend90968b06_nativeClientId": {
+    "AMPLIFY_auth_flutterfrontend9a12e897_nativeClientId": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "flutterfrontend90968b06"
+          "resourceName": "flutterfrontend9a12e897"
         }
       ]
     },
-    "AMPLIFY_auth_flutterfrontend90968b06_userPoolId": {
+    "AMPLIFY_auth_flutterfrontend9a12e897_userPoolId": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "flutterfrontend90968b06"
+          "resourceName": "flutterfrontend9a12e897"
         }
       ]
     },
-    "AMPLIFY_auth_flutterfrontend90968b06_userPoolName": {
+    "AMPLIFY_auth_flutterfrontend9a12e897_userPoolName": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "flutterfrontend90968b06"
+          "resourceName": "flutterfrontend9a12e897"
         }
       ]
     },
-    "AMPLIFY_auth_flutterfrontend90968b06_webClientId": {
+    "AMPLIFY_auth_flutterfrontend9a12e897_webClientId": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "flutterfrontend90968b06"
+          "resourceName": "flutterfrontend9a12e897"
         }
       ]
     }
