@@ -58,14 +58,14 @@ class PillHistoryOut(BaseModel):
         id_ = json_dict['_id']['$oid']
         name = json_dict['name']
         pills = json_dict['pills']
-        start_date = json_dict['stat_date']['$date']
+        start_date = json_dict['start_date']['$date']
         end_date = json_dict['end_date']['$date']
         return PillHistoryOut(id=id_, name=name, pills=pills, start_date=start_date, end_date=end_date)
 
 
 class PillHistoryPatch(BaseModel):
     name: str | None = None
-    pills: list[int] | None = None
+    pills: list[int] | None = [1]
     start_date: datetime | None = None
     end_date: datetime | None = None
 
@@ -96,8 +96,8 @@ class UserOut(BaseModel):
         blood_pressure = json_dict['blood_pressure']
         is_diabetes = json_dict['is_diabetes']
         is_pregnancy = json_dict['is_pregnancy']
-        if json_dict['pill_histories'] not in [[], None]:
-            pill_histories = [PillHistoryOut(pill_history) for pill_history in json_dict['pill_histories']]
+        if len(json_dict['pill_histories']) > 0:
+            pill_histories = [PillHistoryOut.from_dict(pill_history) for pill_history in json_dict['pill_histories']]
         else:
             pill_histories = []
         return UserOut(id=id_, name=name, gender=gender, birthday=birthday, blood_pressure=blood_pressure,
@@ -302,7 +302,7 @@ def post_user(user: UserPost, request: Request):
 
 
 @app.patch('/pillbox/users', response_model=Result)
-def put_user(user: UserPatch, request: Request):
+def patch_user(user: UserPatch, request: Request):
     user_id = get_user_id(request.scope)
     if user_id is None:
         raise HTTPException(status_code=401)
@@ -375,9 +375,9 @@ async def validation(request: Request, valid: Validation):
             mix_taboos = results[1]
             taboo_cases = results[0]
 
-        return Result("not ok", ValidationOut(mix_taboos, taboo_cases))
+        return Result(result="not ok", data=ValidationOut(mix_taboos, taboo_cases))
 
-    return Result("ok")
+    return Result(result="ok")
 
 
 @app.get('/pillbox/users/pill_histories', response_model=Result)
@@ -399,6 +399,7 @@ def get_pill_histories(request: Request, name: str = None, all_histories: bool =
         match["$match"]["pill_histories.name"] = name
     if not all_histories:
         match["$match"]["pill_histories.end_date"] = {"$gte": datetime.utcnow()}
+        match["$match"]["pill_histories.start_date"] = {"$lte": datetime.utcnow()}
     elif only_ended_histories:
         match["$match"]["pill_histories.end_date"] = {"$lt": datetime.utcnow()}
 
@@ -412,13 +413,13 @@ def get_pill_histories(request: Request, name: str = None, all_histories: bool =
                                         ])
 
     if results_out is None:
-        return Result("ok", None)
+        return Result(result="ok", data=None)
 
     results = json.loads(json_util.dumps(results_out))
     results = results[0]['datas'] if len(results) > 0 else []
     print(results)
     if len(results) > 0:
-        return Result("ok", [PillHistoryOut.from_dict(result) for result in results])
+        return Result(result="ok", data=[PillHistoryOut.from_dict(result) for result in results])
 
     return Result(result="ok", data=None)
 
@@ -440,7 +441,7 @@ def get_pill_history_by_id(request: Request, history_id: str):
 
     result_out = pillbox_db.find_one({"_id": user_id,
                                       "pill_histories._id": history_id})
-    if len(result_out) < 0:
+    if result_out is None:
         raise HTTPException(404, f"there is no data with {history_id}")
 
     results = json.loads(json_util.dumps(result_out))
@@ -448,9 +449,9 @@ def get_pill_history_by_id(request: Request, history_id: str):
     print(result)
 
     if len(results) == 0:
-        return Result("ok", None)
+        return Result(result="ok", data=None)
 
-    return Result("ok", PillHistoryOut.from_dict(result))
+    return Result(result="ok", data=PillHistoryOut.from_dict(result))
 
 
 # 검증 및 request body 확인 코드 필요
@@ -466,17 +467,18 @@ def post_pill_history(request: Request, pill_history: PillHistoryPost):
 
     # 복용기록의 이름이 공백이거나 전달이 안된 경우
     pill_history.name = pill_history.name.strip()
-    if pill_history.name is None or len(pill_history.name) < 0:
+    if len(pill_history.name) < 0:
         raise HTTPException(400, "Need history name")
-
-    if pill_history.end_date is None or pill_history.start_date is None:
-        raise HTTPException(400, "Need start_date and end_date")
 
     if pill_history.end_date <= pill_history.start_date:
         raise HTTPException(400, "start_date less then end_date")
 
-    if pill_history.pills is None or len(pill_history.pills) < 0:
+    if len(pill_history.pills) <= 0:
         raise HTTPException(400, "Need pill list")
+
+    for pill in pill_history.pills:
+        if len(str(pill)) != 9:
+            raise HTTPException(400, f"Invalid item_seq {pill}")
 
     # 이름이 같은 복용기록을 처리하기 위한 과정
     duplicated_history = pillbox_db.find_one({"_id": user_id, "pill_histories.name": pill_history.name})
@@ -488,7 +490,7 @@ def post_pill_history(request: Request, pill_history: PillHistoryPost):
 
     pillbox_db.update_one({"_id": user_id}, {"$push": {"pill_histories": pill_history_dict}})
 
-    return Result("ok", str(pill_history_dict["_id"]))
+    return Result(result="ok", data=str(pill_history_dict["_id"]))
 
 
 # 검증 및 request body 확인 코드 필요
@@ -522,8 +524,15 @@ def update_pill_history_by_id(request: Request, pill_history: PillHistoryPatch, 
         if result is None:
             raise HTTPException(400, "end_date must be greater than start_date")
 
-    if pill_history.pills is not None and len(pill_history.pills) < 0:
+    if pill_history.pills is None or len(pill_history.pills) <= 0:
         raise HTTPException(400, "Need pill list")
+
+    if pill_history.pills == [1]:
+        pill_history.pills = None
+
+    for pill in pill_history.pills:
+        if len(str(pill)) != 9:
+            raise HTTPException(400, f"Invalid item_seq {pill}")
 
     if pill_history.name is not None:
         # history_id는 다른데 이름은 같은 기록을 찾는다.
@@ -537,7 +546,7 @@ def update_pill_history_by_id(request: Request, pill_history: PillHistoryPatch, 
 
     pillbox_db.update_one({"_id": user_id, "pill_histories._id": history_id}, {"$set": update_query})
 
-    return Result("ok")
+    return Result(result="ok")
 
 
 @app.delete('/pillbox/users/pill_histories/{history_id}')
@@ -551,12 +560,12 @@ def delete_pill_history_by_id(request: Request, history_id: str):
 
     history = pillbox_db.find_one({"_id": user_id, "pill_histories._id": history_id})
 
-    if len(history) < 0:
+    if history is None:
         raise HTTPException(404, "There is no data")
 
     pillbox_db.update_one({"_id": user_id}, {"$pull": {"pill_histories": {"_id": history_id}}})
 
-    return Result("ok")
+    return Result(result="ok")
 
 
 @app.get('/pillbox/pills/{item_seq}', response_class=HTMLResponse)
