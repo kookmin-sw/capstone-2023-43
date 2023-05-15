@@ -27,9 +27,19 @@ MIX_TABOO_QUERY = '''query validation($item_seqs: [Int]!, $mixture_item_seq: Int
 
 
 TABOO_CASE_QUERY = '''query taboo_list($item_seq: Int!) {
-    pb_pill_info_by_pk(item_seq: $item_seq)
+    pb_pill_info_by_pk(item_seq: $item_seq) {
+        item_seq,
+        taboo_case
+    }
 }
 '''
+
+# docs/src/PillBoxDBSchema 참조
+# 병용금기, 특정나이 금기(성인 미만), 임신여부, 노인 금기만 다룸
+TABOO_CASE = {0x001: 'mix taboo', 0x002: 'certen age group', 0x004: 'pregnancy',
+              0x020: 'elders'}
+
+HASURA_ENDPOINT = os.environ.get('HASURA_ENDPOINT_URL')
 
 
 # Model define section
@@ -100,12 +110,31 @@ class UserPatch(BaseModel):
 class Validation(BaseModel):
     pills: list[int]
     start_date: datetime = datetime.utcnow()
-    end_date: datetime = datetime.utcnow() + timedelta(days=10)
+    # 대부분의 처방전이 3일치 라는 것을 염두하고 처리함
+    end_date: datetime = datetime.utcnow() + timedelta(days=3)
+
+
+class MixTaboo(BaseModel):
+    item_seq: int
+    mixture_item_seq: int
+    prohibited_content: str
+
+    @staticmethod
+    def from_dict(json_dict: dict):
+        item_seq = json_dict['item_seq']
+        mixture_item_seq = json_dict['mixture_item_seq']
+        prohibited_content = json_dict['prohibited_content']
+        return MixTaboo(item_seq, mixture_item_seq, prohibited_content)
+
+
+class ValidationOut(BaseModel):
+    mix_taboos: list[MixTaboo] | None
+    taboo_case: str | None
 
 
 class Result(BaseModel):
     result: str
-    data: str | UserOut | list[PillHistoryOut] | PillHistoryOut
+    data: str | UserOut | list[PillHistoryOut] | PillHistoryOut | ValidationOut | None = None
 
 
 # mongodb Connection section
@@ -131,18 +160,72 @@ def get_user_id(scope):
     return user_id
 
 
-def is_exist(user_id: str):
+def is_exist(user_id: str) -> bool:
     result = pillbox_db.find_one({"_id": user_id})
-    return True if len(result) else False
+    return True if result else False
 
 
-@app.exception_handler(StarletteHttpException)
-def error_handler(request: Request, _):
-    print(request.url)
-    return JSONResponse(
-        status_code=404,
-        content={"error": "not found"}
-    )
+def get_age(birth_day: datetime) -> int:
+    return round((datetime.utcnow() - birth_day)/365.25)
+
+
+async def mix_taboo_valid(pills: list[int], pill: int) -> list[MixTaboo]:
+    async with aiohttp.ClientSession as session:
+        async with session.post(HASURA_ENDPOINT, json={'query': MIX_TABOO_QUERY,
+                                                       'valiables': {'item_seqs': pills,
+                                                                     'mixture_item_seq': pill}}) as response:
+            if response != 200:
+                print('Hasura endpoint error, mix_taboo_valid')
+                raise HTTPException(500, 'internal error')
+
+            body = await response.json()
+
+            if "errors" in body.items():
+                print("query error")
+                raise HTTPException(500, 'internal error')
+
+            datas = body['data']['pb_mix_taboo']
+
+            if len(datas) > 0:
+                mix_taboos = [MixTaboo(mix_taboo) for mix_taboo in datas]
+                return mix_taboos
+            else:
+                return []
+
+
+async def dur_check(pill: int, user: dict) -> list[str]:
+    async with aiohttp.ClientSession as session:
+        async with session.post(HASURA_ENDPOINT, json={'query': TABOO_CASE_QUERY,
+                                                       'valiables': {'item_seq': pill}}) as response:
+            if response != 200:
+                print('Hasura endpoint error, dur_check')
+                raise HTTPException(500, 'internal error')
+
+            body = await response.json()
+            if "errors" in body.items():
+                raise HTTPException(500, 'internal error')
+
+            data = body['data']['pb_pill_info']
+
+            if data is None:
+                raise HTTPException(404, 'item_seq is not in db')
+
+            taboo_list: list[str] = []
+
+            # 사용자에게 해당된 주의 사항만 taboo_list에 추가하여 반환한다.
+            for bit, message in TABOO_CASE.items():
+                add = False
+                if data['taboo_case'] & bit == bit:
+                    if user['is_pregnancy'] and message == 'pregnancy':
+                        add = True
+                    if get_age(user['birthday']) < 19 and message == 'certen age group':
+                        add = True
+                    if get_age(user['birthday']) >= 65 and message == 'elders':
+                        add = True
+                if add:
+                    taboo_list.append(message)
+
+            return taboo_list
 
 
 @app.get('/pillbox/users', response_model=Result)
@@ -165,47 +248,88 @@ def get_user(request: Request):
     return Result(result="ok", data=user)
 
 
-@app.post('/pillbox/users', status_code=201)
+@app.post('/pillbox/users', status_code=201, response_model=Result)
 def post_user(user: UserPost, request: Request):
     user_id = get_user_id(request.scope)
 
     if user_id is None:
-        raise HTTPException(status_code=401, detail="Unauthoized")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-    if is_exist(user_id):
-        raise HTTPException(status_code=400, detail="already exist")
+    if user.gender == 'M' and user.is_pregnancy:
+        raise HTTPException(status_code=400, detail='human male cannot get pregnant')
 
-    user_doc = {'_id': user_id, 'blood_pressure': user.blood_pressure,
-                'is_pregnancy': user.is_pregnancy, 'is_diabetes': user.is_diabetes}
-    pillbox_db.insert_one(user_doc)
+    if user.gender not in ['M', 'F']:
+        raise HTTPException(status_code=400, detail='choose gender male or female')
+
+    if user.birthday.replace(tzinfo=UTC) >= datetime.utcnow().replace(tzinfo=UTC):
+        raise HTTPException(status_code=400, detail='birth day error')
+
+    if user.blood_pressure not in [-1, 0, 1]:
+        raise HTTPException(status_code=400, detail='choose blood_pressure state [high(1), normal(0), low(-1)]')
+
+    user.name = user.name.strip()
+
+    if len(user.name) < 0:
+        raise HTTPException(status_code=400, detail="user name is blank")
+
+    user_doc = user.__dict__
+    user_doc['_id'] = user_id
+    user_doc['pill_histories'] = []
+
+    try:
+        pillbox_db.insert_one(user_doc)
+    except errors.DuplicateKeyError as exc:
+        raise HTTPException(status_code=409, detail="user already exist") from exc
+
     return Result(result="ok")
 
 
-@app.patch('/pillbox/users')
+@app.patch('/pillbox/users', response_model=Result)
 def put_user(user: UserPatch, request: Request):
     user_id = get_user_id(request.scope)
     if user_id is None:
         raise HTTPException(status_code=401)
     if not is_exist(user_id):
-        raise HTTPException(status_code=400, detail="not exist")
+        raise HTTPException(status_code=404, detail="user not found")
 
-    pillbox_db.update_one({"_id": user_id}, {"$set": user.__dict__})
+    if user.gender is not None and user.gender not in ['M', 'F']:
+        raise HTTPException(status_code=400, detail='choose gender male or female')
+
+    user_in_db = pillbox_db.find_one({'_id': user_id}, {"gender": 1, "is_pregnancy": 1})
+    if user.gender is None or user.is_pregnancy is None:
+        if user_in_db['gender'] == 'M' and user.is_pregnancy:
+            raise HTTPException(status_code=400, detail='human male cannot get pregnant')
+        elif user_in_db['gender'] == 'F' and user_in_db['is_pregnancy'] and user.gender == 'M':
+            raise HTTPException(status_code=400, detail='human male cannot get pregnant.')
+
+    if user.gender == 'M' and user.is_pregnancy:
+        raise HTTPException(status_code=400, detail='human male cannot get pregnant')
+
+    if user.blood_pressure not in [None, -1, 0, 1]:
+        raise HTTPException(status_code=400, detail='choose in [1, 0, -1]')
+
+    if user.birthday is not None and user.birthday.replace(tzinfo=UTC) >= datetime.utcnow().replace(tzinfo=UTC):
+        raise HTTPException(status_code=400, detail='birth day error')
+
+    user_dict = {k: v for k, v in user.__dict__.items() if v is not None}
+
+    pillbox_db.update_one({"_id": user_id}, {"$set": user_dict})
 
     return Result(result="ok")
 
 
-@app.post('/pillbox/users/validation')
-def validation(request: Request, valid: Validation):
+@app.post('/pillbox/users/validation', response_model=Result)
+async def validation(request: Request, valid: Validation):
     user_id = get_user_id(request.scope)
 
     if user_id is None:
-        return {"result": "Unauthorization"}
+        raise HTTPException(401, "Unauthorized")
 
     if not is_exist(user_id):
-        return {"result": "No User Data"}
+        raise HTTPException(400, "user not fount")
 
     if validation.end_date <= validation.start_date:
-        return {"result": "start_date must be less than end_date"}
+        raise HTTPException(400, "start_date must be less than end_date")
 
     # 요청의 복용기간내에 존재하는 복용기록의 의약품들의 품목기준코드를 가져오는 aggregate pipeline
     pipeline: list[dict[str, any]] = [{"$match": {"_id": user_id}}]
