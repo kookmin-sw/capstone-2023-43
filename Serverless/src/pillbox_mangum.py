@@ -79,6 +79,9 @@ class PillHistoryPost(BaseModel):
 
 class UserOut(BaseModel):
     id: str
+    name: str
+    gender: str
+    birthday: str
     blood_pressure: int
     is_diabetes: bool
     is_pregnancy: bool
@@ -86,25 +89,37 @@ class UserOut(BaseModel):
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
-        id_ = json_dict['id']
+        id_ = json_dict['_id']
+        name = json_dict['name']
+        gender = json_dict['gender']
+        birthday = json_dict['birthday']['$date']
         blood_pressure = json_dict['blood_pressure']
         is_diabetes = json_dict['is_diabetes']
         is_pregnancy = json_dict['is_pregnancy']
-        pill_histories = [PillHistoryOut(pill_history) for pill_history in json_dict['pill_histories']]
-        return UserOut(id=id_, blood_pressure=blood_pressure, is_diabetes=is_diabetes,
-                       is_pregnancy=is_pregnancy, pill_histories=pill_histories)
+        if json_dict['pill_histories'] not in [[], None]:
+            pill_histories = [PillHistoryOut(pill_history) for pill_history in json_dict['pill_histories']]
+        else:
+            pill_histories = []
+        return UserOut(id=id_, name=name, gender=gender, birthday=birthday, blood_pressure=blood_pressure,
+                       is_diabetes=is_diabetes, is_pregnancy=is_pregnancy, pill_histories=pill_histories)
 
 
 class UserPost(BaseModel):
-    blood_pressure: int = None
-    is_diabetes: bool = False
-    is_pregnancy: bool = False
+    name: str
+    gender: str
+    birthday: datetime
+    blood_pressure: int
+    is_diabetes: bool
+    is_pregnancy: bool
 
 
 class UserPatch(BaseModel):
+    name: str | None = None
+    gender: str | None = None
+    birthday: datetime | None = None
     blood_pressure: int | None = None
-    is_diabetes: bool | None = False
-    is_pregnancy: bool | None = False
+    is_diabetes: bool | None = None
+    is_pregnancy: bool | None = None
 
 
 class Validation(BaseModel):
