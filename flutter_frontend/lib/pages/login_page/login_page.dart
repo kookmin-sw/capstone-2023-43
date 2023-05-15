@@ -54,39 +54,28 @@ class LoginPage extends HookConsumerWidget {
             ? CircularProgressIndicator()
             : BaseButton(
                 text: 'click me! to google login this app!',
-                onTap: () {
-                  Login().then((isSignedIn) {
-                    if (isSignedIn) {
-                      getToken().then((token) {
-                        ref.read(HttpResponseServiceProvider).setToken(token);
-                        ref
-                            .read(HttpResponseServiceProvider)
-                            .initResponse()
-                            .then((_) {
-                          if (ref.read(HttpResponseServiceProvider).stage ==
-                              ResposeStage.newUser) {
-                            ref
-                                .read(HttpResponseServiceProvider)
-                                .postNewUser("김재하", "M",
-                                    DateTime.utc(1999, 6, 26), 0, false, false)
-                                .then((value) {
-                              if (ref.read(HttpResponseServiceProvider).stage ==
-                                  ResposeStage.ready) {
-                                Navigator.pushReplacementNamed(
-                                    context, '/main');
-                              }
-                            });
-                          } else if (ref
-                                  .read(HttpResponseServiceProvider)
-                                  .stage ==
-                              ResposeStage.ready) {
-                            Navigator.pushReplacementNamed(context, '/main');
-                          }
-                        });
-                      });
-                    }
-                  });
+                onTap: () async {
                   isLoading.value = true;
+                  var isSignedIn = await Login();
+                  if (isSignedIn) {
+                    var token = await getToken();
+                    ref.read(HttpResponseServiceProvider).setToken(token);
+                    await ref.read(HttpResponseServiceProvider).initResponse();
+                    if (ref.read(HttpResponseServiceProvider).stage ==
+                        ResposeStage.newUser) {
+                      await ref.read(HttpResponseServiceProvider).postNewUser(
+                          "김재하",
+                          "M",
+                          DateTime.utc(1999, 6, 26),
+                          0,
+                          false,
+                          false);
+                    }
+                    if (ref.read(HttpResponseServiceProvider).stage ==
+                        ResposeStage.ready) {
+                      Navigator.pushReplacementNamed(context, '/main');
+                    }
+                  }
                 },
               ),
       ),

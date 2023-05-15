@@ -33,7 +33,7 @@ class HttpResponseService extends ChangeNotifier {
       headers: {HttpHeaders.authorizationHeader: token},
     ).then((response) {
       if (response.statusCode == 200) {
-        body = jsonDecode(response.body);
+        body = jsonDecode(utf8.decode(response.bodyBytes));
         print(body);
       } else {
         isExistUser = false;
@@ -46,8 +46,8 @@ class HttpResponseService extends ChangeNotifier {
       }
 
       //user의 복용정보를 가져온다.
-      // body['pill_histories']
-      //     .foreach((history) => data.add(SchduleData.fromMap(history)));
+      body['pill_histories']
+          .foreach((history) => data.add(SchduleData.fromMap(history)));
       //정상적으로 로드 완료;
       stage = ResposeStage.ready;
     });
