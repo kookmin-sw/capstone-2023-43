@@ -589,19 +589,21 @@ async def get_pill_data(item_seq: int = 0):
         effect
 }}"""
     variable = {"item_seq": item_seq}
-    hasura_endpoint = os.environ.get('HASURA_ENDPOINT_URL')
     if len(str(item_seq)) != 9:
         return HTMLResponse(content=html_404, status_code=404)
 
     # python 3.8이라 문제가 생기는 듯
     async with aiohttp.ClientSession() as session:
-        async with session.post(hasura_endpoint, json={"query": query, "variables": variable}) as response:
+        async with session.post(HASURA_ENDPOINT, json={"query": query, "variables": variable}) as response:
             if response.status != 200:
                 return HTMLResponse("""dddd""")
             body = await response.json()
             if "errors" in body.items():
                 return HTMLResponse("""error""")
-            data = body["data"]["pb_pill_info"][0]
+            data = body["data"]["pb_pill_info"]
+            if len(data) < 0:
+                return HTMLResponse(html_404, status_code=404)
+            data = data[0]
             html = html.format(name=data['name'], effect=data['effect'],
                                use_method=data['use_method'], warning_message=data['warning_message'])
     return HTMLResponse(html)
