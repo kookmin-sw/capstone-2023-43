@@ -57,10 +57,33 @@ class LoginPage extends HookConsumerWidget {
                 onTap: () {
                   Login().then((isSignedIn) {
                     if (isSignedIn) {
-                      getToken().then((token) => ref
-                          .read(HttpResponseServiceProvider)
-                          .setToken(token));
-                      Navigator.pushReplacementNamed(context, '/main');
+                      getToken().then((token) {
+                        ref.read(HttpResponseServiceProvider).setToken(token);
+                        ref
+                            .read(HttpResponseServiceProvider)
+                            .initResponse()
+                            .then((_) {
+                          if (ref.read(HttpResponseServiceProvider).stage ==
+                              ResposeStage.newUser) {
+                            ref
+                                .read(HttpResponseServiceProvider)
+                                .postNewUser("김재하", "M",
+                                    DateTime.utc(1999, 6, 26), 0, false, false)
+                                .then((value) {
+                              if (ref.read(HttpResponseServiceProvider).stage ==
+                                  ResposeStage.ready) {
+                                Navigator.pushReplacementNamed(
+                                    context, '/main');
+                              }
+                            });
+                          } else if (ref
+                                  .read(HttpResponseServiceProvider)
+                                  .stage ==
+                              ResposeStage.ready) {
+                            Navigator.pushReplacementNamed(context, '/main');
+                          }
+                        });
+                      });
                     }
                   });
                   isLoading.value = true;
