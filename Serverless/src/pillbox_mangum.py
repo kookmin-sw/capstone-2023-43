@@ -1,9 +1,10 @@
 import os
-from pytz import UTC
 import json
 from datetime import datetime, timedelta
-import aiohttp
 import asyncio
+from pytz import UTC
+import aiohttp
+from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
 from fastapi import FastAPI, HTTPException
@@ -139,12 +140,12 @@ class MixTaboo(BaseModel):
         item_seq = json_dict['item_seq']
         mixture_item_seq = json_dict['mixture_item_seq']
         prohibited_content = json_dict['prohibited_content']
-        return MixTaboo(item_seq, mixture_item_seq, prohibited_content)
+        return MixTaboo(item_seq=item_seq, mixture_item_seq=mixture_item_seq, prohibited_content=prohibited_content)
 
 
 class ValidationOut(BaseModel):
     mix_taboos: list[MixTaboo] | None
-    taboo_case: str | None
+    taboo_case: list[str] | None
 
 
 class Result(BaseModel):
@@ -180,17 +181,19 @@ def is_exist(user_id: str) -> bool:
     return True if result else False
 
 
-def get_age(birth_day: datetime) -> int:
-    return round((datetime.utcnow() - birth_day)/365.25)
+def get_age(birthday: datetime) -> int:
+    return relativedelta(datetime.utcnow(), birthday).years
 
 
 async def mix_taboo_valid(pills: list[int], pill: int) -> list[MixTaboo]:
-    async with aiohttp.ClientSession as session:
+    async with aiohttp.ClientSession() as session:
         async with session.post(HASURA_ENDPOINT, json={'query': MIX_TABOO_QUERY,
-                                                       'valiables': {'item_seqs': pills,
+                                                       'variables': {'item_seqs': pills,
                                                                      'mixture_item_seq': pill}}) as response:
-            if response != 200:
+            print(response.request_info)
+            if response.status != 200:
                 print('Hasura endpoint error, mix_taboo_valid')
+                print(await response.json())
                 raise HTTPException(500, 'internal error')
 
             body = await response.json()
@@ -202,25 +205,27 @@ async def mix_taboo_valid(pills: list[int], pill: int) -> list[MixTaboo]:
             datas = body['data']['pb_mix_taboo']
 
             if len(datas) > 0:
-                mix_taboos = [MixTaboo(mix_taboo) for mix_taboo in datas]
+                mix_taboos = [MixTaboo.from_dict(mix_taboo) for mix_taboo in datas]
                 return mix_taboos
             else:
                 return []
 
 
 async def dur_check(pill: int, user: dict) -> list[str]:
-    async with aiohttp.ClientSession as session:
+    async with aiohttp.ClientSession() as session:
         async with session.post(HASURA_ENDPOINT, json={'query': TABOO_CASE_QUERY,
-                                                       'valiables': {'item_seq': pill}}) as response:
-            if response != 200:
+                                                       'variables': {'item_seq': pill}}) as response:
+            print(response.request_info)
+            if response.status != 200:
                 print('Hasura endpoint error, dur_check')
+                print(await response.json())
                 raise HTTPException(500, 'internal error')
 
             body = await response.json()
             if "errors" in body.items():
                 raise HTTPException(500, 'internal error')
 
-            data = body['data']['pb_pill_info']
+            data = body['data']['pb_pill_info_by_pk']
 
             if data is None:
                 raise HTTPException(404, 'item_seq is not in db')
@@ -229,15 +234,15 @@ async def dur_check(pill: int, user: dict) -> list[str]:
 
             # 사용자에게 해당된 주의 사항만 taboo_list에 추가하여 반환한다.
             for bit, message in TABOO_CASE.items():
-                add = False
+                add_message_flag = False
                 if data['taboo_case'] & bit == bit:
                     if user['is_pregnancy'] and message == 'pregnancy':
-                        add = True
+                        add_message_flag = True
                     if get_age(user['birthday']) < 19 and message == 'certen age group':
-                        add = True
+                        add_message_flag = True
                     if get_age(user['birthday']) >= 65 and message == 'elders':
-                        add = True
-                if add:
+                        add_message_flag = True
+                if add_message_flag:
                     taboo_list.append(message)
 
             return taboo_list
@@ -252,7 +257,6 @@ def get_user(request: Request):
     if user_doc is None:
         raise HTTPException(status_code=404, detail="user not found")
     user_doc = json.loads(json_util.dumps(user_doc))
-    print(user_doc)
     try:
         user = UserOut.from_dict(user_doc)
     except KeyError as key_error:
@@ -345,8 +349,15 @@ async def validation(request: Request, valid: Validation):
     if not is_exist(user_id):
         raise HTTPException(400, "user not fount")
 
-    if validation.end_date <= validation.start_date:
+    if valid.end_date <= valid.start_date:
         raise HTTPException(400, "start_date must be less than end_date")
+
+    if valid.pills is None or len(valid.pills) == 0:
+        raise HTTPException(400, "need pills")
+
+    for pill in valid.pills:
+        if len(str(pill)) != 9:
+            raise HTTPException(400, f"need valid item_seq {pill}")
 
     # 요청의 복용기간내에 존재하는 복용기록의 의약품들의 품목기준코드를 가져오는 aggregate pipeline
     pipeline: list[dict[str, any]] = [{"$match": {"_id": user_id}}]
@@ -358,24 +369,18 @@ async def validation(request: Request, valid: Validation):
 
     result_out = pillbox_db.aggregate(pipeline=pipeline)
 
-    pills = [result for result in result_out]
+    pills = [result for result in result_out][0]['pills']
+    print(pills)
 
-    user = pillbox_db.find_one({"_id": user_id}, {'is_pregnancy': 1, 'birth_day': 1})
+    user = pillbox_db.find_one({"_id": user_id}, {'is_pregnancy': 1, 'birthday': 1})
 
     check_validation = [mix_taboo_valid(pills + valid.pills[:-1], valid.pills[-1]), dur_check(valid.pills[-1], user)]
     results = await asyncio.gather(*check_validation)
 
-    if len(results[0]) > 0 or len(results[1]) > 0:
-        mix_taboos = []
-        taboo_cases = []
-        if isinstance(results[0], list[MixTaboo]):
-            mix_taboos = results[0]
-            taboo_cases = results[1]
-        else:
-            mix_taboos = results[1]
-            taboo_cases = results[0]
+    print(results[0])
 
-        return Result(result="not ok", data=ValidationOut(mix_taboos, taboo_cases))
+    if len(results[0]) != 0 or len(results[1]) != 0:
+        return Result(result="not ok", data=ValidationOut(mix_taboos=results[0], taboo_case=results[1]))
 
     return Result(result="ok")
 
@@ -417,7 +422,6 @@ def get_pill_histories(request: Request, name: str = None, all_histories: bool =
 
     results = json.loads(json_util.dumps(results_out))
     results = results[0]['datas'] if len(results) > 0 else []
-    print(results)
     if len(results) > 0:
         return Result(result="ok", data=[PillHistoryOut.from_dict(result) for result in results])
 
@@ -446,7 +450,6 @@ def get_pill_history_by_id(request: Request, history_id: str):
 
     results = json.loads(json_util.dumps(result_out))
     result = [result for result in results['pill_histories'] if result['_id']['$oid'] == str(history_id)][0]
-    print(result)
 
     if len(results) == 0:
         return Result(result="ok", data=None)
@@ -605,12 +608,11 @@ async def get_pill_data(item_seq: int = 0):
     async with aiohttp.ClientSession() as session:
         async with session.post(HASURA_ENDPOINT, json={"query": query, "variables": variable}) as response:
             if response.status != 200:
-                return HTMLResponse("""dddd""")
+                print("hasura end point error, get_pill_data")
+                raise HTTPException(500, "internal error")
             body = await response.json()
-            if "errors" in body.items():
-                return HTMLResponse("""error""")
             data = body["data"]["pb_pill_info"]
-            if len(data) < 0:
+            if data is None or len(data) == 0:
                 return HTMLResponse(html_404, status_code=404)
             data = data[0]
             html = html.format(name=data['name'], effect=data['effect'],
