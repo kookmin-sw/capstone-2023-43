@@ -106,10 +106,10 @@ class AddPillPage extends HookConsumerWidget {
             ),
             Row(
               children: [
-                const Text(
-                  "복용기간",
+                Text(
+                  "복용기간 : ",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 26.sp,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -120,11 +120,88 @@ class AddPillPage extends HookConsumerWidget {
                   ),
                 ),
                 Expanded(
-                    flex: 5,
+                    flex: 2,
                     child: Container(
                       height: 50.h,
-                      color: Colors.grey,
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 26.sp),
+                      ),
                     )),
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                        height: 50.h,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "일",
+                          style: TextStyle(fontSize: 26.sp),
+                        ))),
+                Expanded(
+                  flex: 6,
+                  child: SizedBox(
+                    height: 50.h,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Row(
+              children: [
+                Text(
+                  "복용시간 : ",
+                  style: TextStyle(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: SizedBox(
+                    height: 50.h,
+                  ),
+                ),
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                      height: 50.h,
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 26.sp),
+                      ),
+                    )),
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                        height: 50.h,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "시",
+                          style: TextStyle(fontSize: 26.sp),
+                        ))),
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                      height: 50.h,
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 26.sp),
+                      ),
+                    )),
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                        height: 50.h,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "분",
+                          style: TextStyle(fontSize: 26.sp),
+                        ))),
                 Expanded(
                   flex: 1,
                   child: SizedBox(
@@ -134,7 +211,18 @@ class AddPillPage extends HookConsumerWidget {
               ],
             ),
             SizedBox(
-              height: 20.h,
+              height: 30.h,
+            ),
+            BaseButton(
+              text: "일정 등록하기",
+              color: Color.fromRGBO(11, 106, 227, 1),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 20.sp,
+              ),
+              onTap: () {},
             ),
           ],
         ),

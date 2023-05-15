@@ -7,6 +7,8 @@ class BaseButton extends StatelessWidget {
   final Color? color;
   final bool hasShadow;
   final Icon? icon;
+  final TextStyle? style;
+  final TextAlign? textAlign;
   const BaseButton({
     super.key,
     this.onTap,
@@ -14,6 +16,8 @@ class BaseButton extends StatelessWidget {
     this.hasShadow = true,
     required this.text,
     this.icon,
+    this.style,
+    this.textAlign,
   });
 
   @override
@@ -37,11 +41,14 @@ class BaseButton extends StatelessWidget {
         ),
         padding: EdgeInsets.fromLTRB(20.w, 22.h, 20.w, 22.h),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             icon ?? const Text(''),
             Text(
               text,
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15.sp),
+              textAlign: textAlign,
+              style: style ??
+                  TextStyle(fontWeight: FontWeight.w700, fontSize: 15.sp),
             ),
           ],
         ),

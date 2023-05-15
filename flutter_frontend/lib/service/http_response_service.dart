@@ -46,8 +46,12 @@ class HttpResponseService extends ChangeNotifier {
       }
 
       //user의 복용정보를 가져온다.
-      body['pill_histories']
-          .foreach((history) => data.add(SchduleData.fromMap(history)));
+      if (body['pill_histories'] != null) {
+        body['pill_histories']
+            .foreach((history) => data.add(SchduleData.fromMap(history)));
+      }
+      // print(body['pill_histories']);
+
       //정상적으로 로드 완료;
       stage = ResposeStage.ready;
     });
@@ -94,7 +98,9 @@ class HttpResponseService extends ChangeNotifier {
   }
 
   // fetch -> 서버에서 복용기록을 가져옴.
-  void fetch() async {}
+  void fetch() async {
+    const endPoint = "/pillbox/user/pill_histories";
+  }
 
   // fetchMore -> 추가적으로 서버에서 데이터를 더 가져옴. pagnation 관련 기능
   void fetchMore() {}
