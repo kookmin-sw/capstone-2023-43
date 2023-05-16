@@ -43,6 +43,11 @@ TABOO_CASE = {0x001: 'mix taboo', 0x002: 'certen age group', 0x004: 'pregnancy',
 HASURA_ENDPOINT = os.environ.get('HASURA_ENDPOINT_URL')
 
 
+class PresetTime(BaseModel):
+    name: str
+    time: str
+
+
 # Model define section
 class PillHistoryOut(BaseModel):
     id: str
@@ -50,6 +55,7 @@ class PillHistoryOut(BaseModel):
     pills: list[int]
     start_date: datetime
     end_date: datetime
+    taking_times: list[str]
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
@@ -61,7 +67,9 @@ class PillHistoryOut(BaseModel):
         pills = json_dict['pills']
         start_date = json_dict['start_date']['$date']
         end_date = json_dict['end_date']['$date']
-        return PillHistoryOut(id=id_, name=name, pills=pills, start_date=start_date, end_date=end_date)
+        taking_times = json_dict['taking_times']
+        return PillHistoryOut(id=id_, name=name, pills=pills,
+                              start_date=start_date, end_date=end_date, taking_times=taking_times)
 
 
 class PillHistoryPatch(BaseModel):
@@ -69,6 +77,7 @@ class PillHistoryPatch(BaseModel):
     pills: list[int] | None = [1]
     start_date: datetime | None = None
     end_date: datetime | None = None
+    taking_times: list[str] | None = [1]
 
 
 class PillHistoryPost(BaseModel):
@@ -76,6 +85,7 @@ class PillHistoryPost(BaseModel):
     pills: list[int]
     start_date: datetime
     end_date: datetime
+    taking_times: list[str]
 
 
 class UserOut(BaseModel):
@@ -87,6 +97,7 @@ class UserOut(BaseModel):
     is_diabetes: bool
     is_pregnancy: bool
     pill_histories: list[PillHistoryOut]
+    preset_times: list[str]
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
@@ -101,8 +112,10 @@ class UserOut(BaseModel):
             pill_histories = [PillHistoryOut.from_dict(pill_history) for pill_history in json_dict['pill_histories']]
         else:
             pill_histories = []
+        preset_times = json_dict['preset_time']
         return UserOut(id=id_, name=name, gender=gender, birthday=birthday, blood_pressure=blood_pressure,
-                       is_diabetes=is_diabetes, is_pregnancy=is_pregnancy, pill_histories=pill_histories)
+                       is_diabetes=is_diabetes, is_pregnancy=is_pregnancy, pill_histories=pill_histories,
+                       preset_times=preset_times)
 
 
 class UserPost(BaseModel):
@@ -150,7 +163,7 @@ class ValidationOut(BaseModel):
 
 class Result(BaseModel):
     result: str
-    data: str | UserOut | list[PillHistoryOut] | PillHistoryOut | ValidationOut | None = None
+    data: str | list[str] | UserOut | list[PillHistoryOut] | PillHistoryOut | ValidationOut | None = None
 
 
 # mongodb Connection section
@@ -183,6 +196,22 @@ def is_exist(user_id: str) -> bool:
 
 def get_age(birthday: datetime) -> int:
     return relativedelta(datetime.utcnow(), birthday).years
+
+
+def get_pills(user_id: str) -> list[int]:
+    # 요청의 복용기간내에 존재하는 복용기록의 의약품들의 품목기준코드를 가져오는 aggregate pipeline
+    pipeline: list[dict[str, any]] = [{"$match": {"_id": user_id}}]
+    pipeline.append({"$unwind": "$pill_histories"})
+    pipeline.append({"$unwind": "$pill_histories.pills"})
+    pipeline.append({"$match": {"pill_histories.end_date": {"$gte": datetime.utcnow()},
+                                "pill_histories.start_date": {"$lte": datetime.utcnow()}}})
+    pipeline.append({"$group": {"_id": "$_id", "pills": {"$push": "$pill_histories.pills"}}})
+
+    result_out = pillbox_db.aggregate(pipeline=pipeline)
+
+    pills = [result for result in result_out][0]['pills']
+    print(pills)
+    return pills
 
 
 async def mix_taboo_valid(pills: list[int], pill: int) -> list[MixTaboo]:
@@ -269,6 +298,36 @@ def get_user(request: Request):
     return Result(result="ok", data=user)
 
 
+@app.get('/pillbox/users/preset_time', response_model=Result)
+def get_users_preset_time(request: Request):
+    user_id = get_user_id(request.scope)
+
+    if user_id is None:
+        raise HTTPException(status_code=401)
+
+    preset_time = pillbox_db.find_one({"_id": user_id}, {"preset_time": 1})
+
+    if preset_time is None:
+        raise HTTPException(status_code=404)
+
+    return Result(result="ok", data=preset_time['preset_time'])
+
+
+@app.get('/pillbox/users/pills', response_model=Result)
+def get_users_pills(request: Request):
+    user_id = get_user_id(request.scope)
+    if user_id is None:
+        raise HTTPException(status_code=401)
+    user_doc = pillbox_db.find_one({"_id": user_id})
+
+    if user_doc is None:
+        raise HTTPException(status_code=404, detail="user not found")
+
+    pills = get_pills(user_id)
+
+    return Result(result="ok", data=pills)
+
+
 @app.post('/pillbox/users', status_code=201, response_model=Result)
 def post_user(user: UserPost, request: Request):
     user_id = get_user_id(request.scope)
@@ -292,6 +351,8 @@ def post_user(user: UserPost, request: Request):
 
     if len(user.name) < 0:
         raise HTTPException(status_code=400, detail="user name is blank")
+    
+    # todo preset_time 검사코드
 
     user_doc = user.__dict__
     user_doc['_id'] = user_id
@@ -331,6 +392,8 @@ def patch_user(user: UserPatch, request: Request):
 
     if user.birthday is not None and user.birthday.replace(tzinfo=UTC) >= datetime.utcnow().replace(tzinfo=UTC):
         raise HTTPException(status_code=400, detail='birth day error')
+    
+    # todo preset_time 검증코드
 
     user_dict = {k: v for k, v in user.__dict__.items() if v is not None}
 
@@ -482,6 +545,8 @@ def post_pill_history(request: Request, pill_history: PillHistoryPost):
     for pill in pill_history.pills:
         if len(str(pill)) != 9:
             raise HTTPException(400, f"Invalid item_seq {pill}")
+    
+    # todo taking_time 처리
 
     # 이름이 같은 복용기록을 처리하기 위한 과정
     duplicated_history = pillbox_db.find_one({"_id": user_id, "pill_histories.name": pill_history.name})
@@ -543,6 +608,8 @@ def update_pill_history_by_id(request: Request, pill_history: PillHistoryPatch, 
                                       {"$elemMatch": {"_id": {"$ne": history_id}, "name": pill_history.name}}})
         if result is not None:
             raise HTTPException(400, "history name already exist")
+    
+    # todo taking_time 추가
 
     update_query = pill_history.__dict__
     update_query = {"pill_histories.$."+k: v for k, v in update_query.items() if v is not None}
