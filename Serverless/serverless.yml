@@ -13,19 +13,20 @@ plugins:
   - serverless-python-requirements
 
 package:
+  individually: true
   patterns:
     - '!./**'
     - 'src/**'
     - '!src/**/*.pyc'
 
-custom:
-  pythonRequirements:
-    dockerizePip: non-linux
-    layer:
-      name: mangum-layer
-      description: python mangum layer
-      compatibleRuntimes:
-        - python3.10
+# custom:
+#   pythonRequirements:
+#     dockerizePip: non-linux
+#     layer:
+#       name: mangum-layer
+#       description: python mangum layer
+#       compatibleRuntimes:
+#         - python3.10
 
 functions:
   pillBoxEcho:
@@ -47,9 +48,8 @@ functions:
           authorizer:
             arn: ${env:COGNITO_ARN}
   pillBoxMangum:
-    handler: src/pillbox_mangum.handler
-    layers:
-      - Ref: PythonRequirementsLambdaLayer
+    module: src/mangum
+    handler: pillbox_mangum.handler
     events:
       - http:
           path: /pillbox/{proxy+}
@@ -63,5 +63,15 @@ functions:
           integration: lambda-proxy
           authorizer:
             arn: ${env:COGNITO_ARN}
+  # mlInference:
+  #   module: src/ml
+  #   handler: ml_inference.inference
+  #   events:
+  #     - http:
+  #         path: /pillbox/findpill
+  #         method: any
+  #         integration: lambda-proxy
+  #         authorizer:
+  #           arn: ${env:COGNITO_ARN}
     environment:
       ${file(.env.yml)}
