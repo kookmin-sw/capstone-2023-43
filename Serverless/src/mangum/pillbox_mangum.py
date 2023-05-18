@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import asyncio
 from pytz import UTC
 import aiohttp
@@ -43,9 +43,27 @@ TABOO_CASE = {0x001: 'mix taboo', 0x002: 'certen age group', 0x004: 'pregnancy',
 HASURA_ENDPOINT = os.environ.get('HASURA_ENDPOINT_URL')
 
 
-class PresetTime(BaseModel):
+class PresetTimeOut(BaseModel):
+    id: str
     name: str
     time: str
+
+    @staticmethod
+    def from_dict(json_dict):
+        id_ = json_dict['_id']['$oid']
+        name = json_dict['name']
+        time_ = json_dict['time']
+        return PresetTimeOut(id=id_, name=name, time=time_)
+
+
+class PresetTimePost(BaseModel):
+    name: str
+    time: str
+
+
+class PresetTimePatch(BaseModel):
+    name: str | None = None
+    time: str | None = None
 
 
 # Model define section
@@ -55,7 +73,7 @@ class PillHistoryOut(BaseModel):
     pills: list[int]
     start_date: datetime
     end_date: datetime
-    taking_times: list[str]
+    preset_times: list[str]
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
@@ -67,9 +85,9 @@ class PillHistoryOut(BaseModel):
         pills = json_dict['pills']
         start_date = json_dict['start_date']['$date']
         end_date = json_dict['end_date']['$date']
-        taking_times = json_dict['taking_times']
+        preset_times = [preset_time_id for preset_time_id in json_dict['preset_times']['$oid']]
         return PillHistoryOut(id=id_, name=name, pills=pills,
-                              start_date=start_date, end_date=end_date, taking_times=taking_times)
+                              start_date=start_date, end_date=end_date, preset_times=preset_times)
 
 
 class PillHistoryPatch(BaseModel):
@@ -77,7 +95,7 @@ class PillHistoryPatch(BaseModel):
     pills: list[int] | None = [1]
     start_date: datetime | None = None
     end_date: datetime | None = None
-    taking_times: list[str] | None = [1]
+    preset_times: list[str] | None = [1]
 
 
 class PillHistoryPost(BaseModel):
@@ -85,7 +103,7 @@ class PillHistoryPost(BaseModel):
     pills: list[int]
     start_date: datetime
     end_date: datetime
-    taking_times: list[str]
+    preset_times: list[str]
 
 
 class UserOut(BaseModel):
@@ -97,7 +115,7 @@ class UserOut(BaseModel):
     is_diabetes: bool
     is_pregnancy: bool
     pill_histories: list[PillHistoryOut]
-    preset_times: list[str]
+    preset_times: list[PresetTimeOut]
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
@@ -112,7 +130,11 @@ class UserOut(BaseModel):
             pill_histories = [PillHistoryOut.from_dict(pill_history) for pill_history in json_dict['pill_histories']]
         else:
             pill_histories = []
-        preset_times = json_dict['preset_times']
+        if len(json_dict['preset_times']) > 0:
+            preset_times = [PresetTimeOut.from_dict(preset_time) for preset_time in json_dict['preset_times']]
+        else:
+            preset_times = []
+
         return UserOut(id=id_, name=name, gender=gender, birthday=birthday, blood_pressure=blood_pressure,
                        is_diabetes=is_diabetes, is_pregnancy=is_pregnancy, pill_histories=pill_histories,
                        preset_times=preset_times)
@@ -157,13 +179,14 @@ class MixTaboo(BaseModel):
 
 
 class ValidationOut(BaseModel):
+    is_ok: bool
     mix_taboos: list[MixTaboo] | None
     taboo_case: list[str] | None
 
 
 class Result(BaseModel):
     result: str
-    data: str | list[str] | UserOut | list[PillHistoryOut] | PillHistoryOut | ValidationOut | None = None
+    data: str | list[str] | UserOut | list[PillHistoryOut] | PillHistoryOut | PresetTimeOut | list[PresetTimeOut] | None = None
 
 
 # mongodb Connection section
@@ -209,7 +232,13 @@ def get_pills(user_id: str) -> list[int]:
 
     result_out = pillbox_db.aggregate(pipeline=pipeline)
 
-    pills = [result for result in result_out][0]['pills']
+    result_out = list(result_out)
+
+    if len(result_out) > 0:
+        pills = result_out[0]['pills']
+    else:
+        return []
+
     print(pills)
     return pills
 
@@ -298,21 +327,6 @@ def get_user(request: Request):
     return Result(result="ok", data=user)
 
 
-@app.get('/pillbox/users/preset_time', response_model=Result)
-def get_users_preset_time(request: Request):
-    user_id = get_user_id(request.scope)
-
-    if user_id is None:
-        raise HTTPException(status_code=401)
-
-    preset_time = pillbox_db.find_one({"_id": user_id}, {"preset_time": 1})
-
-    if preset_time is None:
-        raise HTTPException(status_code=404)
-
-    return Result(result="ok", data=preset_time['preset_time'])
-
-
 @app.get('/pillbox/users/pills', response_model=Result)
 def get_users_pills(request: Request):
     user_id = get_user_id(request.scope)
@@ -351,12 +365,11 @@ def post_user(user: UserPost, request: Request):
 
     if len(user.name) < 0:
         raise HTTPException(status_code=400, detail="user name is blank")
-    
-    # todo preset_time 검사코드
 
     user_doc = user.__dict__
     user_doc['_id'] = user_id
     user_doc['pill_histories'] = []
+    user_doc['preset_times'] = []
 
     try:
         pillbox_db.insert_one(user_doc)
@@ -392,8 +405,6 @@ def patch_user(user: UserPatch, request: Request):
 
     if user.birthday is not None and user.birthday.replace(tzinfo=UTC) >= datetime.utcnow().replace(tzinfo=UTC):
         raise HTTPException(status_code=400, detail='birth day error')
-    
-    # todo preset_time 검증코드
 
     user_dict = {k: v for k, v in user.__dict__.items() if v is not None}
 
@@ -402,7 +413,125 @@ def patch_user(user: UserPatch, request: Request):
     return Result(result="ok")
 
 
-@app.post('/pillbox/users/validation', response_model=Result)
+@app.get('/pillbox/users/preset_times', response_model=Result)
+def get_users_preset_time(request: Request):
+    user_id = get_user_id(request.scope)
+
+    if user_id is None:
+        raise HTTPException(status_code=401)
+
+    result = pillbox_db.find_one({"_id": user_id}, {"preset_times": 1})
+
+    if result is None:
+        raise HTTPException(status_code=404)
+
+    result = json.loads(json_util.dumps(result))
+
+    preset_times = result['preset_times']
+    preset_times = [PresetTimeOut.from_dict(preset_time) for preset_time in preset_times]
+
+    return Result(result="ok", data=preset_times)
+
+
+@app.get('/pillbox/users/preset_times/{preset_time_id}', response_model=Result)
+def get_users_preset_time_by_id(request: Request, preset_time_id: str):
+    user_id = get_user_id(request)
+
+    if user_id is None:
+        raise HTTPException(status_code=401)
+
+    try:
+        result = pillbox_db.find_one({"_id": user_id, "preset_times._id": ObjectId(preset_time_id)}, {"preset_times": 1})
+    except Exception as exc:
+        raise HTTPException(400, "error of id") from exc
+
+    if result is None:
+        raise HTTPException(status_code=404)
+
+    result = json.loads(json_util.dumps(result))
+
+    preset_times = result['preset_times']
+
+    preset_time = [item for item in preset_times if item['_id']['$oid'] == preset_time_id][0]
+
+    preset_time: PresetTimeOut = PresetTimeOut.from_dict(preset_time)
+    print(type(preset_time))
+
+    return Result(result="ok", data=preset_time)
+
+
+@app.post('/pillbox/users/preset_times', response_model=Result)
+def post_users_preset_time(request: Request, preset_time: PresetTimePost):
+    user_id = get_user_id(request)
+
+    if user_id is None:
+        raise HTTPException(status_code=401)
+
+    result = pillbox_db.find_one({"_id": user_id, "preset_times.name": preset_time.name})
+
+    if result is not None:
+        raise HTTPException(400, "already exist name")
+
+    try:
+        time.fromisoformat(preset_time.time)
+    except ValueError as exc:
+        raise HTTPException(400, "need right time format(ISO)") from exc
+
+    preset_time_dict = preset_time.__dict__
+    preset_time_dict["_id"] = ObjectId()
+    pillbox_db.update_one({"_id": user_id}, {'$push': {"preset_times": preset_time_dict}})
+
+    return Result(result="ok", data=str(preset_time_dict["_id"]))
+
+
+@app.patch('/pillbox/users/preset_times/{preset_time_id}', response_model=Result)
+def patch_users_preset_time(request: Request, preset_time_id: str, preset_time: PresetTimePatch):
+    user_id = get_user_id(request)
+
+    if user_id is None:
+        raise HTTPException(status_code=401)
+    preset_time_id = ObjectId(preset_time_id)
+
+    if preset_time.name is not None:
+        result = pillbox_db.find_one({"_id": user_id,
+                                      "preset_times.name": preset_time.name,
+                                      "preset_times._id": {"$ne": preset_time_id}})
+
+        if result is not None:
+            raise HTTPException(400, "already exist name")
+
+    if preset_time.time is not None:
+        try:
+            time.fromisoformat(preset_time.time)
+        except ValueError as exc:
+            raise HTTPException(400, "need right time format(ISO)") from exc
+
+    update_query = {"preset_times.$." + k: v for k, v in preset_time.__dict__.items() if v is not None}
+    pillbox_db.update_one({"_id": user_id, "preset_times._id": preset_time_id}, {'$set': update_query})
+
+    return Result(result="ok")
+
+
+@app.delete('/pillbox/users/preset_times/{preset_time_id}', response_model=Result)
+def delete_users_preset_time(request: Request, preset_time_id: str):
+    user_id = get_user_id(request.scope)
+
+    if user_id is None:
+        raise HTTPException("Unauthorization")
+
+    preset_time_id = ObjectId(preset_time_id)
+
+    preset_time = pillbox_db.find_one({"_id": user_id, "preset_times._id": preset_time_id})
+
+    if preset_time is None:
+        raise HTTPException(404, "There is no data")
+
+    pillbox_db.update_one({"_id": user_id}, {"$pull": {"preset_times": {"_id": preset_time_id}}})
+
+    return Result(result="ok")
+
+
+@app.post('/pillbox/users/validation', response_model=ValidationOut)
 async def validation(request: Request, valid: Validation):
     user_id = get_user_id(request.scope)
 
@@ -432,7 +561,12 @@ async def validation(request: Request, valid: Validation):
 
     result_out = pillbox_db.aggregate(pipeline=pipeline)
 
-    pills = [result for result in result_out][0]['pills']
+    result_out = list(result_out)
+
+    if len(result_out) > 0:
+        pills = result_out[0]['pills']
+    else:
+        pills = []
     print(pills)
 
     user = pillbox_db.find_one({"_id": user_id}, {'is_pregnancy': 1, 'birthday': 1})
@@ -443,9 +577,8 @@ async def validation(request: Request, valid: Validation):
     print(results[0])
 
     if len(results[0]) != 0 or len(results[1]) != 0:
-        return Result(result="not ok", data=ValidationOut(mix_taboos=results[0], taboo_case=results[1]))
-
-    return Result(result="ok")
+        return ValidationOut(is_ok=False, mix_taboos=results[0], taboo_case=results[1])
+    return ValidationOut(is_ok=True)
 
 
 @app.get('/pillbox/users/pill_histories', response_model=Result)
@@ -545,13 +678,17 @@ def post_pill_history(request: Request, pill_history: PillHistoryPost):
     for pill in pill_history.pills:
         if len(str(pill)) != 9:
             raise HTTPException(400, f"Invalid item_seq {pill}")
-    
-    # todo taking_time 처리
 
     # 이름이 같은 복용기록을 처리하기 위한 과정
     duplicated_history = pillbox_db.find_one({"_id": user_id, "pill_histories.name": pill_history.name})
     if duplicated_history is not None:
         raise HTTPException(409, "pill history already exists")
+
+    preset_time_id_list = [ObjectId(preset_time_id) for preset_time_id in pill_history.preset_times]
+    is_preset_time_exist = pill_history.find_one({"_id": user_id, "preset_times._id": {"$all": preset_time_id_list}})
+
+    if is_preset_time_exist is None:
+        raise HTTPException(400, "preset_time_id not exist")
 
     pill_history_dict = pill_history.__dict__
     pill_history_dict["_id"] = ObjectId()
@@ -608,8 +745,14 @@ def update_pill_history_by_id(request: Request, pill_history: PillHistoryPatch, 
                                       {"$elemMatch": {"_id": {"$ne": history_id}, "name": pill_history.name}}})
         if result is not None:
             raise HTTPException(400, "history name already exist")
-    
-    # todo taking_time 추가
+
+    if pill_history.preset_times is not [1]:
+        preset_time_id_list = [ObjectId(preset_time_id) for preset_time_id in pill_history.preset_times]
+        is_preset_time_exist = pill_history.find_one({"_id": user_id,
+                                                      "preset_times._id": {"$all": preset_time_id_list}})
+
+        if is_preset_time_exist is None:
+            raise HTTPException(400, "preset_time_id not exist")
 
     update_query = pill_history.__dict__
     update_query = {"pill_histories.$."+k: v for k, v in update_query.items() if v is not None}
