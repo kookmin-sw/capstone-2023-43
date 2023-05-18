@@ -112,7 +112,7 @@ class UserOut(BaseModel):
             pill_histories = [PillHistoryOut.from_dict(pill_history) for pill_history in json_dict['pill_histories']]
         else:
             pill_histories = []
-        preset_times = json_dict['preset_time']
+        preset_times = json_dict['preset_times']
         return UserOut(id=id_, name=name, gender=gender, birthday=birthday, blood_pressure=blood_pressure,
                        is_diabetes=is_diabetes, is_pregnancy=is_pregnancy, pill_histories=pill_histories,
                        preset_times=preset_times)
