@@ -11,14 +11,16 @@ enum ResposeStage { notready, ready, loading, finish, error, newUser }
 //서비스 스켈레톤 코드 -> url 및 동작 도큐멘테이션을 받는대로 데이터 생성
 class HttpResponseService extends ChangeNotifier {
   final url = 'https://g1rj1dd4j1.execute-api.ap-northeast-2.amazonaws.com/dev';
-  late String token;
+  late String idToken;
   late List<SchduleData> data;
   ResposeStage stage = ResposeStage.notready;
   late User user;
 
   HttpResponseService();
-  void setToken(_token) {
-    token = _token;
+
+  void setToken(token) {
+    idToken = "";
+    idToken = token;
   }
 
   // 서비스 초기화... 유저 정보 가져오기.
@@ -30,7 +32,7 @@ class HttpResponseService extends ChangeNotifier {
 
     await http.get(
       Uri.parse(url + endPoint),
-      headers: {HttpHeaders.authorizationHeader: token},
+      headers: {"Authorization": "Bearer " + idToken},
     ).then((response) {
       if (response.statusCode == 200) {
         body = jsonDecode(utf8.decode(response.bodyBytes));
@@ -79,7 +81,7 @@ class HttpResponseService extends ChangeNotifier {
         .post(
       Uri.parse(url + endPoint),
       headers: {
-        HttpHeaders.authorizationHeader: token,
+        HttpHeaders.authorizationHeader: idToken,
         HttpHeaders.contentTypeHeader: "application/json"
       },
       body: user.toJson(),
@@ -98,8 +100,11 @@ class HttpResponseService extends ChangeNotifier {
   }
 
   // fetch -> 서버에서 복용기록을 가져옴.
-  void fetch() async {
+  Future<void> fetch() async {
     const endPoint = "/pillbox/user/pill_histories";
+    await http.get(Uri.parse(url + endPoint), headers: {
+      HttpHeaders.authorizationHeader: "Bearer " + idToken,
+    }).then((response) => {if (response.statusCode == 200) {} else {}});
   }
 
   // fetchMore -> 추가적으로 서버에서 데이터를 더 가져옴. pagnation 관련 기능

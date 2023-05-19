@@ -39,8 +39,9 @@ class LoginPage extends HookConsumerWidget {
               options: CognitoSessionOptions(getAWSCredentials: true))
           as CognitoAuthSession;
       cognitoAuthSessionToken = session.userPoolTokens?.idToken;
+      print(cognitoAuthSessionToken);
     } catch (e) {
-      print(e);
+      print('error!');
     }
     return cognitoAuthSessionToken!;
   }

@@ -9,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_analytics_pinpoint/amplify_analytics_pinpoint.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_frontend/amplifyconfiguration.dart';
 
@@ -63,6 +62,7 @@ class MyAppState extends State<MyApp> {
                 fontFamily: 'NotoSansKR',
                 scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1)),
             home: const ProviderScope(child: LoginPage()),
+            // home: const ProviderScope(child: MainPage()),
           ),
         );
       },

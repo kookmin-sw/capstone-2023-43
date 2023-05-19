@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_infomation.dart';
+import 'package:flutter_frontend/pages/add_pill_page/widget/button_toggleable.dart';
 import 'package:flutter_frontend/pages/add_pill_page/widget/list_tile/pill_group_list_tile.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 import 'package:flutter_frontend/service/add_pill_service.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -15,9 +18,11 @@ class AddPillPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     late List<PillInfomation> pills = ref.watch(AddPillServiceProvider).pills;
     var stage = ref.watch(AddPillServiceProvider).stage;
-
+    var PresetToggle = useState([false, false, false, false]);
+    var dateFocused = useState(false);
+    var groupFocused = useState(false);
     return BaseWidget(
-      body: Center(
+      body: SingleChildScrollView(
           child: Padding(
         padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
         child: Column(
@@ -67,8 +72,11 @@ class AddPillPage extends HookConsumerWidget {
             ),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(width: 0.5),
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                border: Border.all(
+                  width: 1.h,
+                  color: Color.fromRGBO(11, 106, 227, 1),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(15.h)),
               ),
               child: stage == AddPillState.addPill
                   ? Center(
@@ -95,54 +103,116 @@ class AddPillPage extends HookConsumerWidget {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xffd2d2d2),
+                            color: Color.fromRGBO(11, 106, 227, 0.5),
                             fontSize: 20.sp,
                           ),
                         ),
                       )),
             ),
             SizedBox(
-              height: 20.h,
+              height: 10.h,
             ),
             Row(
               children: [
-                Text(
-                  "복용기간 : ",
-                  style: TextStyle(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w700,
+                Expanded(
+                  flex: 20,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border:
+                            Border.all(color: Color.fromRGBO(11, 106, 227, 1)),
+                        borderRadius: BorderRadius.circular(15.0.h)),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20.h, vertical: 3.h),
+                      child: TextField(
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Color.fromRGBO(11, 106, 227, 1),
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "약 그룹 이름",
+                          hintStyle: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Color.fromRGBO(11, 106, 227, 0.5),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
+                Expanded(flex: 1, child: SizedBox()),
                 Expanded(
+                  flex: 9,
+                  child: AnimatedContainer(
+                    decoration: BoxDecoration(
+                      border:
+                          Border.all(color: Color.fromRGBO(11, 106, 227, 1)),
+                      borderRadius: BorderRadius.circular(15.0.h),
+                    ),
+                    duration: Duration(milliseconds: 250),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20.h, vertical: 3.h),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          TextField(
+                            style: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Color.fromRGBO(11, 106, 227, 1)),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "day",
+                              hintStyle: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Color.fromRGBO(11, 106, 227, 0.5),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment(1, 0),
+                            child: Text(
+                              '일',
+                              style: TextStyle(
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color.fromRGBO(11, 106, 227, 0.5)),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 15,
+                  child: ButtonToggleable(60.0, () {
+                    PresetToggle.value[0] = !PresetToggle.value[0];
+                  }, "아침에 먹어요"),
+                ),
+                const Expanded(
                   flex: 1,
                   child: SizedBox(
-                    height: 50.h,
+                    height: 60,
                   ),
                 ),
                 Expanded(
-                    flex: 2,
-                    child: Container(
-                      height: 50.h,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 26.sp),
-                      ),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                        height: 50.h,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "일",
-                          style: TextStyle(fontSize: 26.sp),
-                        ))),
-                Expanded(
-                  flex: 6,
-                  child: SizedBox(
-                    height: 50.h,
-                  ),
+                  flex: 15,
+                  child: ButtonToggleable(60.0, () {
+                    PresetToggle.value[1] = !PresetToggle.value[1];
+                  }, "점심에 먹어요"),
                 ),
               ],
             ),
@@ -151,62 +221,23 @@ class AddPillPage extends HookConsumerWidget {
             ),
             Row(
               children: [
-                Text(
-                  "복용시간 : ",
-                  style: TextStyle(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w700,
+                Expanded(
+                  flex: 15,
+                  child: ButtonToggleable(60.0, () {
+                    PresetToggle.value[2] = !PresetToggle.value[2];
+                  }, "저녁에 먹어요"),
+                ),
+                const Expanded(
+                  flex: 1,
+                  child: SizedBox(
+                    height: 60,
                   ),
                 ),
                 Expanded(
-                  flex: 1,
-                  child: SizedBox(
-                    height: 50.h,
-                  ),
-                ),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      height: 50.h,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 26.sp),
-                      ),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                        height: 50.h,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "시",
-                          style: TextStyle(fontSize: 26.sp),
-                        ))),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      height: 50.h,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 26.sp),
-                      ),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                        height: 50.h,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "분",
-                          style: TextStyle(fontSize: 26.sp),
-                        ))),
-                Expanded(
-                  flex: 1,
-                  child: SizedBox(
-                    height: 50.h,
-                  ),
+                  flex: 15,
+                  child: ButtonToggleable(60.0, () {
+                    PresetToggle.value[3] = !PresetToggle.value[3];
+                  }, "자기전에 먹어요"),
                 ),
               ],
             ),
