@@ -19,15 +19,6 @@ package:
     - 'src/**'
     - '!src/**/*.pyc'
 
-# custom:
-#   pythonRequirements:
-#     dockerizePip: non-linux
-#     layer:
-#       name: mangum-layer
-#       description: python mangum layer
-#       compatibleRuntimes:
-#         - python3.10
-
 functions:
   pillBoxEcho:
     handler: src/handler.echo
@@ -63,15 +54,5 @@ functions:
           integration: lambda-proxy
           authorizer:
             arn: ${env:COGNITO_ARN}
-  # mlInference:
-  #   module: src/ml
-  #   handler: ml_inference.inference
-  #   events:
-  #     - http:
-  #         path: /pillbox/findpill
-  #         method: any
-  #         integration: lambda-proxy
-  #         authorizer:
-  #           arn: ${env:COGNITO_ARN}
     environment:
       ${file(.env.yml)}
