@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_infomation.dart';
+import 'package:flutter_frontend/model/schdule_data.dart';
 import 'package:flutter_frontend/pages/add_pill_page/widget/button_toggleable.dart';
 import 'package:flutter_frontend/pages/add_pill_page/widget/list_tile/pill_group_list_tile.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 import 'package:flutter_frontend/service/add_pill_service.dart';
+import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -18,9 +19,19 @@ class AddPillPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     late List<PillInfomation> pills = ref.watch(AddPillServiceProvider).pills;
     var stage = ref.watch(AddPillServiceProvider).stage;
+    var loadStage = ref.watch(HttpResponseServiceProvider).stage;
+    final groupTexController = useTextEditingController(text: '');
+    final dayTexController = useTextEditingController(text: '');
     var PresetToggle = useState([false, false, false, false]);
-    var dateFocused = useState(false);
-    var groupFocused = useState(false);
+    // var pillchecked = useState(false);
+    // var groupFilled = useState(false);
+    // var dayFilled = useState(false);
+    // var presetChecked = useState(false);
+    // useEffect(() {
+    //   if (stage == AddPillState.addPill) {
+    //     pillchecked.value = true;
+    //   }
+    // });
     return BaseWidget(
       body: SingleChildScrollView(
           child: Padding(
@@ -125,6 +136,7 @@ class AddPillPage extends HookConsumerWidget {
                       padding:
                           EdgeInsets.symmetric(horizontal: 20.h, vertical: 3.h),
                       child: TextField(
+                        controller: groupTexController,
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w700,
@@ -160,6 +172,7 @@ class AddPillPage extends HookConsumerWidget {
                         alignment: Alignment.center,
                         children: [
                           TextField(
+                            controller: dayTexController,
                             style: TextStyle(
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.w700,
@@ -253,7 +266,37 @@ class AddPillPage extends HookConsumerWidget {
                 fontWeight: FontWeight.w700,
                 fontSize: 20.sp,
               ),
-              onTap: () {},
+              onTap: () async {
+                List<int> pillIds = [];
+                List<String> presetIds = [];
+                for (var pill in pills) {
+                  pillIds.add(pill.itemSeq);
+                }
+                for (int i = 0; i < 4; i++) {
+                  if (PresetToggle.value[i]) {
+                    presetIds.add(
+                        ref.read(HttpResponseServiceProvider).presetTime[i].id);
+                  }
+                }
+                var startDate = DateTime.now();
+                var endDate = startDate.add(
+                  Duration(
+                    days: int.parse(dayTexController.text),
+                  ),
+                );
+                await ref.read(HttpResponseServiceProvider).postData(
+                    SchduleData(
+                        startDate: startDate,
+                        endDate: endDate,
+                        name: groupTexController.text,
+                        pills: pillIds,
+                        presetTimes: presetIds));
+
+                if (loadStage == ResposeStage.ready) {
+                  Navigator.pop(context);
+                  ref.read(AddPillServiceProvider).initState();
+                }
+              },
             ),
           ],
         ),

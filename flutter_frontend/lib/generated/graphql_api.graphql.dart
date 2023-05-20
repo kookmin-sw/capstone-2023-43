@@ -103,6 +103,9 @@ class PillInfomation$QueryRoot$PbPillInfo extends JsonSerializable
           Map<String, dynamic> json) =>
       _$PillInfomation$QueryRoot$PbPillInfoFromJson(json);
 
+  @JsonKey(name: 'item_seq')
+  late int itemSeq;
+
   late String name;
 
   @JsonKey(name: 'entp_name')
@@ -127,6 +130,7 @@ class PillInfomation$QueryRoot$PbPillInfo extends JsonSerializable
 
   @override
   List<Object?> get props => [
+        itemSeq,
         name,
         entpName,
         etcOtcCode,
@@ -449,6 +453,13 @@ final PILL_INFOMATION_QUERY_DOCUMENT = DocumentNode(definitions: [
         ],
         directives: [],
         selectionSet: SelectionSetNode(selections: [
+          FieldNode(
+            name: NameNode(value: 'item_seq'),
+            alias: null,
+            arguments: [],
+            directives: [],
+            selectionSet: null,
+          ),
           FieldNode(
             name: NameNode(value: 'name'),
             alias: null,

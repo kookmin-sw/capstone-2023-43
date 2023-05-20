@@ -49,6 +49,8 @@ dependencies:
   amplify_analytics_pinpoint: '>0.6.0 <=1.0.1'
   amplify_auth_cognito: '<1.0.0'
   http: '^0.13.6'
+  date_format: ^2.0.7
+
 
 
 dependency_overrides:

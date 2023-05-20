@@ -72,6 +72,7 @@ Map<String, dynamic> _$SearchPillList$QueryRootToJson(
 PillInfomation$QueryRoot$PbPillInfo
     _$PillInfomation$QueryRoot$PbPillInfoFromJson(Map<String, dynamic> json) =>
         PillInfomation$QueryRoot$PbPillInfo()
+          ..itemSeq = json['item_seq'] as int
           ..name = json['name'] as String
           ..entpName = json['entp_name'] as String
           ..etcOtcCode = json['etc_otc_code'] as String
@@ -84,6 +85,7 @@ PillInfomation$QueryRoot$PbPillInfo
 Map<String, dynamic> _$PillInfomation$QueryRoot$PbPillInfoToJson(
         PillInfomation$QueryRoot$PbPillInfo instance) =>
     <String, dynamic>{
+      'item_seq': instance.itemSeq,
       'name': instance.name,
       'entp_name': instance.entpName,
       'etc_otc_code': instance.etcOtcCode,

@@ -7,6 +7,7 @@ class User {
   int bloodPressure;
   bool isDiabetes;
   bool isPregnancy;
+
   User({
     required this.name,
     required this.gender,

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/model/preset_time.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../model/schdule_data.dart';
@@ -12,7 +14,8 @@ enum ResposeStage { notready, ready, loading, finish, error, newUser }
 class HttpResponseService extends ChangeNotifier {
   final url = 'https://g1rj1dd4j1.execute-api.ap-northeast-2.amazonaws.com/dev';
   late String idToken;
-  late List<SchduleData> data;
+  List<SchduleData> data = [];
+  List<PresetTime> presetTime = [];
   ResposeStage stage = ResposeStage.notready;
   late User user;
 
@@ -48,12 +51,18 @@ class HttpResponseService extends ChangeNotifier {
       }
 
       //user의 복용정보를 가져온다.
-      if (body['pill_histories'] != null) {
-        body['pill_histories']
-            .foreach((history) => data.add(SchduleData.fromMap(history)));
+      if (body['data']['pill_histories'] != null) {
+        for (var history in body['data']['pill_histories']) {
+          data.add(SchduleData.fromMap(history));
+        }
       }
-      // print(body['pill_histories']);
 
+      if (body['data']['preset_times'] != null) {
+        for (var preset in body['data']['preset_times']) {
+          presetTime.add(PresetTime.fromMap(preset));
+        }
+        print(presetTime);
+      }
       //정상적으로 로드 완료;
       stage = ResposeStage.ready;
     });
@@ -113,7 +122,30 @@ class HttpResponseService extends ChangeNotifier {
   // postData -> 데이터를 서버로 보냄.
   // header 에 'Content-Type' : 'application/json' 꼭 붙히기
   // 웬만한 response는 200으로 오나, 새로 작성한 데이터 같은 경우 201로 온다
-  void postData() {}
+  Future<void> postData(SchduleData body) async {
+    const endPoint = "/pillbox/users/pill_histories";
+
+    stage = ResposeStage.loading;
+    await http
+        .post(
+      Uri.parse(url + endPoint),
+      headers: {
+        HttpHeaders.authorizationHeader: idToken,
+        HttpHeaders.contentTypeHeader: "application/json"
+      },
+      body: body.toJson(),
+    )
+        .then((response) {
+      if (response.statusCode == 201) {
+        print("update complete!");
+        stage = ResposeStage.ready;
+        data.add(body);
+      } else {
+        print("something happend!");
+        stage = ResposeStage.error;
+      }
+    });
+  }
 
   // updateData -> 이미 있는 데이터를 업데이트함.
   // header 에 'Content-Type' : 'application/json' 꼭 붙히기

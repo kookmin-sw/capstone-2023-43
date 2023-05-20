@@ -87,6 +87,7 @@ class PillInfomationContext extends HookConsumerWidget {
                           ref
                               .read(AddPillServiceProvider)
                               .addPill(PillInfomation(
+                                itemSeq: data['item_seq'] ?? 'none',
                                 className: data['clss_name'] ?? 'none',
                                 entpName: data['entp_name'] ?? 'none',
                                 etcOtcCode: data['etc_otc_code'] ?? 'none',

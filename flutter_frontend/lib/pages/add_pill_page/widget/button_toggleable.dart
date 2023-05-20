@@ -14,6 +14,7 @@ class ButtonToggleable extends HookWidget {
     return GestureDetector(
       onTap: () {
         isSelect.value = !isSelect.value;
+        onTap();
       },
       child: AnimatedContainer(
         height: height.h,
