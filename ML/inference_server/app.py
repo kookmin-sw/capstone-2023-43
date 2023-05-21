@@ -55,7 +55,7 @@ async def inference(image: Annotated[bytes, File()]):
     result = model(input_image)
     probabilities = softmax(result)
     top10_values, top10_indicies = torch.topk(probabilities, k=10, dim=1)
-    return {"file_size": len(image), }
+    return {"item_seqs": [output_map[index] for index in top10_indicies.squeeze().tolist()]}
 
 def test_inference():
     input_image = Image.open(r"testimage.png")
