@@ -38,12 +38,13 @@ class ResNet50Classifier(nn.Module):
         return x
 
 app = FastAPI()
-model: ResNet50Classifier = torch.load("latest_model.pt", map_location=torch.device('cpu'))
 softmax = nn.Softmax(dim=1)
 with open("class_map.pickle", "rb") as file:
     model_output_to_itemseq = pickle.load(file)
     output_map = {value: key for key, value in model_output_to_itemseq.items()}
-    
+model: ResNet50Classifier = ResNet50Classifier(num_classes=len(output_map), freeze_resnet=False)
+model.load_state_dict(torch.load("latest_model_state_dict.pt", map_location=torch.device('cpu')))
+model.eval()
 
 @app.get("/")
 async def root():
@@ -51,7 +52,12 @@ async def root():
 
 @app.post("/inference")
 async def inference(image: Annotated[bytes, File()]):
-    input_image = Image.open(image)
+    input_image = Image.open(image).convert('RGB').resize((224,224))
+    preprocess = transforms.Compose([
+        transforms.ToTensor(),  # 텐서로 변환
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # 정규화
+        ])
+    input_image = preprocess(input_image).unsqueeze(0)
     result = model(input_image)
     probabilities = softmax(result)
     top10_values, top10_indicies = torch.topk(probabilities, k=10, dim=1)
@@ -77,5 +83,7 @@ def test_inference():
     # print(model_output_to_itemseq)
 
 if __name__ == "__main__":
-    print(list(output_map.items())[:10])
+    # print(list(output_map.items())[:10])
+    # print(len(output_map))
     # print(test_inference())
+    # torch.save(model.state_dict(), "latest_model_state_dict.pt")
