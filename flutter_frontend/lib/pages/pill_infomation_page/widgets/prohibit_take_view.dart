@@ -6,33 +6,45 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../widgets/base_item.dart';
 
 class ProhibitTakeView extends HookWidget {
-  List<int>? pills;
+  List<dynamic>? pills;
+  String status;
 
   ProhibitTakeView({
     this.pills,
+    required this.status,
   });
 
   @override
   Widget build(BuildContext context) {
     return BaseItem(
-      color: pills != null ? Colors.red : Colors.green,
+      color: status != "ok" && pills!.isNotEmpty ? Colors.red : Colors.green,
       child: Column(
         children: [
           Text(
-            pills != null ? '현재 먹고 있는 약과 같이 복용금지된 약이에요!' : "다른 약이랑 먹어도 괜찮아요!",
+            status != "ok" && pills!.isNotEmpty
+                ? '현재 먹고 있는 약과 같이 복용금지된 약이에요!'
+                : "다른 약이랑 먹어도 괜찮아요!",
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
           ),
-          SizedBox(
-            height: 10.h,
-          ),
-          pills != null
-              ? Container(
-                  height: 50,
-                  color: Colors.grey,
+          status != "ok" && pills!.isNotEmpty
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Text(
+                      "▶ " + pills![index],
+                      style: TextStyle(
+                          fontSize: 18.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          overflow: TextOverflow.ellipsis),
+                      maxLines: 1,
+                    );
+                  },
+                  itemCount: pills!.length,
                 )
               : Container()
         ],

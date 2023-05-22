@@ -108,16 +108,28 @@ class PillInfomationContext extends HookConsumerWidget {
               height: 20.h,
             ),
             // 복용금지 뷰
-            ProhibitTakeView(
-              pills: valData["mix_taboos"],
-            ),
+            valData.isNotEmpty
+                ? ProhibitTakeView(
+                    status: valData["result"],
+                    pills: valData["mix_taboos"],
+                  )
+                : Container(
+                    height: 30.h,
+                    color: Colors.grey,
+                  ),
             SizedBox(
               height: 20.h,
             ),
             // 복용주의 뷰
-            CaseTakeView(
-              pills: valData["taboo_case"],
-            ),
+            valData.isNotEmpty
+                ? CaseTakeView(
+                    status: valData["result"],
+                    pills: valData["taboo_case"],
+                  )
+                : Container(
+                    height: 30.h,
+                    color: Colors.grey,
+                  ),
             SizedBox(
               height: 20.h,
             ),

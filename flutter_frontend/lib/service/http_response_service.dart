@@ -194,8 +194,8 @@ class HttpResponseService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> postValidation(List<int> itemSeqs) async {
-    var valData = {};
+  Future<void> postValidation(List<dynamic> itemSeqs) async {
+    valData = {};
     var startDate = DateTime.now();
     var endDate = startDate.add(Duration(days: 1));
     var reqData = {
@@ -215,7 +215,7 @@ class HttpResponseService extends ChangeNotifier {
         .then((response) {
       if (response.statusCode == 200) {
         var body = jsonDecode(utf8.decode(response.bodyBytes));
-        valData = body;
+        valData = Map.from(body);
         notifyListeners();
       }
     });

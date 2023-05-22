@@ -5,30 +5,31 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../widgets/base_item.dart';
 
 class CaseTakeView extends HookWidget {
-  List<int>? pills;
+  List<dynamic>? pills;
+  String status;
 
   CaseTakeView({
     this.pills,
+    required this.status,
   });
 
   @override
   Widget build(BuildContext context) {
     return BaseItem(
-      color: pills != null ? Colors.yellow : Colors.green,
+      color: status != "ok" && pills!.isNotEmpty ? Colors.orange : Colors.green,
       child: Column(
         children: [
           Text(
-            pills != null ? '현재 먹고 있는 약과 같이 복용금지된 약이에요!' : "약을 복용해도 부작용이 없어요!",
+            status != "ok" && pills!.isNotEmpty
+                ? '이런분들은 약 사용에 주의해 주세요!'
+                : "약을 복용해도 부작용이 없어요!",
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
           ),
-          SizedBox(
-            height: 10.h,
-          ),
-          pills != null
+          status != "ok" && pills!.isNotEmpty
               ? Container(
                   height: 50,
                   color: Colors.grey,
