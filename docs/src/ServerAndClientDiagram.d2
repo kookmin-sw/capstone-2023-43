@@ -17,10 +17,8 @@ Servers: {
   Cognito: {icon: https://icons.terrastruct.com/aws%2FSecurity%2C%20Identity%2C%20&%20Compliance%2FAmazon-Cognito.svg}
   APIGateway: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAmazon-API-Gateway.svg}
   Lambda: {icon: https://icons.terrastruct.com/aws%2FCompute%2FAWS-Lambda.svg}
-  SageMaker: {icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FAmazon-SageMaker.svg}
   APIGateway -> Cognito
   Cognito -> Lambda
-  Lambda -> SageMaker
 
   APIGateway <-> MongoDB: transaction
   APIGateway <-> Postgreql: transaction

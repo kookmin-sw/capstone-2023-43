@@ -2,28 +2,26 @@ direction: down
 MongoDB: |json
   User: {
     "id": UUID,
+    "gender": "M" or "F",
     "is_pregnancy": false,
     "blood_pressure": 1,
     "is_diabetes": false,
+    "preset_times": [
+      {"_id": ObjectId(), "name": "name", "time": "00:00:00"}
+    ]
     "pill_histories": [{
       "pills": ["item_seq"],
       "start_date": "Date",
       "end_date": "Date",
+      "preset_times" :["preset_ids"],
+      "timestamps": { "start_dateTprset_times":[]}
     },
-  ]
+    ]
+  }
 |
 
 Postgresql: {
   icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
-
-  User: {
-    shape: sql_table
-    id: uuid {constraint: primary_key}
-    name: string
-    e_mail: string
-    sex: int
-    birth_date: Date
-  }
 
   pill_info: {
     shape: sql_table
