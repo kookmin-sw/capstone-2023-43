@@ -23,15 +23,7 @@ class AddPillPage extends HookConsumerWidget {
     final groupTexController = useTextEditingController(text: '');
     final dayTexController = useTextEditingController(text: '');
     var PresetToggle = useState([false, false, false, false]);
-    // var pillchecked = useState(false);
-    // var groupFilled = useState(false);
-    // var dayFilled = useState(false);
-    // var presetChecked = useState(false);
-    // useEffect(() {
-    //   if (stage == AddPillState.addPill) {
-    //     pillchecked.value = true;
-    //   }
-    // });
+    var errMsg = useState('');
     return BaseWidget(
       body: SingleChildScrollView(
           child: Padding(
@@ -267,10 +259,16 @@ class AddPillPage extends HookConsumerWidget {
                 fontSize: 20.sp,
               ),
               onTap: () async {
+                errMsg.value = '';
+                bool summitReady = true;
+
                 List<int> pillIds = [];
                 List<String> presetIds = [];
                 for (var pill in pills) {
                   pillIds.add(pill.itemSeq);
+                }
+                if (pillIds.isEmpty) {
+                  summitReady = false;
                 }
                 for (int i = 0; i < 4; i++) {
                   if (PresetToggle.value[i]) {
@@ -278,14 +276,30 @@ class AddPillPage extends HookConsumerWidget {
                         ref.read(HttpResponseServiceProvider).presetTime[i].id);
                   }
                 }
+
+                if (pillIds.isEmpty) {
+                  summitReady = false;
+                }
+
+                if (dayTexController.text == '') {
+                  summitReady = false;
+                }
+
+                if (groupTexController.text == '') {
+                  summitReady = false;
+                }
+
+                if (summitReady == false) return;
                 var startDate = DateTime.now();
                 var endDate = startDate.add(
                   Duration(
                     days: int.parse(dayTexController.text),
                   ),
                 );
+
                 await ref.read(HttpResponseServiceProvider).postData(
                     SchduleData(
+                        id: '',
                         startDate: startDate,
                         endDate: endDate,
                         name: groupTexController.text,

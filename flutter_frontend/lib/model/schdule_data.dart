@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class SchduleData {
+  String id;
   DateTime startDate;
   DateTime endDate;
   String name;
@@ -10,6 +11,7 @@ class SchduleData {
   List<String> presetTimes;
 
   SchduleData({
+    required this.id,
     required this.startDate,
     required this.endDate,
     required this.name,
@@ -18,6 +20,7 @@ class SchduleData {
   });
 
   SchduleData copyWith({
+    String? id,
     DateTime? startDate,
     DateTime? endDate,
     String? name,
@@ -25,6 +28,7 @@ class SchduleData {
     List<String>? presetTimes,
   }) {
     return SchduleData(
+      id: id ?? this.id,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       name: name ?? this.name,
@@ -35,6 +39,7 @@ class SchduleData {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'start_date': startDate.toIso8601String(),
       'end_date': endDate.toIso8601String(),
       'name': name,
@@ -45,6 +50,7 @@ class SchduleData {
 
   factory SchduleData.fromMap(Map<String, dynamic> map) {
     return SchduleData(
+      id: map['id'],
       startDate: DateTime.parse(map['start_date']),
       endDate: DateTime.parse(map['end_date']),
       name: map['name'] ?? '',
@@ -60,7 +66,7 @@ class SchduleData {
 
   @override
   String toString() {
-    return 'SchduleData(startDate: $startDate, endDate: $endDate, name: $name, pills: $pills, presetTimes: $presetTimes)';
+    return 'SchduleData(id: $id, startDate: $startDate, endDate: $endDate, name: $name, pills: $pills, presetTimes: $presetTimes)';
   }
 
   @override
@@ -68,6 +74,7 @@ class SchduleData {
     if (identical(this, other)) return true;
 
     return other is SchduleData &&
+        other.id == id &&
         other.startDate == startDate &&
         other.endDate == endDate &&
         other.name == name &&
@@ -77,7 +84,8 @@ class SchduleData {
 
   @override
   int get hashCode {
-    return startDate.hashCode ^
+    return id.hashCode ^
+        startDate.hashCode ^
         endDate.hashCode ^
         name.hashCode ^
         pills.hashCode ^

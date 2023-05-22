@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/model/pill_take_list.dart';
 import 'package:flutter_frontend/model/preset_time.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../model/schdule_data.dart';
@@ -16,6 +16,7 @@ class HttpResponseService extends ChangeNotifier {
   late String idToken;
   List<SchduleData> data = [];
   List<PresetTime> presetTime = [];
+  List<PillTakeList> list = [];
   ResposeStage stage = ResposeStage.notready;
   late User user;
 
@@ -24,6 +25,18 @@ class HttpResponseService extends ChangeNotifier {
   void setToken(token) {
     idToken = "";
     idToken = token;
+  }
+
+  void generateList() {
+    list = [];
+    for (var t in presetTime) {
+      var id = t.id;
+      var Templist = data.where((element) => element.presetTimes.contains(id));
+      for (var item in Templist) {
+        list.add(
+            PillTakeList(name: item.name, historyId: item.id, presetId: id));
+      }
+    }
   }
 
   // 서비스 초기화... 유저 정보 가져오기.
@@ -63,6 +76,8 @@ class HttpResponseService extends ChangeNotifier {
         }
         print(presetTime);
       }
+
+      generateList();
       //정상적으로 로드 완료;
       stage = ResposeStage.ready;
     });
@@ -145,6 +160,9 @@ class HttpResponseService extends ChangeNotifier {
         stage = ResposeStage.error;
       }
     });
+
+    generateList();
+    notifyListeners();
   }
 
   // updateData -> 이미 있는 데이터를 업데이트함.

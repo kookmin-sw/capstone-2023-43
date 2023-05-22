@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/model/schdule_data.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/main_context_page.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/progress_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/schedule_item.dart';
 import 'package:flutter_frontend/pages/main_page/widgets/toggle_button.dart';
+import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // 나중에 서비스가 생성되면 HookWidget 에서 HookConsumerWidget으로 변경 필요.
-class MainPage extends HookWidget {
+class MainPage extends HookConsumerWidget {
   const MainPage({super.key});
 
   Widget? getToggleSwitch(
@@ -32,37 +35,11 @@ class MainPage extends HookWidget {
           );
   }
 
-  Widget? listTakeList(
-    context,
-    index,
-    itemList, [
-    Function(DismissDirection)? onDismissed,
-  ]) {
-    return onDismissed != null
-        ? Dismissible(
-            key: UniqueKey(),
-            onDismissed: onDismissed,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 20.h),
-              child: ScheduleItem(
-                status: '복약 예정',
-                time: '${itemList.value[index]}:00',
-              ),
-            ),
-          )
-        : Padding(
-            padding: EdgeInsets.only(bottom: 20.h),
-            child: ScheduleItem(
-              status: '복약 완료',
-              time: '${itemList.value[index - 1]}:00',
-            ),
-          );
-  }
-
   @override
-  Widget build(BuildContext context) {
-    final itemsBefore = useState(List<int>.generate(3, (i) => i + 6));
-    final itemsAfter = useState(List<int>.generate(4, (i) => i + 1));
+  Widget build(BuildContext context, WidgetRef ref) {
+    var list = ref.watch(HttpResponseServiceProvider).list;
+    var presetTime = ref.watch(HttpResponseServiceProvider).presetTime;
+    var data = ref.watch(HttpResponseServiceProvider).data;
     return BaseWidget(
       body: CustomScrollView(
         slivers: [
@@ -84,43 +61,26 @@ class MainPage extends HookWidget {
             padding: EdgeInsets.fromLTRB(50.w, 0, 50.w, 0),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                  (context, index) =>
-                      listTakeList(context, index, itemsBefore, (Direction) {
-                        itemsAfter.value = [
-                          ...itemsAfter.value,
-                          itemsBefore.value[index]
-                        ]..sort();
-
-                        itemsBefore.value = [
-                          ...itemsBefore.value..removeAt(index)
-                        ];
-                      }),
-                  childCount: itemsBefore.value.length),
-            ),
-          ),
-
-          // 약 복용후 리스트
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(50.w, 10.h, 50.w, 50.h),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  // message 구현을 위한 모델 필요 -> isMessage?
-                  (context, index) => index == 0
-                      ? Padding(
-                          padding: EdgeInsets.only(bottom: 30.h),
-                          child: Center(
-                            child: Text(
-                              '오늘도 열심히 드시고 계시네요! 💪 ',
-                              style: TextStyle(
-                                fontSize: 18.w,
-                                fontWeight: FontWeight.w700,
-                                color: Color.fromRGBO(165, 165, 165, 1),
-                              ),
-                            ),
-                          ),
-                        )
-                      : listTakeList(context, index, itemsAfter),
-                  childCount: itemsAfter.value.length + 1),
+                (context, index) {
+                  var time = presetTime
+                      .where((element) => element.id == list[index].presetId);
+                  var his = data
+                      .where((element) => element.id == list[index].historyId);
+                  return Dismissible(
+                    key: UniqueKey(),
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 20.h),
+                      child: ScheduleItem(
+                        cnt: his.first.pills.length,
+                        status: list[index].name,
+                        time: time.first.name,
+                        date: time.first.time,
+                      ),
+                    ),
+                  );
+                },
+                childCount: list.length,
+              ),
             ),
           ),
         ],
