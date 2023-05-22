@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/generated/graphql_api.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
+import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../widgets/base_widget.dart';
 import '../../pill_infomation_page/pill_infomation.dart';
 
-class SearchResultList extends HookWidget {
+class SearchResultList extends HookConsumerWidget {
   final String search;
   const SearchResultList({
     super.key,
@@ -16,7 +18,7 @@ class SearchResultList extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textController = useTextEditingController();
     final searchText = useState(search);
 
@@ -125,6 +127,10 @@ class SearchResultList extends HookWidget {
                                 subTitle: data[index]['class_name'] ?? 'none',
                                 company: data[index]['entp_name'],
                                 onTap: () {
+                                  ref
+                                      .read(HttpResponseServiceProvider)
+                                      .postValidation(
+                                          [data[index]['item_seq']]);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

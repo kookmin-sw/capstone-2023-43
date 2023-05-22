@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/generated/graphql_api.dart';
+import 'package:flutter_frontend/pages/pill_infomation_page/sub_page/more_inoformation.dart';
 import 'package:flutter_frontend/pages/pill_infomation_page/widgets/case_take_view.dart';
 import 'package:flutter_frontend/pages/pill_infomation_page/widgets/prohibit_take_view.dart';
 import 'package:flutter_frontend/service/add_pill_service.dart';
+import 'package:flutter_frontend/service/http_response_service.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 import '../../model/pill_infomation.dart';
 import '../../widgets/base_button.dart';
@@ -18,6 +20,7 @@ class PillInfomationContext extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var valData = ref.watch(HttpResponseServiceProvider).valData;
     final query = PillInfomationQuery(
         variables: PillInfomationArguments(itemSeq: itemSeq));
     return Query(
@@ -105,30 +108,44 @@ class PillInfomationContext extends HookConsumerWidget {
               height: 20.h,
             ),
             // 복용금지 뷰
-            ProhibitTakeView(),
+            ProhibitTakeView(
+              pills: valData["mix_taboos"],
+            ),
             SizedBox(
               height: 20.h,
             ),
             // 복용주의 뷰
-            CaseTakeView(),
+            CaseTakeView(
+              pills: valData["taboo_case"],
+            ),
             SizedBox(
               height: 20.h,
             ),
             // 복용 정보 use_method 뷰 띄어주기
-            BaseItem(
-              child: Html(
-                shrinkWrap: true,
-                data: data['use_method'],
-              ),
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            // 복용 정보 warning_message 뷰 띄어주기
-            BaseItem(
-              child: Html(
-                shrinkWrap: true,
-                data: data['warning_message'],
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (buildContext) {
+                  return MoreInformation();
+                }));
+                ref
+                    .read(HttpResponseServiceProvider)
+                    .getDetailHtml(data['item_seq']);
+              },
+              child: BaseItem(
+                child: Stack(
+                  children: [
+                    Text(
+                      "복용시 주의사항",
+                      style: TextStyle(
+                          fontSize: 20.sp, fontWeight: FontWeight.w700),
+                    ),
+                    Align(
+                      alignment: Alignment(1, 0),
+                      child: Icon(Icons.arrow_right),
+                    )
+                  ],
+                ),
               ),
             ),
           ],

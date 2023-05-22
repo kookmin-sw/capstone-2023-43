@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_take_list.dart';
 import 'package:flutter_frontend/model/preset_time.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../model/schdule_data.dart';
@@ -14,9 +15,11 @@ enum ResposeStage { notready, ready, loading, finish, error, newUser }
 class HttpResponseService extends ChangeNotifier {
   final url = 'https://g1rj1dd4j1.execute-api.ap-northeast-2.amazonaws.com/dev';
   late String idToken;
+  String detailHTML = "";
   List<SchduleData> data = [];
   List<PresetTime> presetTime = [];
   List<PillTakeList> list = [];
+  late Map<String, dynamic> valData = {};
   ResposeStage stage = ResposeStage.notready;
   late User user;
 
@@ -172,6 +175,51 @@ class HttpResponseService extends ChangeNotifier {
 
   // deleteData -> 데이터 고로시.
   void deleteData() {}
+
+  void getDetailHtml(int itemseq) async {
+    detailHTML = "";
+    notifyListeners();
+    const endPoint = "/pillbox/pills/";
+    bool isExistUser = true;
+
+    await http.get(
+      Uri.parse("$url$endPoint$itemseq"),
+      headers: {"Authorization": "Bearer " + idToken},
+    ).then((response) {
+      if (response.statusCode == 200) {
+        detailHTML = response.body;
+      } else {}
+    });
+
+    notifyListeners();
+  }
+
+  Future<void> postValidation(List<int> itemSeqs) async {
+    var valData = {};
+    var startDate = DateTime.now();
+    var endDate = startDate.add(Duration(days: 1));
+    var reqData = {
+      "start_date": startDate.toIso8601String(),
+      "end_date": endDate.toIso8601String(),
+      "pills": itemSeqs
+    };
+    print(json.encode(reqData));
+    const endPoint = "/pillbox/users/validation";
+    await http
+        .post(Uri.parse(url + endPoint),
+            headers: {
+              HttpHeaders.authorizationHeader: "Bearer " + idToken,
+              HttpHeaders.contentTypeHeader: "application/json"
+            },
+            body: json.encode(reqData))
+        .then((response) {
+      if (response.statusCode == 200) {
+        var body = jsonDecode(utf8.decode(response.bodyBytes));
+        valData = body;
+        notifyListeners();
+      }
+    });
+  }
 }
 
 final HttpResponseServiceProvider =
