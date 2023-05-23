@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
 import 'package:flutter_frontend/pages/login_page/login_page.dart';

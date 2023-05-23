@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/model/pill_take_list.dart';
 import 'package:flutter_frontend/model/preset_time.dart';
@@ -23,6 +24,7 @@ class HttpResponseService extends ChangeNotifier {
   ResposeStage stage = ResposeStage.notready;
   late User user;
   late String errMsg;
+  late List<CameraDescription> cameras;
 
   HttpResponseService();
 
@@ -49,7 +51,7 @@ class HttpResponseService extends ChangeNotifier {
     late Map<String, dynamic> body;
     const endPoint = "/pillbox/users";
     bool isExistUser = true;
-
+    cameras = await availableCameras();
     await http.get(
       Uri.parse(url + endPoint),
       headers: {"Authorization": "Bearer " + idToken},
