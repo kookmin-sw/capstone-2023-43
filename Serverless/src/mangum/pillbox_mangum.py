@@ -20,11 +20,12 @@ from bson.errors import InvalidId
 # graphql query define section
 MIX_TABOO_QUERY = '''query validation($item_seqs: [Int]!, $mixture_item_seq: Int!) {
   pb_mix_taboo(where: {_and: [{item_seq: {_in: $item_seqs}}, {mixture_item_seq: {_eq: $mixture_item_seq}}]}) {
-    item_seq
-    mixture_item_seq
-    prohibited_content
+    pill_info {
+      name
+    }
   }
-}'''
+}
+'''
 
 
 TABOO_CASE_QUERY = '''query taboo_list($item_seq: Int!) {
@@ -74,6 +75,7 @@ class PillHistoryOut(BaseModel):
     start_date: datetime
     end_date: datetime
     preset_times: list[str]
+    timestamp: dict[str, list]
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
@@ -86,8 +88,9 @@ class PillHistoryOut(BaseModel):
         start_date = json_dict['start_date']['$date']
         end_date = json_dict['end_date']['$date']
         preset_times = [preset_time_id for preset_time_id in json_dict['preset_times']]
+        timestamp_ = json_dict['timestamps']
         return PillHistoryOut(id=id_, name=name, pills=pills,
-                              start_date=start_date, end_date=end_date, preset_times=preset_times)
+                              start_date=start_date, end_date=end_date, preset_times=preset_times, timestamp=timestamp_)
 
 
 class PillHistoryPatch(BaseModel):
@@ -165,22 +168,14 @@ class Validation(BaseModel):
     end_date: datetime = datetime.utcnow() + timedelta(days=3)
 
 
-class MixTaboo(BaseModel):
-    item_seq: int
-    mixture_item_seq: int
-    prohibited_content: str
-
-    @staticmethod
-    def from_dict(json_dict: dict):
-        item_seq = json_dict['item_seq']
-        mixture_item_seq = json_dict['mixture_item_seq']
-        prohibited_content = json_dict['prohibited_content']
-        return MixTaboo(item_seq=item_seq, mixture_item_seq=mixture_item_seq, prohibited_content=prohibited_content)
-
-
 class ValidationOut(BaseModel):
-    mix_taboos: list[MixTaboo] | None
+    mix_taboos: list[str] | None
     taboo_case: list[str] | None
+
+
+class TimestampPost(BaseModel):
+    date_key: str
+    preset_time_id: str
 
 
 # mongodb Connection section
@@ -237,7 +232,7 @@ async def get_pills(user_id: str) -> list[int]:
     return pills
 
 
-async def mix_taboo_valid(pills: list[int], pill: int) -> list[MixTaboo]:
+async def mix_taboo_valid(pills: list[int], pill: int) -> list[str]:
     async with aiohttp.ClientSession() as session:
         async with session.post(HASURA_ENDPOINT, json={'query': MIX_TABOO_QUERY,
                                                        'variables': {'item_seqs': pills,
@@ -257,7 +252,7 @@ async def mix_taboo_valid(pills: list[int], pill: int) -> list[MixTaboo]:
             datas = body['data']['pb_mix_taboo']
 
             if len(datas) > 0:
-                mix_taboos = [MixTaboo.from_dict(mix_taboo) for mix_taboo in datas]
+                mix_taboos = [item['pill_info']['name'] for item in datas]
                 return mix_taboos
             return []
 
@@ -266,7 +261,6 @@ async def dur_check(pill: int, user: dict) -> list[str]:
     async with aiohttp.ClientSession() as session:
         async with session.post(HASURA_ENDPOINT, json={'query': TABOO_CASE_QUERY,
                                                        'variables': {'item_seq': pill}}) as response:
-            print(response.request_info)
             if response.status != 200:
                 print('Hasura endpoint error, dur_check')
                 print(await response.json())
@@ -463,7 +457,7 @@ async def get_users_preset_time_by_id(request: Request, preset_time_id: str):
     return {"result": "ok", "data": preset_time}
 
 
-@app.post('/pillbox/users/preset_times')
+@app.post('/pillbox/users/preset_times', status_code=201)
 async def post_users_preset_time(request: Request, preset_time: PresetTimePost):
     user_id = get_user_id(request)
 
@@ -553,7 +547,7 @@ async def validation(request: Request, valid: Validation):
     if user_id is None:
         raise HTTPException(401, "Unauthorized")
 
-    if not is_exist(user_id):
+    if not await is_exist(user_id):
         raise HTTPException(400, "user not fount")
 
     if valid.end_date <= valid.start_date:
@@ -584,7 +578,7 @@ async def validation(request: Request, valid: Validation):
         pills = []
     print(pills)
 
-    user = pillbox_db.find_one({"_id": user_id}, {'is_pregnancy': 1, 'birthday': 1})
+    user = await pillbox_db.find_one({"_id": user_id}, {'is_pregnancy': 1, 'birthday': 1})
 
     check_validation = [mix_taboo_valid(pills + valid.pills[:-1], valid.pills[-1]), dur_check(valid.pills[-1], user)]
     results = await asyncio.gather(*check_validation)
@@ -638,8 +632,8 @@ async def get_pill_histories(request: Request, name: str = None, all_histories: 
 
     results = results[0]
 
-    results = json.loads(json_util.dumps(results_out))
-    results = results[0]['datas'] if len(results) > 0 else []
+    results = json.loads(json_util.dumps(results))
+    results = results['datas'] if len(results) > 0 else []
     if len(results) > 0:
         return {"result": "ok", "data": [PillHistoryOut.from_dict(result) for result in results]}
 
@@ -688,7 +682,7 @@ async def post_pill_history(request: Request, pill_history: PillHistoryPost):
 
     # 복용기록의 이름이 공백이거나 전달이 안된 경우
     pill_history.name = pill_history.name.strip()
-    if len(pill_history.name) < 0:
+    if len(pill_history.name) <= 0:
         raise HTTPException(400, "Need history name")
 
     if pill_history.end_date <= pill_history.start_date:
@@ -707,14 +701,28 @@ async def post_pill_history(request: Request, pill_history: PillHistoryPost):
         raise HTTPException(409, "pill history already exists")
 
     preset_time_id_list = [ObjectId(preset_time_id) for preset_time_id in pill_history.preset_times]
-    is_preset_time_exist = await pillbox_db.find_one({"_id": user_id, "preset_times._id":
-                                                        {"$all": preset_time_id_list}})
+    preset_times = await pillbox_db.find_one({"_id": user_id, "preset_times._id": {"$all": preset_time_id_list}},
+                                              {"preset_times._id": 1, "preset_times.time": 1})
 
-    if is_preset_time_exist is None:
+    if preset_times is None:
         raise HTTPException(400, "preset_time_id not exist")
+
+    preset_times = [preset_time['time'] for preset_time in preset_times['preset_times']
+                    if preset_time['_id'] in preset_time_id_list]
+    print(preset_times)
 
     pill_history_dict = pill_history.__dict__
     pill_history_dict["_id"] = ObjectId()
+
+    day_increase = pill_history.start_date
+
+    timestamp_keys = []
+
+    while (day_increase <= pill_history.end_date):
+        timestamp_keys.append(day_increase.strftime("%Y-%m-%dT%H:%M:%S"))
+        day_increase = day_increase + timedelta(days=1)
+
+    pill_history_dict['timestamps'] = {timestamp_key: [] for timestamp_key in timestamp_keys}
 
     await pillbox_db.update_one({"_id": user_id}, {"$push": {"pill_histories": pill_history_dict}})
 
@@ -779,11 +787,14 @@ async def update_pill_history_by_id(request: Request, pill_history: PillHistoryP
                 raise HTTPException(400, f"Invalid item_seq {pill}")
 
     if pill_history.name is not None:
+        if len(pill_history.name) <= 0:
+            pill_history.name = None
         # history_id는 다른데 이름은 같은 기록을 찾는다.
-        result = await pillbox_db.find_one({"_id": user_id, "pill_histories":
+        else:
+            result = await pillbox_db.find_one({"_id": user_id, "pill_histories":
                                             {"$elemMatch": {"_id": {"$ne": history_id}, "name": pill_history.name}}})
-        if result is not None:
-            raise HTTPException(400, "history name already exist")
+            if result is not None:
+                raise HTTPException(400, "history name already exist")
 
     if pill_history.preset_times != [1]:
         try:
@@ -822,6 +833,59 @@ async def delete_pill_history_by_id(request: Request, history_id: str):
         raise HTTPException(404, "There is no data")
 
     await pillbox_db.update_one({"_id": user_id}, {"$pull": {"pill_histories": {"_id": history_id}}})
+
+    return {"result": "ok"}
+
+
+@app.get('/pillbox/users/pill_histories/{pill_history_id}/timestamps')
+async def get_timestamps(request: Request, pill_history_id: str):
+    user_id = get_user_id(request.scope)
+
+    if user_id is None:
+        raise HTTPException("Unauthorization")
+
+    try:
+        pill_history_id = ObjectId(pill_history_id)
+    except TypeError as type_error:
+        raise HTTPException(400, "invalid history id") from type_error
+
+    histories = await pillbox_db.find_one({"_id": user_id, "pill_histories._id": pill_history_id})
+
+    if histories is None:
+        raise HTTPException(404, "There is no data")
+
+    history = [history for history in histories['pill_histories'] if history['_id'] == pill_history_id]
+
+    if history is None or len(history) == 0:
+        raise HTTPException(404, "history not found")
+
+    history = history[0]
+
+    return {"result": "ok", "data": history['timestamps']}
+
+
+@app.post('/pillbox/users/pill_histories/{pill_history_id}/timestamps')
+async def post_timestamp(request: Request, pill_history_id: str, timestamp: TimestampPost):
+    user_id = get_user_id(request.scope)
+
+    if user_id is None:
+        raise HTTPException("Unauthorization")
+
+    try:
+        pill_history_id = ObjectId(pill_history_id)
+    except TypeError as type_error:
+        print(type_error)
+        raise HTTPException(400, "invalid history id") from type_error
+
+    query = {
+        "_id": user_id, "pill_histories": {
+            "$elemMatch": {
+                "_id": pill_history_id, "preset_times": timestamp.preset_time_id}}}
+    data = {"$push": {f"pill_histories.$.timestamps.{timestamp.date_key}": timestamp.preset_time_id}}
+
+    result = await pillbox_db.update_one(query, data)
+    if result.matched_count == 0:
+        raise HTTPException(404, "not found path")
 
     return {"result": "ok"}
 
