@@ -1,98 +1,50 @@
 direction: down
-MongoDB: {
-  icon: https://icons.terrastruct.com/dev%2Fmongodb.svg
-
+MongoDB: |json
   User: {
-    shape: sql_table
-    Id: string {constraint: foreign_key}
-    Pregnancy: bool
-    BloodPressure: int
-    IsDiabetes: bool
-  }
-
-  PillHistory: {
-    shape: sql_table
-    User: uuid {constraint: foreign_key}
-    PillName: string {constraint: foreign_key}
-    StartDate: Date
-    EndDate: Date
-  }
-}
+    "id": UUID,
+    "is_pregnancy": false,
+    "blood_pressure": 1,
+    "is_diabetes": false,
+    "pill_histories": [{
+      "pills": ["item_seq"],
+      "start_date": "Date",
+      "end_date": "Date",
+    },
+  ]
+|
 
 Postgresql: {
   icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
 
   User: {
     shape: sql_table
-    Id: uuid {constraint: primary_key}
-    Name: string
-    EMail: string
-    Sex: int
-    BirthDate: Date
+    id: uuid {constraint: primary_key}
+    name: string
+    e_mail: string
+    sex: int
+    birth_date: Date
   }
 
-  Pill: {
+  pill_info: {
     shape: sql_table
-    ItemSeq: string {constraint: primary_key}
-    Name: string
-    ENTPName: string
-    Class: string
-    ETCOTCCode: string
-    Effect: string
-    WarningMessage: string
-    UseMethod: string
-    TabooCase: uint32
-    ImageLink: string
+    item_seq: int {constraint: primary_key}
+    name: string
+    entp_name: string
+    class_name: string
+    effect: string
+    warning_message: string
+    use_method: string
+    image_url: string
+    taboo_case: array
   }
 
-  MixTaboo: {
+  mix_taboo: {
     shape: sql_table
-    PillA: string {constraint: foreign_key}
-    PillB: string {constraint: foreign_key}
+    item_seq: int {constraint: foreign_key}
+    mixture_item_seq: int {constraint: foreign_key}
+    prohibited_content: string
   }
 
-  Pill.Name -> MixTaboo.PillA
-  Pill.Name -> MixTaboo.PillB
+  pill_info.item_seq -> mix_taboo.item_seq
+  pill_info.item_seq -> mix_taboo.mixture_item_seq
 }
-
-User: |md
-  # Id
-   UUID
-  # BloodPressure 
-  * 고
-  * 저 
-  # Pregnancy
-  임신부, 수유부를 모두 해당되는 항목 수정시 경고문구 띄울것
-  # IsDiabetes
-  당뇨여부
-  # ENTPName
-  제조사
-  # ETCOTCCode
-  전문의약품, 일반의약품
-  # Class
-  약 분류 (etc: 항히스타민제, 소염제)
-  # TabooCase
-  bit 이용하여 처리
-  * 병용 금기 : A = 0x01
-  * 특정연령 금기 : B = 0x02
-  * 임부 금기 : C = 0x04 
-  * Reserved : D ~ E = 0x08, 0x10
-  * 노인금기 : F = 0x20
-  * 당뇨금기 : (자체 코드)= 0x30
-  * 혈압 : (자체코드)= 0x40
-|
-Pill: |md
-  # ItemSeq
-  품목표준코드 (9자리 숫자코드)
-  # TabooCase
-  복용하지 말아야할 몸상태 기재
-  * 노약자 (65세 이상)
-  * 어린이 (18세 미만)
-  * 임신부, 수유부
-  * 혈압 (고, 저)
-  * 당뇨
-|
-
-Postgresql.User.Id -> MongoDB.User.Id: {style: {stroke-dash: 2}}
-Postgresql.User.Id -> MongoDB.PillHistory.User: {style: {stroke-dash: 2}}
-Postgresql.Pill.Name -> MongoDB.PillHistory.PillName

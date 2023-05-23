@@ -1,0 +1,12 @@
+query pill_infomation($itemSeq: Int!) {
+  pb_pill_info_by_pk(item_seq: $itemSeq) {
+    name
+    entp_name
+    etc_otc_code
+    class_name
+    image_url
+    use_method
+    warning_message
+    effect
+  }
+}

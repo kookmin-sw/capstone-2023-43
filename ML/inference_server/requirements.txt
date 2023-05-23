@@ -1,0 +1,6 @@
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==2.0.1+cpu
+torchvision==0.15.2+cpu
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+python-multipart==0.0.6

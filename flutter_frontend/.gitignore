@@ -42,3 +42,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+#npm modules
+node_modules
+
+#ignore schema
+/lib/schema.graphql

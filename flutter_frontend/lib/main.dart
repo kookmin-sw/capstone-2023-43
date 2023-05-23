@@ -1,32 +1,45 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/generated/graphql_api.graphql.dart';
+import 'package:flutter_frontend/pages/add_pill_page/add_pill_page.dart';
+import 'package:flutter_frontend/pages/main_page/main_page.dart';
+import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
+import 'package:flutter_frontend/service/grapgql_config.dart';
+import 'package:flutter_frontend/service/pb_graph_client.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'demo.dart';
-
-void main() {
-  runApp(const MyApp());
+PbGraphQlClient gq = PbGraphQlClient();
+void main() async {
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHookPage(),
+    return ScreenUtilInit(
+      designSize: const Size(500, 860),
+      builder: (BuildContext context, Widget? child) {
+        return GraphQLProvider(
+          client: GraphQLConfig.initCLient(),
+          child: MaterialApp(
+            title: 'Flutter Demo',
+            routes: {
+              '/search': (context) => SearchPillPage(),
+              '/add': (context) => AddPillPage(),
+            },
+            theme: ThemeData(
+                fontFamily: 'NotoSansKR',
+                scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1)),
+            home: const MainPage(),
+          ),
+        );
+      },
     );
   }
 }
