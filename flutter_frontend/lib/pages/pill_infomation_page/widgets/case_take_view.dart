@@ -30,9 +30,21 @@ class CaseTakeView extends HookWidget {
             ),
           ),
           status != "ok" && pills!.isNotEmpty
-              ? Container(
-                  height: 50,
-                  color: Colors.grey,
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return Text(
+                      "▶ " + pills![index],
+                      style: TextStyle(
+                          fontSize: 18.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          overflow: TextOverflow.ellipsis),
+                      maxLines: 1,
+                    );
+                  },
+                  itemCount: pills!.length,
                 )
               : Container()
         ],

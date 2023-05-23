@@ -33,6 +33,7 @@ class ProhibitTakeView extends HookWidget {
           status != "ok" && pills!.isNotEmpty
               ? ListView.builder(
                   shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Text(
                       "▶ " + pills![index],

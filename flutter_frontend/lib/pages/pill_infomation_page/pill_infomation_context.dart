@@ -37,6 +37,7 @@ class PillInfomationContext extends HookConsumerWidget {
         }
 
         var data = result.data!['pb_pill_info_by_pk'];
+        print(data["image_url"]);
 
         return Column(
           children: [
@@ -44,9 +45,39 @@ class PillInfomationContext extends HookConsumerWidget {
               height: 20.h,
             ),
             Container(
-              height: 100.w,
-              width: 100.w,
-              color: Colors.grey,
+              height: 200.h,
+              // width: 100.w,
+              //color: Colors.grey,
+              child: data["image_url"].contains("https://")
+                  ? Image.network(
+                      data["image_url"],
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.h),
+                          color: Colors.amber,
+                        ),
+                        child: Center(
+                            child: Text(
+                          "이미지가 제공되지 않는 페이지 입니다!",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, color: Colors.white),
+                        )),
+                      ),
+                    ),
             ),
             SizedBox(
               height: 20.h,
@@ -114,8 +145,10 @@ class PillInfomationContext extends HookConsumerWidget {
                     pills: valData["mix_taboos"],
                   )
                 : Container(
-                    height: 30.h,
-                    color: Colors.grey,
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(15.h)),
                   ),
             SizedBox(
               height: 20.h,
@@ -127,8 +160,10 @@ class PillInfomationContext extends HookConsumerWidget {
                     pills: valData["taboo_case"],
                   )
                 : Container(
-                    height: 30.h,
-                    color: Colors.grey,
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(15.h)),
                   ),
             SizedBox(
               height: 20.h,
