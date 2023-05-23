@@ -15,6 +15,7 @@ Servers: {
   Postgreql: {icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg}
   MongoDB: {icon: https://icons.terrastruct.com/dev%2Fmongodb.svg}
   Cognito: {icon: https://icons.terrastruct.com/aws%2FSecurity%2C%20Identity%2C%20&%20Compliance%2FAmazon-Cognito.svg}
+  AI_Inference: {icon: https://icons.terrastruct.com/aws%2FMachine%20Learning%2FAmazon-Augmented-AI_light-bg.svg}
   APIGateway: {icon: https://icons.terrastruct.com/aws%2FMobile%2FAmazon-API-Gateway.svg}
   Lambda: {icon: https://icons.terrastruct.com/aws%2FCompute%2FAWS-Lambda.svg}
   APIGateway -> Cognito
@@ -22,6 +23,7 @@ Servers: {
 
   APIGateway <-> MongoDB: transaction
   APIGateway <-> Postgreql: transaction
+  APIGateway <-> AI_Inference
 }
 Client <-> Servers.APIGateway: request & response
 
