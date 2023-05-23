@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/pages/new_user_page/new_user_page.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -53,31 +54,31 @@ class LoginPage extends HookConsumerWidget {
       body: Padding(
         padding: EdgeInsets.fromLTRB(50.w, 20.h, 50.w, 0),
         child: Center(
-          child: isLoading.value
-              ? CircularProgressIndicator()
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'PillBox',
-                      style: TextStyle(
-                        fontSize: 84.sp,
-                        fontWeight: FontWeight.w700,
-                        color: const Color.fromRGBO(11, 106, 227, 1),
-                      ),
-                    ),
-                    Text(
-                      '당신의 복약기록 도우미',
-                      style: TextStyle(
-                        fontSize: 30.sp,
-                        fontWeight: FontWeight.w700,
-                        color: const Color.fromRGBO(11, 106, 227, 1),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 140.h,
-                    ),
-                    BaseButton(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'PillBox',
+                style: TextStyle(
+                  fontSize: 84.sp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color.fromRGBO(11, 106, 227, 1),
+                ),
+              ),
+              Text(
+                '당신의 복약기록 도우미',
+                style: TextStyle(
+                  fontSize: 30.sp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color.fromRGBO(11, 106, 227, 1),
+                ),
+              ),
+              SizedBox(
+                height: 140.h,
+              ),
+              isLoading.value
+                  ? const CircularProgressIndicator()
+                  : BaseButton(
                       text: '구글로 로그인하기',
                       style: TextStyle(
                           color: Colors.white,
@@ -95,20 +96,23 @@ class LoginPage extends HookConsumerWidget {
                               .initResponse();
                           if (ref.read(HttpResponseServiceProvider).stage ==
                               ResposeStage.newUser) {
-                            await ref
-                                .read(HttpResponseServiceProvider)
-                                .postNewUser("김재하", "M",
-                                    DateTime.utc(1999, 6, 26), 0, false, false);
-                          }
-                          if (ref.read(HttpResponseServiceProvider).stage ==
+                            // ignore: use_build_context_synchronously
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const NewUserPage();
+                            }));
+                          } else if (ref
+                                  .read(HttpResponseServiceProvider)
+                                  .stage ==
                               ResposeStage.ready) {
+                            // ignore: use_build_context_synchronously
                             Navigator.pushReplacementNamed(context, '/main');
                           }
                         }
                       },
                     ),
-                  ],
-                ),
+            ],
+          ),
         ),
       ),
     );

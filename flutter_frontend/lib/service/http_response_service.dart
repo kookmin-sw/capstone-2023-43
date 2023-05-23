@@ -127,6 +127,67 @@ class HttpResponseService extends ChangeNotifier {
     });
   }
 
+  Future<void> postTimePreset(
+    String morningDate,
+    String lunchDate,
+    String dinnerDate,
+    String nightDate,
+  ) async {
+    const endPoint = "/pillbox/users/preset_times";
+
+    List<Map<String, String>> listPreset = [
+      {"name": "아침", "time": morningDate},
+      {"name": "점심", "time": lunchDate},
+      {"name": "저녁", "time": dinnerDate},
+      {"name": "자기전", "time": nightDate},
+    ];
+
+    for (Map<String, String> preset in listPreset) {
+      stage = ResposeStage.loading;
+      await http
+          .post(
+        Uri.parse(url + endPoint),
+        headers: {
+          HttpHeaders.authorizationHeader: idToken,
+          HttpHeaders.contentTypeHeader: "application/json"
+        },
+        body: json.encode(preset),
+      )
+          .then((response) {
+        if (response.statusCode != 201) {
+          stage = ResposeStage.error;
+          print("somthing courred error. response canceled");
+          return;
+        }
+      });
+    }
+
+    stage = ResposeStage.loading;
+    await http.get(
+      Uri.parse(url + endPoint),
+      headers: {
+        HttpHeaders.authorizationHeader: idToken,
+      },
+    ).then((response) {
+      if (response.statusCode == 200) {
+        var body = json.decode(utf8.decode(response.bodyBytes));
+        print(presetTime);
+        if (body != null) {
+          for (var preset in body["data"]) {
+            presetTime.add(PresetTime.fromMap(preset));
+          }
+        }
+      } else {
+        stage = ResposeStage.error;
+        print("somthing courred error. response canceled");
+        return;
+      }
+    });
+
+    print(presetTime);
+    stage = ResposeStage.ready;
+  }
+
   // fetch -> 서버에서 복용기록을 가져옴.
   Future<void> fetch() async {
     const endPoint = "/pillbox/user/pill_histories";

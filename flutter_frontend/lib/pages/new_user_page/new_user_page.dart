@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_frontend/pages/new_user_page/set_preset_page.dart';
 import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
@@ -17,6 +18,8 @@ class NewUserPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var birthdayController = useTextEditingController(text: "");
     var nameController = useTextEditingController(text: "");
+    var checkDiabetes = useState(false);
+    var checkPregnancy = useState(false);
     var genderToggle = useState([true, false]);
     var bloodPressureToggle = useState([false, true, false]);
     var maskFommater = MaskTextInputFormatter(
@@ -184,24 +187,57 @@ class NewUserPage extends HookConsumerWidget {
                 children: [
                   Expanded(
                       flex: 17,
-                      child: ButtonToggleableNewUser(
-                          50.h, () => {}, "당뇨병이 있어요", true)),
+                      child: ButtonToggleableNewUser(50.h, () {
+                        checkDiabetes.value = !checkDiabetes.value;
+                      }, "당뇨병이 있어요", true)),
                   Expanded(flex: 1, child: SizedBox()),
                   Expanded(
                       flex: 17,
-                      child: ButtonToggleableNewUser(
-                          50.h, () => {}, "임신했어요", true)),
+                      child: ButtonToggleableNewUser(50.h, () {
+                        checkPregnancy.value = !checkPregnancy.value;
+                      }, "임신했어요", true)),
                 ],
               ),
               SizedBox(
                 height: 10.h,
               ),
-              BaseButton(
-                text: "가입하기",
-                color: Color.fromRGBO(11, 106, 227, 1),
-                style: TextStyle(color: Colors.white),
-                onTap: () {},
-              )
+              ref.read(HttpResponseServiceProvider).stage ==
+                      ResposeStage.loading
+                  ? CircularProgressIndicator()
+                  : BaseButton(
+                      text: "가입하기",
+                      color: Color.fromRGBO(11, 106, 227, 1),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20.sp),
+                      onTap: () async {
+                        if (nameController.text == "") return;
+                        if (!maskFommater.isFill()) return;
+                        String name = nameController.text;
+                        String gender = genderToggle.value[0] ? "M" : "F";
+                        int bloodPressure =
+                            bloodPressureToggle.value.indexOf(true) - 1;
+                        var dateData = birthdayController.text.split('/');
+                        DateTime birthday = DateTime.utc(int.parse(dateData[0]),
+                            int.parse(dateData[1]), int.parse(dateData[2]));
+                        await ref.read(HttpResponseServiceProvider).postNewUser(
+                            name,
+                            gender,
+                            birthday,
+                            bloodPressure,
+                            checkDiabetes.value,
+                            checkDiabetes.value);
+                        if (ref.read(HttpResponseServiceProvider).stage ==
+                            ResposeStage.ready) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SetPresetPage()));
+                        }
+                      },
+                    )
             ],
           ),
         ),

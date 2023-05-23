@@ -4,6 +4,7 @@ import 'package:flutter_frontend/pages/login_page/login_page.dart';
 import 'package:flutter_frontend/pages/new_user_page/new_user_page.dart';
 import 'package:flutter_frontend/pages/main_page/main_page.dart';
 import 'package:flutter_frontend/pages/new_user_page/new_user_page.dart';
+import 'package:flutter_frontend/pages/new_user_page/set_preset_page.dart';
 import 'package:flutter_frontend/pages/search_pill_page/search_pill_page.dart';
 import 'package:flutter_frontend/service/grapgql_config.dart';
 import 'package:flutter_frontend/service/pb_graph_client.dart';
@@ -63,8 +64,8 @@ class MyAppState extends State<MyApp> {
             theme: ThemeData(
                 fontFamily: 'NotoSansKR',
                 scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1)),
-            // home: const ProviderScope(child: LoginPage()),
-            home: const ProviderScope(child: NewUserPage()),
+            home: const ProviderScope(child: LoginPage()),
+            // home: const ProviderScope(child: SetPresetPage()),
           ),
         );
       },
