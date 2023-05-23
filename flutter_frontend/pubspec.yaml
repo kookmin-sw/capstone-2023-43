@@ -50,6 +50,7 @@ dependencies:
   amplify_auth_cognito: '<1.0.0'
   http: '^0.13.6'
   date_format: ^2.0.7
+  mask_text_input_formatter: ^2.4.0
 
 
 
