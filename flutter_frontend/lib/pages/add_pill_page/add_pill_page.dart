@@ -19,11 +19,15 @@ class AddPillPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     late List<PillInfomation> pills = ref.watch(AddPillServiceProvider).pills;
     var stage = ref.watch(AddPillServiceProvider).stage;
-    var loadStage = ref.watch(HttpResponseServiceProvider).stage;
     final groupTexController = useTextEditingController(text: '');
     final dayTexController = useTextEditingController(text: '');
     var PresetToggle = useState([false, false, false, false]);
-    var errMsg = useState('');
+
+    var checkDay = useState(true);
+    var checkName = useState(true);
+    var checkPreset = useState(true);
+    var checkPill = useState(true);
+
     return BaseWidget(
       body: SingleChildScrollView(
           child: Padding(
@@ -61,6 +65,7 @@ class AddPillPage extends HookConsumerWidget {
               icon: const Icon(Icons.search),
               onTap: () {
                 ref.read(AddPillServiceProvider).changeSelectState();
+                checkPill.value = true;
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -77,11 +82,15 @@ class AddPillPage extends HookConsumerWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   width: 1.h,
-                  color: Color.fromRGBO(11, 106, 227, 1),
+                  color: checkPill.value
+                      ? Color.fromRGBO(11, 106, 227, 1)
+                      : Colors.red,
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(15.h)),
               ),
-              child: stage == AddPillState.addPill
+              child: (stage == AddPillState.addPill ||
+                          stage == AddPillState.selectPill) &&
+                      pills.isNotEmpty
                   ? Center(
                       child: ListView.builder(
                         padding: EdgeInsets.all(10),
@@ -121,14 +130,17 @@ class AddPillPage extends HookConsumerWidget {
                   flex: 20,
                   child: Container(
                     decoration: BoxDecoration(
-                        border:
-                            Border.all(color: Color.fromRGBO(11, 106, 227, 1)),
+                        border: Border.all(
+                            color: checkName.value
+                                ? Color.fromRGBO(11, 106, 227, 1)
+                                : Colors.red),
                         borderRadius: BorderRadius.circular(15.0.h)),
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 20.h, vertical: 3.h),
                       child: TextField(
                         controller: groupTexController,
+                        onChanged: (value) => checkName.value = true,
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w700,
@@ -152,8 +164,10 @@ class AddPillPage extends HookConsumerWidget {
                   flex: 9,
                   child: AnimatedContainer(
                     decoration: BoxDecoration(
-                      border:
-                          Border.all(color: Color.fromRGBO(11, 106, 227, 1)),
+                      border: Border.all(
+                          color: checkDay.value
+                              ? Color.fromRGBO(11, 106, 227, 1)
+                              : Colors.red),
                       borderRadius: BorderRadius.circular(15.0.h),
                     ),
                     duration: Duration(milliseconds: 250),
@@ -165,6 +179,9 @@ class AddPillPage extends HookConsumerWidget {
                         children: [
                           TextField(
                             controller: dayTexController,
+                            keyboardType: TextInputType.numberWithOptions(
+                                signed: false, decimal: true),
+                            onChanged: (value) => checkDay.value = true,
                             style: TextStyle(
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.w700,
@@ -205,7 +222,8 @@ class AddPillPage extends HookConsumerWidget {
                   flex: 15,
                   child: ButtonToggleable(60.0, () {
                     PresetToggle.value[0] = !PresetToggle.value[0];
-                  }, "아침에 먹어요"),
+                    checkPreset.value = true;
+                  }, "아침에 먹어요", checkPreset.value),
                 ),
                 const Expanded(
                   flex: 1,
@@ -217,7 +235,8 @@ class AddPillPage extends HookConsumerWidget {
                   flex: 15,
                   child: ButtonToggleable(60.0, () {
                     PresetToggle.value[1] = !PresetToggle.value[1];
-                  }, "점심에 먹어요"),
+                    checkPreset.value = true;
+                  }, "점심에 먹어요", checkPreset.value),
                 ),
               ],
             ),
@@ -230,7 +249,8 @@ class AddPillPage extends HookConsumerWidget {
                   flex: 15,
                   child: ButtonToggleable(60.0, () {
                     PresetToggle.value[2] = !PresetToggle.value[2];
-                  }, "저녁에 먹어요"),
+                    checkPreset.value = true;
+                  }, "저녁에 먹어요", checkPreset.value),
                 ),
                 const Expanded(
                   flex: 1,
@@ -242,7 +262,8 @@ class AddPillPage extends HookConsumerWidget {
                   flex: 15,
                   child: ButtonToggleable(60.0, () {
                     PresetToggle.value[3] = !PresetToggle.value[3];
-                  }, "자기전에 먹어요"),
+                    checkPreset.value = true;
+                  }, "자기전에 먹어요", checkPreset.value),
                 ),
               ],
             ),
@@ -259,17 +280,13 @@ class AddPillPage extends HookConsumerWidget {
                 fontSize: 20.sp,
               ),
               onTap: () async {
-                errMsg.value = '';
-                bool summitReady = true;
-
                 List<int> pillIds = [];
                 List<String> presetIds = [];
+
                 for (var pill in pills) {
                   pillIds.add(pill.itemSeq);
                 }
-                if (pillIds.isEmpty) {
-                  summitReady = false;
-                }
+
                 for (int i = 0; i < 4; i++) {
                   if (PresetToggle.value[i]) {
                     presetIds.add(
@@ -277,19 +294,11 @@ class AddPillPage extends HookConsumerWidget {
                   }
                 }
 
-                if (pillIds.isEmpty) {
-                  summitReady = false;
+                if (int.tryParse(dayTexController.text) == null) {
+                  checkDay.value = false;
+                  return;
                 }
 
-                if (dayTexController.text == '') {
-                  summitReady = false;
-                }
-
-                if (groupTexController.text == '') {
-                  summitReady = false;
-                }
-
-                if (summitReady == false) return;
                 var startDate = DateTime.now();
                 var endDate = startDate.add(
                   Duration(
@@ -298,17 +307,31 @@ class AddPillPage extends HookConsumerWidget {
                 );
 
                 await ref.read(HttpResponseServiceProvider).postData(
-                    SchduleData(
-                        id: '',
-                        startDate: startDate,
-                        endDate: endDate,
-                        name: groupTexController.text,
-                        pills: pillIds,
-                        presetTimes: presetIds));
+                      SchduleData(
+                          id: '',
+                          startDate: startDate,
+                          endDate: endDate,
+                          name: groupTexController.text,
+                          pills: pillIds,
+                          presetTimes: presetIds),
+                    );
 
-                if (loadStage == ResposeStage.ready) {
+                if (ref.read(HttpResponseServiceProvider).stage ==
+                    ResposeStage.ready) {
                   Navigator.pop(context);
                   ref.read(AddPillServiceProvider).initState();
+                } else if (ref.read(HttpResponseServiceProvider).stage ==
+                    ResposeStage.error) {
+                  if (ref.read(HttpResponseServiceProvider).errMsg ==
+                      "Need pill list") {
+                    checkPill.value = false;
+                  } else if (ref.read(HttpResponseServiceProvider).errMsg ==
+                      "preset_time_id not exist") {
+                    checkPreset.value = false;
+                  } else if (ref.read(HttpResponseServiceProvider).errMsg ==
+                      "Need history name") {
+                    checkName.value = false;
+                  }
                 }
               },
             ),

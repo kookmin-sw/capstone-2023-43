@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/generated/graphql_api.dart';
+import 'package:flutter_frontend/model/pill_infomation.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_item.dart';
 import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../service/add_pill_service.dart';
 import '../../../widgets/base_widget.dart';
 import '../../pill_infomation_page/pill_infomation.dart';
 
@@ -127,10 +129,19 @@ class SearchResultList extends HookConsumerWidget {
                                 subTitle: data[index]['class_name'] ?? 'none',
                                 company: data[index]['entp_name'],
                                 onTap: () {
+                                  List<int> items = [];
+                                  items.add(data[index]['item_seq']);
+                                  if (ref.read(AddPillServiceProvider).stage ==
+                                      AddPillState.selectPill) {
+                                    for (PillInfomation pill in ref
+                                        .read(AddPillServiceProvider)
+                                        .pills) {
+                                      items.add(pill.itemSeq);
+                                    }
+                                  }
                                   ref
                                       .read(HttpResponseServiceProvider)
-                                      .postValidation(
-                                          [data[index]['item_seq']]);
+                                      .postValidation(items);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

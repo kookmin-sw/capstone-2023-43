@@ -22,6 +22,7 @@ class HttpResponseService extends ChangeNotifier {
   late Map<String, dynamic> valData = {};
   ResposeStage stage = ResposeStage.notready;
   late User user;
+  late String errMsg;
 
   HttpResponseService();
 
@@ -158,8 +159,10 @@ class HttpResponseService extends ChangeNotifier {
         print("update complete!");
         stage = ResposeStage.ready;
         data.add(body);
-      } else {
+      } else if (response.statusCode == 400) {
         print("something happend!");
+        var detail = jsonDecode(utf8.decode(response.bodyBytes));
+        errMsg = detail["detail"];
         stage = ResposeStage.error;
       }
     });

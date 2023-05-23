@@ -26,24 +26,20 @@ class PillGroupListItem extends StatelessWidget {
         "$index",
         style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500),
       ),
-      title: Flexible(
-        child: Text(
-          title,
-          maxLines: 1,
-          style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700,
-              overflow: TextOverflow.ellipsis),
-        ),
+      title: Text(
+        title,
+        maxLines: 1,
+        style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w700,
+            overflow: TextOverflow.ellipsis),
       ),
-      subtitle: Flexible(
-        child: Text(
-          company,
-          maxLines: 1,
-          style: TextStyle(
-            fontSize: 16.sp,
-            overflow: TextOverflow.ellipsis,
-          ),
+      subtitle: Text(
+        company,
+        maxLines: 1,
+        style: TextStyle(
+          fontSize: 16.sp,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
