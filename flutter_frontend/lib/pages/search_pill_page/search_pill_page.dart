@@ -2,9 +2,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/pages/search_pill_page/widgets/image_result.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_result_list.dart';
 import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_frontend/service/image_response_service.dart';
+import 'package:flutter_frontend/widgets/base_button.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -104,33 +106,56 @@ class SearchPillPage extends HookConsumerWidget {
                                   aspectRatio: 1,
                                   width: 224,
                                   quality: 100,
-                                ).then((value) async {
-                                  final length = await value.length() / 1024;
+                                ).then((val) async {
+                                  final length = await val.length() / 1024;
                                   ref
                                       .read(dioResponseServiceProvider)
-                                      .initDio(value);
-                                  photos.value = [File(value.path)];
+                                      .initDio(val);
+                                  photos.value = [File(val.path)];
                                 });
 
                                 await ref
                                     .read(dioResponseServiceProvider)
-                                    .requestDio();
+                                    .requestDio()
+                                    .then((value) {
+                                  Navigator.pop(context);
+                                });
                               },
                             )));
                 // final img = await picker.pickImage(source: ImageSource.camera);
               },
               child: Container(
                 height: 50.h,
-                width: 200.h,
+                width: 300.h,
                 decoration: BoxDecoration(
                     border: Border.all(),
                     borderRadius: BorderRadius.circular(15.h)),
-                child: Center(child: Text("카메라")),
+                child: Center(child: Text("카메라를 이용해서 약을 찾아보세요!")),
               ),
             ),
+            SizedBox(
+              height: 20.h,
+            ),
             photos.value.isEmpty
-                ? Text('No image selected.')
-                : Image.file(File(photos.value[0].path))
+                ? Text('')
+                : Image.file(File(photos.value[0].path)),
+            SizedBox(
+              height: 20.h,
+            ),
+            photos.value.isEmpty
+                ? SizedBox()
+                : BaseButton(
+                    text: "이 사진을 이용해서 약 찾아보기!",
+                    color: Color.fromRGBO(11, 106, 227, 1),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return ImageResult();
+                      }));
+                    },
+                  )
           ],
         ),
       ),

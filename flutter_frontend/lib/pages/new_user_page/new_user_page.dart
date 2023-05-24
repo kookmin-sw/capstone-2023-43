@@ -36,7 +36,7 @@ class NewUserPage extends HookConsumerWidget {
               Text(
                 "Welcome!",
                 style: TextStyle(
-                  fontSize: 76.sp,
+                  fontSize: 72.sp,
                   fontWeight: FontWeight.w700,
                   color: const Color.fromRGBO(11, 106, 227, 1),
                 ),

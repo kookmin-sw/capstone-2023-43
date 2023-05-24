@@ -320,7 +320,8 @@ class AddPillPage extends HookConsumerWidget {
                             endDate: endDate,
                             name: groupTexController.text,
                             pills: pillIds,
-                            presetTimes: presetIds),
+                            presetTimes: presetIds,
+                            timeStamp: {}),
                       );
 
                   if (ref.read(HttpResponseServiceProvider).stage ==

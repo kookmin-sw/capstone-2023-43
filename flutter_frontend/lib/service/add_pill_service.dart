@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_frontend/model/pill_infomation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +21,7 @@ class AddPillService extends ChangeNotifier {
   void addPill(PillInfomation item) {
     pills.add(PillInfomation.fromMap(item.toMap()));
     stage = AddPillState.addPill;
+    log("addpill! ${item.itemSeq}");
     notifyListeners();
   }
 

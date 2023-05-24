@@ -67,7 +67,6 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                   try {
                     await controller.takePicture().then((value) {
                       widget.aftertake(value);
-                      Navigator.pop(context);
                     });
                   } catch (e) {
                     print("$e");

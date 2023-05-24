@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class HttpResponseService extends ChangeNotifier {
     ).then((response) {
       if (response.statusCode == 200) {
         body = jsonDecode(utf8.decode(response.bodyBytes));
-        print(body);
+        // print(body);
       } else {
         isExistUser = false;
       }
@@ -75,6 +76,8 @@ class HttpResponseService extends ChangeNotifier {
           data.add(SchduleData.fromMap(history));
         }
       }
+
+      log("${data[0]}");
 
       if (body['data']['preset_times'] != null) {
         for (var preset in body['data']['preset_times']) {
@@ -237,7 +240,9 @@ class HttpResponseService extends ChangeNotifier {
   // updateData -> 이미 있는 데이터를 업데이트함.
   // header 에 'Content-Type' : 'application/json' 꼭 붙히기
   // 웬만한 response는 200으로 오나, 새로 작성한 데이터 같은 경우 201로 온다
-  void updateData() {}
+  void updateData() {
+    var now = DateTime.now();
+  }
 
   // deleteData -> 데이터 고로시.
   void deleteData() {}

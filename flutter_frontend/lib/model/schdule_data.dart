@@ -9,6 +9,7 @@ class SchduleData {
   String name;
   List<int> pills;
   List<String> presetTimes;
+  Map<String, List<dynamic>> timeStamp;
 
   SchduleData({
     required this.id,
@@ -17,6 +18,7 @@ class SchduleData {
     required this.name,
     required this.pills,
     required this.presetTimes,
+    required this.timeStamp,
   });
 
   SchduleData copyWith({
@@ -26,6 +28,7 @@ class SchduleData {
     String? name,
     List<int>? pills,
     List<String>? presetTimes,
+    Map<String, List<dynamic>>? timeStamp,
   }) {
     return SchduleData(
       id: id ?? this.id,
@@ -34,6 +37,7 @@ class SchduleData {
       name: name ?? this.name,
       pills: pills ?? this.pills,
       presetTimes: presetTimes ?? this.presetTimes,
+      timeStamp: timeStamp ?? this.timeStamp,
     );
   }
 
@@ -45,6 +49,7 @@ class SchduleData {
       'name': name,
       'pills': pills,
       'preset_times': presetTimes,
+      'timestamp': timeStamp,
     };
   }
 
@@ -56,6 +61,7 @@ class SchduleData {
       name: map['name'] ?? '',
       pills: List<int>.from(map['pills']),
       presetTimes: List<String>.from(map['preset_times']),
+      timeStamp: Map<String, List<dynamic>>.from(map['timestamp']),
     );
   }
 
@@ -66,7 +72,7 @@ class SchduleData {
 
   @override
   String toString() {
-    return 'SchduleData(id: $id, startDate: $startDate, endDate: $endDate, name: $name, pills: $pills, presetTimes: $presetTimes)';
+    return 'SchduleData(id: $id, startDate: $startDate, endDate: $endDate, name: $name, pills: $pills, presetTimes: $presetTimes, timestamp: $timeStamp)';
   }
 
   @override
@@ -79,7 +85,8 @@ class SchduleData {
         other.endDate == endDate &&
         other.name == name &&
         listEquals(other.pills, pills) &&
-        listEquals(other.presetTimes, presetTimes);
+        listEquals(other.presetTimes, presetTimes) &&
+        mapEquals(other.timeStamp, timeStamp);
   }
 
   @override
@@ -89,6 +96,7 @@ class SchduleData {
         endDate.hashCode ^
         name.hashCode ^
         pills.hashCode ^
-        presetTimes.hashCode;
+        presetTimes.hashCode ^
+        timeStamp.hashCode;
   }
 }

@@ -6,8 +6,5 @@ query pill_infomation($itemSeq: Int!) {
     etc_otc_code
     class_name
     image_url
-    use_method
-    warning_message
-    effect
   }
 }
