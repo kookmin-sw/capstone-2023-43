@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/pages/search_pill_page/widgets/search_result_list.dart';
 import 'package:flutter_frontend/service/http_response_service.dart';
+import 'package:flutter_frontend/service/image_response_service.dart';
 import 'package:flutter_frontend/widgets/base_widget.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -105,8 +106,15 @@ class SearchPillPage extends HookConsumerWidget {
                                   quality: 100,
                                 ).then((value) async {
                                   final length = await value.length() / 1024;
+                                  ref
+                                      .read(dioResponseServiceProvider)
+                                      .initDio(value);
                                   photos.value = [File(value.path)];
                                 });
+
+                                await ref
+                                    .read(dioResponseServiceProvider)
+                                    .requestDio();
                               },
                             )));
                 // final img = await picker.pickImage(source: ImageSource.camera);
