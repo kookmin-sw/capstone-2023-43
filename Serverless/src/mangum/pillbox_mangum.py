@@ -608,8 +608,9 @@ async def get_pill_histories(request: Request, name: str = None, all_histories: 
     if name is not None:
         match["$match"]["pill_histories.name"] = name
     if not all_histories:
+        nowdate = datetime.utcnow() + timedelta(days=1)
         match["$match"]["pill_histories.end_date"] = {"$gte": datetime.utcnow()}
-        match["$match"]["pill_histories.start_date"] = {"$lte": datetime.utcnow()}
+        match["$match"]["pill_histories.start_date"] = {"$lte": nowdate}
     elif only_ended_histories:
         match["$match"]["pill_histories.end_date"] = {"$lt": datetime.utcnow()}
 
