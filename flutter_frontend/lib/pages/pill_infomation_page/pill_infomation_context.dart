@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/generated/graphql_api.dart';
 import 'package:flutter_frontend/pages/pill_infomation_page/sub_page/more_inoformation.dart';
@@ -37,7 +39,7 @@ class PillInfomationContext extends HookConsumerWidget {
         }
 
         var data = result.data!['pb_pill_info_by_pk'];
-        print(data["image_url"]);
+        log(data["image_url"]);
 
         return Column(
           children: [

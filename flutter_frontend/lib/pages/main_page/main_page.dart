@@ -68,6 +68,9 @@ class MainPage extends HookConsumerWidget {
                       .where((element) => element.id == list[index].historyId);
                   return Dismissible(
                     key: UniqueKey(),
+                    onDismissed: (direction) {
+                      ref.read(HttpResponseServiceProvider).updateData(index);
+                    },
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 20.h),
                       child: ScheduleItem(

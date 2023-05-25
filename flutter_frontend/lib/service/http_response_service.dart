@@ -34,14 +34,35 @@ class HttpResponseService extends ChangeNotifier {
     idToken = token;
   }
 
+  String getTodayKey(Map<String, List<dynamic>> timestamp) {
+    final today = DateTime.now();
+    String result = "";
+    for (var key in timestamp.keys) {
+      var date = DateTime.parse(key);
+
+      if (date.year == today.year &&
+          date.month == today.month &&
+          date.day == today.day) {
+        result = key;
+        break;
+      }
+    }
+
+    return result;
+  }
+
   void generateList() {
     list = [];
     for (var t in presetTime) {
       var id = t.id;
       var Templist = data.where((element) => element.presetTimes.contains(id));
+
       for (var item in Templist) {
-        list.add(
-            PillTakeList(name: item.name, historyId: item.id, presetId: id));
+        var today = getTodayKey(item.timeStamp);
+        if (item.timeStamp[today]!.contains(id) == false) {
+          list.add(
+              PillTakeList(name: item.name, historyId: item.id, presetId: id));
+        }
       }
     }
   }
@@ -222,11 +243,11 @@ class HttpResponseService extends ChangeNotifier {
     )
         .then((response) {
       if (response.statusCode == 201) {
-        print("update complete!");
+        log("update complete!");
         stage = ResposeStage.ready;
         data.add(body);
       } else if (response.statusCode == 400) {
-        print("something happend!");
+        log("something happend!");
         var detail = jsonDecode(utf8.decode(response.bodyBytes));
         errMsg = detail["detail"];
         stage = ResposeStage.error;
@@ -240,8 +261,44 @@ class HttpResponseService extends ChangeNotifier {
   // updateData -> 이미 있는 데이터를 업데이트함.
   // header 에 'Content-Type' : 'application/json' 꼭 붙히기
   // 웬만한 response는 200으로 오나, 새로 작성한 데이터 같은 경우 201로 온다
-  void updateData() {
-    var now = DateTime.now();
+  void updateData(int index) async {
+    final endPoint =
+        "/pillbox/users/pill_histories/${list[index].historyId}/timestamps";
+
+    Map<String, String> request = {
+      "date_key": "",
+      "preset_time_id": list[index].presetId,
+    };
+
+    final targetHistory =
+        data.where((element) => element.id == list[index].historyId);
+
+    final timestamp = targetHistory.first.timeStamp;
+    request["date_key"] = getTodayKey(timestamp);
+
+    await http
+        .post(Uri.parse(url + endPoint),
+            headers: {
+              HttpHeaders.authorizationHeader: idToken,
+              HttpHeaders.contentTypeHeader: "application/json"
+            },
+            body: json.encode(request))
+        .then((response) {
+      if (response.statusCode == 200) {
+        log("update success");
+        data
+            .where((element) => element.id == list[index].historyId)
+            .first
+            .timeStamp[request["date_key"]]
+            ?.add(request["preset_time_id"]);
+
+        log("${data.where((element) => element.id == list[index].historyId).first}");
+        generateList();
+        notifyListeners();
+      } else {
+        log("fail request! ${response.statusCode}");
+      }
+    });
   }
 
   // deleteData -> 데이터 고로시.
