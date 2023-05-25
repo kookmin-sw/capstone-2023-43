@@ -6,10 +6,14 @@ useDotenv: true
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.10
   region: ap-northeast-2
 
+plugins:
+  - serverless-python-requirements
+
 package:
+  individually: true
   patterns:
     - '!./**'
     - 'src/**'
@@ -22,55 +26,33 @@ functions:
       - http:
           path: /pillbox/echo
           method: get
-          integration: lambda
+          integration: lambda-proxy
+          authorizer:
+            arn: ${env:COGNITO_ARN}
   pillBoxFindPillByImage:
     handler: src/pill_image_handler.find_pill_by_image
     events:
       - http:
           path: /pillbox/findByImage
           method: post
-          integration: lambda
+          integration: lambda-proxy
           authorizer:
             arn: ${env:COGNITO_ARN}
-
-resources:
-  Resources:
-    HasuraProxyResource:
-      Type: AWS::ApiGateway::Resource
-      Properties:
-        ParentId: 
-          Fn::GetAtt:
-            - ApiGatewayRestApi
-            - RootResourceId
-        PathPart: graphql
-        RestApiId: 
-          Ref: ApiGatewayRestApi
-    HasuraProxyMethod:
-      Type: AWS::ApiGateway::Method
-      Properties:
-        ResourceId: 
-          Ref: HasuraProxyResource
-        RestApiId: 
-          Ref: ApiGatewayRestApi
-        HttpMethod: POST
-        MethodResponses:
-          - StatusCode: 200
-        Integration:
-          IntegrationHttpMethod: POST
-          Type: HTTP_PROXY
-          Uri: ${env:HASURA_ENDPOINT_URL}
-          IntegrationResponses:
-            - StatusCode: 200
-        AuthorizationType: COGNITO_USER_POOLS
-        AuthorizerId: 
-          Ref: AuthorizersCognitoUserPools
-    AuthorizersCognitoUserPools:
-      Type: AWS::ApiGateway::Authorizer
-      Properties:
-        Name: CognitoAuthorizer
-        Type: COGNITO_USER_POOLS
-        IdentitySource: method.request.header.authorization
-        RestApiId: 
-          Ref: ApiGatewayRestApi
-        ProviderARNs:
-          - ${env:COGNITO_ARN}
+  pillBoxMangum:
+    module: src/mangum
+    handler: pillbox_mangum.handler
+    events:
+      - http:
+          path: /pillbox/{proxy+}
+          method: any
+          integration: lambda-proxy
+          authorizer:
+            arn: ${env:COGNITO_ARN}
+      - http:
+          path: /pillbox
+          method: any
+          integration: lambda-proxy
+          authorizer:
+            arn: ${env:COGNITO_ARN}
+    environment:
+      ${file(.env.yml)}

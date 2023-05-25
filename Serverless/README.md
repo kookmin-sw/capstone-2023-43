@@ -23,3 +23,13 @@ AWS IAM `aws-cli` 계정 사용
 `serverless.yml`의 `functions`에 추가
 
 `handler`는 `경로/파이썬모듈.함수` 형태로 작성
+
+## Cognito 인증테스트
+
+`aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME="pillboxtest",PASSWORD="<암호>" --client-id <client_id>`
+
+여기서 나온 idToken이랑 AccessToken 잘 보관할것
+
+`curl -H 'Authorization: Bearer <idToken>' https://~~~~~~~~~~~~~`
+이렇게 하면 cognito 인증 되서 넘어감
+
