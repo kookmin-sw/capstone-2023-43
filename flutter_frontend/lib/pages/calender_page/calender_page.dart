@@ -17,16 +17,12 @@ class CalenderPage extends HookConsumerWidget {
     final _selectedDay = useState(DateTime.now());
     final time = ref.read(HttpResponseServiceProvider).presetTime;
     final data = ref.read(HttpResponseServiceProvider).wholedata;
-    final list = useState(<PillTakeList>[]);
+    final list = useState(ref.read(HttpResponseServiceProvider).list);
     return BaseWidget(
       body: Padding(
         padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
         child: Column(
           children: [
-            // 프로그래스 바.
-            // 앞으로 들어가야할 UI
-            // 일일 복용 여부
-            // 각각 날짜 선택시 먹을약 -> 처방전 리스트 출력.
             Row(
               children: [
                 IconButton(

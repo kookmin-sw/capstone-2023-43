@@ -41,63 +41,69 @@ class MainPage extends HookConsumerWidget {
     var presetTime = ref.watch(HttpResponseServiceProvider).presetTime;
     var data = ref.watch(HttpResponseServiceProvider).data;
     return BaseWidget(
-      body: CustomScrollView(
-        slivers: [
-          // 앱바 -> MainContextPage 로 정리
-          const MainContextPage(),
-          // 패딩 -> 실버 리스트 -> 빌더보다는 동시에 빌드되는 children으로 바꾸는게 편할듯
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(50.w, 20.h, 50.w, 0),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => getToggleSwitch(context, index),
-                childCount: 2,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(HttpResponseServiceProvider).initResponse();
+          ref.read(HttpResponseServiceProvider).getWholeHistory();
+        },
+        child: CustomScrollView(
+          slivers: [
+            // 앱바 -> MainContextPage 로 정리
+            const MainContextPage(),
+            // 패딩 -> 실버 리스트 -> 빌더보다는 동시에 빌드되는 children으로 바꾸는게 편할듯
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(50.w, 20.h, 50.w, 0),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => getToggleSwitch(context, index),
+                  childCount: 2,
+                ),
               ),
             ),
-          ),
 
-          // 약 복용 리스트
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(50.w, 0, 50.w, 0),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  var time = presetTime
-                      .where((element) => element.id == list[index].presetId);
-                  var his = data
-                      .where((element) => element.id == list[index].historyId);
-                  return list.isEmpty
-                      ? Center(
-                          child: Text(
-                          '오늘 먹을 약 기록이 없습니다!',
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.w700),
-                        ))
-                      : Dismissible(
-                          key: UniqueKey(),
-                          onDismissed: (direction) {
-                            ref
-                                .read(HttpResponseServiceProvider)
-                                .updateData(index);
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 20.h),
-                            child: ScheduleItem(
-                              cnt: his.first.pills.length,
-                              status: list[index].name,
-                              time: time.first.name,
-                              date: time.first.time,
+            // 약 복용 리스트
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(50.w, 0, 50.w, 0),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    var time = presetTime
+                        .where((element) => element.id == list[index].presetId);
+                    var his = data.where(
+                        (element) => element.id == list[index].historyId);
+                    return list.isEmpty
+                        ? Center(
+                            child: Text(
+                            '오늘 먹을 약 기록이 없습니다!',
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w700),
+                          ))
+                        : Dismissible(
+                            key: UniqueKey(),
+                            onDismissed: (direction) {
+                              ref
+                                  .read(HttpResponseServiceProvider)
+                                  .updateData(index);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: ScheduleItem(
+                                cnt: his.first.pills.length,
+                                status: list[index].name,
+                                time: time.first.name,
+                                date: time.first.time,
+                              ),
                             ),
-                          ),
-                        );
-                },
-                childCount: list.isEmpty ? 1 : list.length,
+                          );
+                  },
+                  childCount: list.isEmpty ? 1 : list.length,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

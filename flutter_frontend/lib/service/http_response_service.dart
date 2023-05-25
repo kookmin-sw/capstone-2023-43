@@ -161,12 +161,14 @@ class HttpResponseService extends ChangeNotifier {
 
       //user의 복용정보를 가져온다.
       if (body['data']['pill_histories'] != null) {
+        data = [];
         for (var history in body['data']['pill_histories']) {
           data.add(SchduleData.fromMap(history));
         }
       }
 
       if (body['data']['preset_times'] != null) {
+        presetTime = [];
         for (var preset in body['data']['preset_times']) {
           presetTime.add(PresetTime.fromMap(preset));
         }

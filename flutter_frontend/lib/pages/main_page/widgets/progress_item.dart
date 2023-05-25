@@ -113,7 +113,7 @@ class ProgressItem extends HookConsumerWidget {
                       color: const Color(0xff0B6AE3)),
                 ),
               Text(
-                '시에 복약예정',
+                '시 복약예정',
                 style: TextStyle(
                   fontSize: 36.sp,
                   fontWeight: FontWeight.w700,
