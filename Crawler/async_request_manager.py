@@ -1,6 +1,7 @@
 # 비동기 request 핸들링 매니저입니다.
 import asyncio
 import aiohttp
+import random
 
 class RequestManager:
     def __init__(self, max_concurrent_task: int = 16) -> None:
@@ -30,6 +31,8 @@ class RequestManager:
     async def _request_handler(self, handler_name):
         print(f"RequestManager Handler: {handler_name} Started.")
         while True:
+            # 0~1초 사이 무작위로 sleep. 너무많은 요청을 보내니 문제가 발생함
+            await asyncio.sleep(random.random())
             try:
                 request_url, params, headers, is_post = await self.request_queue.get()
                 if request_url is None:
@@ -46,6 +49,8 @@ class RequestManager:
                 # print(f"RequestManager Handler: {handler_name}: {response.url.human_repr()}", end='\r')
             except Exception as e:
                 print(f"RequestManager Handler: {handler_name}: {e}")
+                # 재시도하기 위해 다시 큐에 넣음
+                await self.create_request(request_url, params, headers, is_post)
         print(f"RequestManager Handler: {handler_name} Finished.")
 
 

@@ -13,8 +13,8 @@ async def main():
 
     # DUR 허가정보를 사용해보기로 함
     request_url = filter_options.base_url + "/DURPrdlstInfoService02/getDurPrdlstInfoList2"
-    # DUR 허가정보는 총 27545건
-    for page in range(1, 27545//filter_options.NUM_OF_ROWS + 1):
+    # DUR 허가정보는 총 26726건
+    for page in range(1, 26726//filter_options.NUM_OF_ROWS + 1):
         await request_manager.create_request(request_url, 
                                              {'serviceKey': filter_options.token,
                                               'type': 'json',
@@ -29,8 +29,14 @@ async def main():
             response_none_count += 1
             continue
         for item in response_json['body']['items']:
-            print(f"{item['ITEM_SEQ']} {item['ITEM_NAME']} {item['CLASS_NO']}")
-            item_class[item['ITEM_SEQ']] = item['CLASS_NO']
+            if '수출용' in item['ITEM_NAME']:
+                break
+
+            for chart in filter_options.full_charts:
+                if chart in item['CHART']:
+                    print(f"{item['ITEM_SEQ']} {item['ITEM_NAME']} {item['CLASS_NO']}")
+                    item_class[item['ITEM_SEQ']] = item['CLASS_NO']
+                    break
     with open('drug_class.json', 'w') as file:
         json.dump(item_class, file)
 

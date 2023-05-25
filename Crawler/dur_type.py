@@ -10,7 +10,7 @@ import json
 from async_request_manager import RequestManager
 import filter_options
 
-TOTAL_COUNT: int = 27551
+TOTAL_COUNT: int = 26726
 
 BITMASKS: dict[str, int] = {'A': 0x001, 'B': 0x002,
                             'C': 0x004, 'D': 0x008,
@@ -36,7 +36,7 @@ async def main():
         })
 
     response_none_count = 0
-    type_items: list[dict[str, int]] = []
+    type_items: dict[int, int] = {}
 
     while response_none_count < 5:
         url, _, _, response_json = await request_manager.get_response()
@@ -60,7 +60,7 @@ async def main():
                     print(f"{item['ITEM_SEQ']} : {item['ITEM_NAME'].strip()} \
 {item['TYPE_CODE']} {item['CHART']}")
 
-                    type_items.append({item['ITEM_SEQ']: taboo_case})
+                    type_items[int(item['ITEM_SEQ'])] = taboo_case
                     break
     await request_manager.stop()
 

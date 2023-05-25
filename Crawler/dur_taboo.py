@@ -25,13 +25,21 @@ async def main():
             continue
         # filter chart
         for item in response_json['body']['items']:
+            if '수출용' in item['ITEM_NAME'] or '수출용' in item['MIXTURE_ITEM_NAME']:
+                continue
+            item_chart, mixture_chart = False, False
             for chart_filter in filter_options.full_charts:
-                if chart_filter in item['CHART'] and chart_filter in item['MIXTURE_CHART']: # 둘다 필터에 맞으면
-                    dur_data.append({"item_seq": item['ITEM_SEQ'], "mixture_item_seq": item['MIXTURE_ITEM_SEQ'], "prohibited_content": item['PROHBT_CONTENT']})
-                    print(f"{item['ITEM_SEQ']} {item['ITEM_NAME']} {item['MIXTURE_ITEM_SEQ']} {item['MIXTURE_ITEM_NAME']}")
-                    break
+                if not item_chart and chart_filter in item['CHART']:
+                    item_chart = True
+                if not mixture_chart and chart_filter in item['MIXTURE_CHART']: # 둘다 필터에 맞으면
+                    mixture_chart = True
+
+            if item_chart and mixture_chart:
+                dur_data.append({"item_seq": item['ITEM_SEQ'], "mixture_item_seq": item['MIXTURE_ITEM_SEQ'], "prohibited_content": item['PROHBT_CONTENT']})
+                print(f"{item['ITEM_SEQ']} {item['ITEM_NAME']} {item['MIXTURE_ITEM_SEQ']} {item['MIXTURE_ITEM_NAME']}")
+
     await request_manager.stop()
-    
+
     with open("dur_output.json", "w") as file:
         json.dump({"data": dur_data}, file)
 

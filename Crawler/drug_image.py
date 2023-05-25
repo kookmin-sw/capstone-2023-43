@@ -9,7 +9,7 @@ import json
 from async_request_manager import RequestManager
 import filter_options
 
-TOTAL_COUNT = 25073
+TOTAL_COUNT = 25208
 
 
 async def main():
@@ -26,7 +26,7 @@ async def main():
             'pageNo': page})
 
     response_none_count = 0
-    images: list[dict[str, str]] = []
+    images: dict[int, str] = {}
 
     while response_none_count < 5:
         url, _, _, response_json = await request_manager.get_response()
@@ -40,7 +40,7 @@ async def main():
 
             print(f"{item['ITEM_SEQ']} -> {item['ITEM_NAME']} \
 {item['ITEM_IMAGE']}")
-            images.append({item['ITEM_SEQ']: item['ITEM_IMAGE']})
+            images[int(item['ITEM_SEQ'])] = item['ITEM_IMAGE']
 
     await request_manager.stop()
     with open('drug_image.json', 'w', encoding='UTF-8') as file:
