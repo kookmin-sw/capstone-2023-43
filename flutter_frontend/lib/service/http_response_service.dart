@@ -19,6 +19,7 @@ class HttpResponseService extends ChangeNotifier {
   late String idToken;
   String detailHTML = "";
   List<SchduleData> data = [];
+  List<SchduleData> wholedata = [];
   List<PresetTime> presetTime = [];
   List<PillTakeList> list = [];
   late Map<String, dynamic> valData = {};
@@ -51,6 +52,22 @@ class HttpResponseService extends ChangeNotifier {
     return result;
   }
 
+  String getKeyByDay(Map<String, List<dynamic>> timestamp, DateTime day) {
+    String result = "";
+    for (var key in timestamp.keys) {
+      var date = DateTime.parse(key);
+
+      if (date.year == day.year &&
+          date.month == day.month &&
+          date.day == day.day) {
+        result = key;
+        break;
+      }
+    }
+
+    return result;
+  }
+
   void generateList() {
     list = [];
     for (var t in presetTime) {
@@ -65,6 +82,29 @@ class HttpResponseService extends ChangeNotifier {
         }
       }
     }
+  }
+
+  int checkpillConsume(DateTime day) {
+    bool hasNoPillhis = true;
+    //var result = <PillTakeList>[];
+    for (var t in presetTime) {
+      var id = t.id;
+      var Templist =
+          wholedata.where((element) => element.presetTimes.contains(id));
+      for (var item in Templist) {
+        var today = getKeyByDay(item.timeStamp, day);
+        if (today == "") continue;
+        hasNoPillhis = false;
+        if (item.timeStamp[today]!.contains(id) == false) {
+          return 1;
+        }
+      }
+    }
+
+    if (hasNoPillhis)
+      return 0;
+    else
+      return 2;
   }
 
   // 서비스 초기화... 유저 정보 가져오기.
@@ -234,7 +274,7 @@ class HttpResponseService extends ChangeNotifier {
         .post(
       Uri.parse(url + endPoint),
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer " + idToken,
+        HttpHeaders.authorizationHeader: idToken,
         HttpHeaders.contentTypeHeader: "application/json"
       },
       body: body.toJson(),
@@ -242,17 +282,20 @@ class HttpResponseService extends ChangeNotifier {
         .then((response) async {
       if (response.statusCode == 201) {
         log("upload!");
-        var id = json.decode(response.body)["data"];
+
         await http.get(
-          Uri.parse(url + endPoint + id),
+          Uri.parse(url + endPoint),
           headers: {
-            HttpHeaders.authorizationHeader: "Bearer " + idToken,
+            HttpHeaders.authorizationHeader: idToken,
           },
         ).then((response) {
           if (response.statusCode == 200) {
+            data.clear();
             final body = json.decode(utf8.decode(response.bodyBytes));
             if (body['data'] != null) {
-              data.add(SchduleData.fromMap(body['data']));
+              for (var history in body['data']) {
+                data.add(SchduleData.fromMap(history));
+              }
             }
             log("update coomplete!");
             stage = ResposeStage.ready;
@@ -269,6 +312,28 @@ class HttpResponseService extends ChangeNotifier {
 
     generateList();
     notifyListeners();
+  }
+
+  Future<void> getWholeHistory() async {
+    const endPoint = "/pillbox/users/pill_histories?ended_histories=true";
+    stage = ResposeStage.loading;
+    await http.get(
+      Uri.parse(url + endPoint),
+      headers: {
+        HttpHeaders.authorizationHeader: idToken,
+      },
+    ).then((response) {
+      if (response.statusCode == 200) {
+        final body = json.decode(utf8.decode(response.bodyBytes));
+        if (body['data'] != null) {
+          wholedata.clear();
+          for (var history in body['data']) {
+            wholedata.add(SchduleData.fromMap(history));
+          }
+          stage = ResposeStage.ready;
+        }
+      }
+    });
   }
 
   // updateData -> 이미 있는 데이터를 업데이트함.
@@ -292,7 +357,7 @@ class HttpResponseService extends ChangeNotifier {
     await http
         .post(Uri.parse(url + endPoint),
             headers: {
-              HttpHeaders.authorizationHeader: "Bearer " + idToken,
+              HttpHeaders.authorizationHeader: idToken,
               HttpHeaders.contentTypeHeader: "application/json"
             },
             body: json.encode(request))

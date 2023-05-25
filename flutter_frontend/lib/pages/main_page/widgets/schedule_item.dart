@@ -31,12 +31,15 @@ class ScheduleItem extends HookWidget {
               const SizedBox(
                 width: 10,
               ),
-              Text(
-                status,
-                style: TextStyle(
-                  color: Color.fromRGBO(11, 106, 227, 1),
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  status,
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: Color.fromRGBO(11, 106, 227, 1),
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w700,
+                      overflow: TextOverflow.ellipsis),
                 ),
               ),
             ],

@@ -66,23 +66,34 @@ class MainPage extends HookConsumerWidget {
                       .where((element) => element.id == list[index].presetId);
                   var his = data
                       .where((element) => element.id == list[index].historyId);
-                  return Dismissible(
-                    key: UniqueKey(),
-                    onDismissed: (direction) {
-                      ref.read(HttpResponseServiceProvider).updateData(index);
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 20.h),
-                      child: ScheduleItem(
-                        cnt: his.first.pills.length,
-                        status: list[index].name,
-                        time: time.first.name,
-                        date: time.first.time,
-                      ),
-                    ),
-                  );
+                  return list.isEmpty
+                      ? Center(
+                          child: Text(
+                          '오늘 먹을 약 기록이 없습니다!',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.w700),
+                        ))
+                      : Dismissible(
+                          key: UniqueKey(),
+                          onDismissed: (direction) {
+                            ref
+                                .read(HttpResponseServiceProvider)
+                                .updateData(index);
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 20.h),
+                            child: ScheduleItem(
+                              cnt: his.first.pills.length,
+                              status: list[index].name,
+                              time: time.first.name,
+                              date: time.first.time,
+                            ),
+                          ),
+                        );
                 },
-                childCount: list.length,
+                childCount: list.isEmpty ? 1 : list.length,
               ),
             ),
           ),
