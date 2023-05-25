@@ -35,6 +35,14 @@ class HttpResponseService extends ChangeNotifier {
     idToken = token;
   }
 
+  int getTodaycnt() {
+    int result = 0;
+    for (var history in data) {
+      result += history.presetTimes.length;
+    }
+    return result;
+  }
+
   String getTodayKey(Map<String, List<dynamic>> timestamp) {
     final today = DateTime.now();
     String result = "";
