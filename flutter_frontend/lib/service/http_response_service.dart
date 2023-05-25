@@ -98,8 +98,6 @@ class HttpResponseService extends ChangeNotifier {
         }
       }
 
-      log("${data[0]}");
-
       if (body['data']['preset_times'] != null) {
         for (var preset in body['data']['preset_times']) {
           presetTime.add(PresetTime.fromMap(preset));
@@ -236,21 +234,36 @@ class HttpResponseService extends ChangeNotifier {
         .post(
       Uri.parse(url + endPoint),
       headers: {
-        HttpHeaders.authorizationHeader: idToken,
+        HttpHeaders.authorizationHeader: "Bearer " + idToken,
         HttpHeaders.contentTypeHeader: "application/json"
       },
       body: body.toJson(),
     )
-        .then((response) {
+        .then((response) async {
       if (response.statusCode == 201) {
-        log("update complete!");
-        stage = ResposeStage.ready;
-        data.add(body);
+        log("upload!");
+        var id = json.decode(response.body)["data"];
+        await http.get(
+          Uri.parse(url + endPoint + id),
+          headers: {
+            HttpHeaders.authorizationHeader: "Bearer " + idToken,
+          },
+        ).then((response) {
+          if (response.statusCode == 200) {
+            final body = json.decode(utf8.decode(response.bodyBytes));
+            if (body['data'] != null) {
+              data.add(SchduleData.fromMap(body['data']));
+            }
+            log("update coomplete!");
+            stage = ResposeStage.ready;
+          }
+        });
       } else if (response.statusCode == 400) {
         log("something happend!");
         var detail = jsonDecode(utf8.decode(response.bodyBytes));
         errMsg = detail["detail"];
         stage = ResposeStage.error;
+        return;
       }
     });
 
@@ -279,7 +292,7 @@ class HttpResponseService extends ChangeNotifier {
     await http
         .post(Uri.parse(url + endPoint),
             headers: {
-              HttpHeaders.authorizationHeader: idToken,
+              HttpHeaders.authorizationHeader: "Bearer " + idToken,
               HttpHeaders.contentTypeHeader: "application/json"
             },
             body: json.encode(request))
