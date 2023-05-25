@@ -84,6 +84,26 @@ class HttpResponseService extends ChangeNotifier {
     }
   }
 
+  List<PillTakeList> generateListbyDay(DateTime day) {
+    List<PillTakeList> result = [];
+    for (var t in presetTime) {
+      var id = t.id;
+      var Templist =
+          wholedata.where((element) => element.presetTimes.contains(id));
+
+      for (var item in Templist) {
+        var today = getKeyByDay(item.timeStamp, day);
+        if (today == "") continue;
+        if (item.timeStamp[today]!.contains(id) == false) {
+          result.add(
+              PillTakeList(name: item.name, historyId: item.id, presetId: id));
+        }
+      }
+    }
+
+    return result;
+  }
+
   int checkpillConsume(DateTime day) {
     bool hasNoPillhis = true;
     //var result = <PillTakeList>[];

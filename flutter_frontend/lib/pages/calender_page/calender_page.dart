@@ -1,4 +1,7 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/model/pill_take_list.dart';
+import 'package:flutter_frontend/model/schdule_data.dart';
 import 'package:flutter_frontend/service/http_response_service.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +15,9 @@ class CalenderPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final _focusedDay = useState(DateTime.now());
     final _selectedDay = useState(DateTime.now());
+    final time = ref.read(HttpResponseServiceProvider).presetTime;
+    final data = ref.read(HttpResponseServiceProvider).wholedata;
+    final list = useState(<PillTakeList>[]);
     return BaseWidget(
       body: Padding(
         padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
@@ -51,6 +57,9 @@ class CalenderPage extends HookConsumerWidget {
               onDaySelected: (selectedDay, focusedDay) {
                 _selectedDay.value = selectedDay;
                 _focusedDay.value = focusedDay;
+                list.value = ref
+                    .read(HttpResponseServiceProvider)
+                    .generateListbyDay(selectedDay);
               },
               onPageChanged: (focusedDay) {
                 _focusedDay.value = focusedDay;
@@ -124,6 +133,50 @@ class CalenderPage extends HookConsumerWidget {
                 rightChevronVisible: false,
               ),
             ),
+            SizedBox(
+              height: 30.h,
+            ),
+            Row(
+              children: [
+                Text(
+                  "미복약 리스트",
+                  style: TextStyle(fontSize: 28.sp),
+                )
+              ],
+            ),
+            Divider(
+              thickness: 1,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemBuilder: (context, index) {
+                  String t = formatDate(
+                      time
+                          .where((element) =>
+                              element.id == list.value[index].presetId)
+                          .first
+                          .time,
+                      [HH, ":", nn]);
+                  SchduleData d = data
+                      .where((element) =>
+                          element.id == list.value[index].historyId)
+                      .first;
+                  return ListTile(
+                    title: Row(children: [
+                      Text(t + " "),
+                      Text(
+                        d.name,
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      )
+                    ]),
+                    subtitle: Row(
+                      children: [Text("${d.pills.length}"), Text("개의 복용약 포함")],
+                    ),
+                  );
+                },
+                itemCount: list.value.length,
+              ),
+            )
           ],
         ),
       ),
