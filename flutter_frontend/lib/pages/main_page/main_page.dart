@@ -17,11 +17,16 @@ class MainPage extends HookConsumerWidget {
   Widget? getToggleSwitch(
     context,
     index,
+    listCnt,
+    hisCnt,
   ) {
     return index == 0
         ? Padding(
             padding: EdgeInsets.only(bottom: 20.h),
-            child: ProgressItem(),
+            child: ProgressItem(
+              hisCnt: hisCnt,
+              listCnt: listCnt,
+            ),
           )
         : Padding(
             padding: EdgeInsets.only(bottom: 20.h, left: 20.w, right: 20.w),
@@ -55,7 +60,11 @@ class MainPage extends HookConsumerWidget {
               padding: EdgeInsets.fromLTRB(50.w, 20.h, 50.w, 0),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => getToggleSwitch(context, index),
+                  (context, index) => getToggleSwitch(
+                      context,
+                      index,
+                      list.length,
+                      ref.read(HttpResponseServiceProvider).getTodaycnt()),
                   childCount: 2,
                 ),
               ),

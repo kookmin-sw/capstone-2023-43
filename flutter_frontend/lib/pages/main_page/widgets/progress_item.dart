@@ -6,11 +6,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ProgressItem extends HookConsumerWidget {
-  const ProgressItem({super.key});
+  final int listCnt;
+  final int hisCnt;
+  const ProgressItem({super.key, required this.hisCnt, required this.listCnt});
+
+  double getPecentage() {
+    if (listCnt == hisCnt) return 0;
+    if (hisCnt == 0) return 1;
+    return (hisCnt - listCnt) / hisCnt;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final list = ref.watch(HttpResponseServiceProvider).list;
-    final cnt = useState(ref.read(HttpResponseServiceProvider).getTodaycnt());
     return BaseItem(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,32 +32,14 @@ class ProgressItem extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              cnt.value == 0
-                  ? list.length == cnt.value
-                      ? Text(
-                          '0%',
-                          style: TextStyle(
-                            fontSize: 16.w,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.blue,
-                          ),
-                        )
-                      : Text(
-                          '100%',
-                          style: TextStyle(
-                            fontSize: 16.w,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.blue,
-                          ),
-                        )
-                  : Text(
-                      '${(((cnt.value - list.length) / cnt.value) * 100).toInt()}%',
-                      style: TextStyle(
-                        fontSize: 16.w,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.blue,
-                      ),
-                    ),
+              Text(
+                '${(getPecentage() * 100).toInt()}%',
+                style: TextStyle(
+                  fontSize: 16.w,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.blue,
+                ),
+              ),
               Text(
                 '복약완료',
                 style: TextStyle(
@@ -65,11 +54,7 @@ class ProgressItem extends HookConsumerWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               child: LinearProgressIndicator(
-                value: cnt.value == 0
-                    ? 1
-                    : list.length == cnt.value
-                        ? 0
-                        : ((cnt.value - list.length) / cnt.value),
+                value: getPecentage(),
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xff0B6AE3)),
                 backgroundColor: Color(0xffD6D6D6),
               ),
