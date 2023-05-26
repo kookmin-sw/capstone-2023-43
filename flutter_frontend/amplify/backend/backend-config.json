@@ -1,0 +1,46 @@
+{
+  "analytics": {},
+  "auth": {
+    "flutterfrontend9a12e897": {
+      "customAuth": false,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_flutterfrontend9a12e897_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend9a12e897"
+        }
+      ]
+    },
+    "AMPLIFY_auth_flutterfrontend9a12e897_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend9a12e897"
+        }
+      ]
+    },
+    "AMPLIFY_auth_flutterfrontend9a12e897_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend9a12e897"
+        }
+      ]
+    },
+    "AMPLIFY_auth_flutterfrontend9a12e897_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "flutterfrontend9a12e897"
+        }
+      ]
+    }
+  }
+}

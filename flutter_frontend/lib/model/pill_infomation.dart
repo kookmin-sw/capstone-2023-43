@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class PillInfomation {
+  final int itemSeq;
   final String name;
   final String entpName;
-  final int etcOtcCode;
+  final String etcOtcCode;
   final String className;
   final String imageUrl;
 
   PillInfomation({
+    required this.itemSeq,
     required this.name,
     required this.entpName,
     required this.etcOtcCode,
@@ -18,13 +20,15 @@ class PillInfomation {
   });
 
   PillInfomation copyWith({
+    int? itemSeq,
     String? name,
     String? entpName,
-    int? etcOtcCode,
+    String? etcOtcCode,
     String? className,
     String? imageUrl,
   }) {
     return PillInfomation(
+      itemSeq: itemSeq ?? this.itemSeq,
       name: name ?? this.name,
       entpName: entpName ?? this.entpName,
       etcOtcCode: etcOtcCode ?? this.etcOtcCode,
@@ -35,6 +39,7 @@ class PillInfomation {
 
   Map<String, dynamic> toMap() {
     return {
+      'itemSeq': itemSeq,
       'name': name,
       'entpName': entpName,
       'etcOtcCode': etcOtcCode,
@@ -45,9 +50,10 @@ class PillInfomation {
 
   factory PillInfomation.fromMap(Map<String, dynamic> map) {
     return PillInfomation(
+      itemSeq: map['itemSeq'] ?? '',
       name: map['name'] ?? '',
       entpName: map['entpName'] ?? '',
-      etcOtcCode: map['etcOtcCode']?.toInt() ?? 0,
+      etcOtcCode: map['etcOtcCode'] ?? '',
       className: map['className'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
     );
@@ -60,7 +66,7 @@ class PillInfomation {
 
   @override
   String toString() {
-    return 'PillInfomation(name: $name, entpName: $entpName, etcOtcCode: $etcOtcCode, className: $className, imageUrl: $imageUrl)';
+    return 'PillInfomation(itemSeq: $itemSeq, name: $name, entpName: $entpName, etcOtcCode: $etcOtcCode, className: $className, imageUrl: $imageUrl)';
   }
 
   @override
@@ -68,6 +74,7 @@ class PillInfomation {
     if (identical(this, other)) return true;
 
     return other is PillInfomation &&
+        other.itemSeq == itemSeq &&
         other.name == name &&
         other.entpName == entpName &&
         other.etcOtcCode == etcOtcCode &&
@@ -77,7 +84,8 @@ class PillInfomation {
 
   @override
   int get hashCode {
-    return name.hashCode ^
+    return itemSeq.hashCode ^
+        name.hashCode ^
         entpName.hashCode ^
         etcOtcCode.hashCode ^
         className.hashCode ^

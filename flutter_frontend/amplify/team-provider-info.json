@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-flutterfrontend-dev-163735-authRole",
+      "UnauthRoleArn": "arn:aws:iam::266766455020:role/amplify-flutterfrontend-dev-163735-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::266766455020:role/amplify-flutterfrontend-dev-163735-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-flutterfrontend-dev-163735-deployment",
+      "UnauthRoleName": "amplify-flutterfrontend-dev-163735-unauthRole",
+      "StackName": "amplify-flutterfrontend-dev-163735",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:266766455020:stack/amplify-flutterfrontend-dev-163735/60b525c0-e985-11ed-92da-0237cf56b57a",
+      "AmplifyAppId": "d265dots6ohfgu"
+    },
+    "categories": {
+      "auth": {
+        "flutterfrontend64ebd937": {},
+        "flutterfrontend9a12e897": {
+          "userPoolId": "ap-northeast-2_kDv29EFfM",
+          "userPoolName": "pillbox_userpool",
+          "webClientId": "kjl8u2ps4e75jdptc9js7absm",
+          "nativeClientId": "kjl8u2ps4e75jdptc9js7absm"
+        }
+      }
+    }
+  }
+}

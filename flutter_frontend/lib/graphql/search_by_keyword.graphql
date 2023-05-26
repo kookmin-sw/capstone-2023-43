@@ -1,0 +1,14 @@
+query search_by_keyword($keyword: String!) {
+  pb_pill_info(
+    where: {
+      _or: [
+        { effect: { _like: $keyword } }
+        { class_name: { _like: $keyword } }
+        { name: { _like: $keyword } }
+      ]
+    }
+  ) {
+    entp_name
+    name
+  }
+}

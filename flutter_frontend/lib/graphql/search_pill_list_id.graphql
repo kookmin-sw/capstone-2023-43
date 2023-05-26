@@ -1,0 +1,10 @@
+query search_pill_list_ids($item_seqs: [Int!]) {
+  pb_pill_info(where: { item_seq: { _in: $item_seqs } }) {
+    item_seq
+    name
+    entp_name
+    etc_otc_code
+    class_name
+    image_url
+  }
+}
