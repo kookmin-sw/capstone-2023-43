@@ -117,8 +117,6 @@ class UserOut(BaseModel):
     blood_pressure: int
     is_diabetes: bool
     is_pregnancy: bool
-    pill_histories: list[PillHistoryOut]
-    preset_times: list[PresetTimeOut]
 
     @staticmethod
     def from_dict(json_dict: dict[str, any]):
@@ -129,18 +127,9 @@ class UserOut(BaseModel):
         blood_pressure = json_dict['blood_pressure']
         is_diabetes = json_dict['is_diabetes']
         is_pregnancy = json_dict['is_pregnancy']
-        if len(json_dict['pill_histories']) > 0:
-            pill_histories = [PillHistoryOut.from_dict(pill_history) for pill_history in json_dict['pill_histories']]
-        else:
-            pill_histories = []
-        if len(json_dict['preset_times']) > 0:
-            preset_times = [PresetTimeOut.from_dict(preset_time) for preset_time in json_dict['preset_times']]
-        else:
-            preset_times = []
 
         return UserOut(id=id_, name=name, gender=gender, birthday=birthday, blood_pressure=blood_pressure,
-                       is_diabetes=is_diabetes, is_pregnancy=is_pregnancy, pill_histories=pill_histories,
-                       preset_times=preset_times)
+                       is_diabetes=is_diabetes, is_pregnancy=is_pregnancy)
 
 
 class UserPost(BaseModel):
@@ -298,7 +287,7 @@ async def get_user(request: Request):
     user_id = get_user_id(request.scope)
     if user_id is None:
         raise HTTPException(status_code=401)
-    user_doc = await pillbox_db.find_one({"_id": user_id})
+    user_doc = await pillbox_db.find_one({"_id": user_id}, {"pill_histories": 0, "preset_times": 0})
     if user_doc is None:
         raise HTTPException(status_code=404, detail="user not found")
     user_doc = json.loads(json_util.dumps(user_doc))
