@@ -17,7 +17,7 @@ class CalenderPage extends HookConsumerWidget {
     final _selectedDay = useState(DateTime.now());
     final time = ref.read(HttpResponseServiceProvider).presetTime;
     final data = ref.read(HttpResponseServiceProvider).wholedata;
-    final list = useState(ref.read(HttpResponseServiceProvider).list);
+    final list = ref.watch(HttpResponseServiceProvider).daylist;
     return BaseWidget(
       body: Padding(
         padding: EdgeInsets.fromLTRB(40.w, 40.h, 40.w, 0),
@@ -53,7 +53,7 @@ class CalenderPage extends HookConsumerWidget {
               onDaySelected: (selectedDay, focusedDay) {
                 _selectedDay.value = selectedDay;
                 _focusedDay.value = focusedDay;
-                list.value = ref
+                ref
                     .read(HttpResponseServiceProvider)
                     .generateListbyDay(selectedDay);
               },
@@ -148,15 +148,14 @@ class CalenderPage extends HookConsumerWidget {
                 itemBuilder: (context, index) {
                   String t = formatDate(
                       time
-                          .where((element) =>
-                              element.id == list.value[index].presetId)
+                          .where(
+                              (element) => element.id == list[index].presetId)
                           .first
                           .time,
                       [HH, ":", nn]);
-                  SchduleData d = data
-                      .where((element) =>
-                          element.id == list.value[index].historyId)
-                      .first;
+                  var iter = data
+                      .where((element) => element.id == list[index].historyId);
+                  SchduleData d = iter.first;
                   return ListTile(
                     title: Row(children: [
                       Text(t + " "),
@@ -170,7 +169,7 @@ class CalenderPage extends HookConsumerWidget {
                     ),
                   );
                 },
-                itemCount: list.value.length,
+                itemCount: list.length,
               ),
             )
           ],

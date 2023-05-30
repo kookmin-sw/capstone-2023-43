@@ -22,6 +22,7 @@ class HttpResponseService extends ChangeNotifier {
   List<SchduleData> wholedata = [];
   List<PresetTime> presetTime = [];
   List<PillTakeList> list = [];
+  List<PillTakeList> daylist = [];
   late Map<String, dynamic> valData = {};
   ResposeStage stage = ResposeStage.notready;
   late User user;
@@ -84,6 +85,7 @@ class HttpResponseService extends ChangeNotifier {
 
       for (var item in Templist) {
         var today = getTodayKey(item.timeStamp);
+        if (today == "") continue;
         if (item.timeStamp[today]!.contains(id) == false) {
           list.add(
               PillTakeList(name: item.name, historyId: item.id, presetId: id));
@@ -92,8 +94,8 @@ class HttpResponseService extends ChangeNotifier {
     }
   }
 
-  List<PillTakeList> generateListbyDay(DateTime day) {
-    List<PillTakeList> result = [];
+  void generateListbyDay(DateTime day) {
+    daylist = [];
     for (var t in presetTime) {
       var id = t.id;
       var Templist =
@@ -103,13 +105,11 @@ class HttpResponseService extends ChangeNotifier {
         var today = getKeyByDay(item.timeStamp, day);
         if (today == "") continue;
         if (item.timeStamp[today]!.contains(id) == false) {
-          result.add(
+          daylist.add(
               PillTakeList(name: item.name, historyId: item.id, presetId: id));
         }
       }
     }
-
-    return result;
   }
 
   int checkpillConsume(DateTime day) {

@@ -41,6 +41,9 @@ class MainContextPage extends HookConsumerWidget {
                         .read(HttpResponseServiceProvider)
                         .getWholeHistory();
                     // ignore: use_build_context_synchronously
+                    ref
+                        .read(HttpResponseServiceProvider)
+                        .generateListbyDay(DateTime.now());
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => CalenderPage()),
