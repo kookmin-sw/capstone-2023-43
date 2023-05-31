@@ -311,6 +311,9 @@ async def get_user(request: Request):
         print(valid)
         raise HTTPException(status_code=500, detail="internal error") from valid
 
+    user.pill_histories = [pillhistory for pillhistory in user.pill_histories
+                           if pillhistory.end_date.replace(tzinfo=UTC) >= datetime.utcnow().replace(tzinfo=UTC)]
+
     return {"result": "ok", "data": user}
 
 
