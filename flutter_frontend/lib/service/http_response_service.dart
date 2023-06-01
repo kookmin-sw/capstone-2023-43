@@ -167,6 +167,8 @@ class HttpResponseService extends ChangeNotifier {
         }
       }
 
+      log("$data");
+
       if (body['data']['preset_times'] != null) {
         presetTime = [];
         for (var preset in body['data']['preset_times']) {
