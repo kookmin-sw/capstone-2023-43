@@ -15,6 +15,17 @@
 * 낱알의 약을 사진을 찍어 인공지능이 어떤 약인지 알려줍니다.
 * 구강투여하는 제제 중 몇가지를 추려 약에 대한 정보를 알려줍니다.
 
+## Abstract
+
+* PillBox is an app that helps prevent medication misuse and promotes safe medication intake.
+* It allows you to search for medications and manage a medication list and intake schedule.
+* It informs you about medications that should not be taken based on your age, pregnancy status, and other conditions.
+* It advises whether it is safe to take multiple medications together.
+* It sets alarms according to the user's specified medication intake times.
+* It visually displays the days when medication was taken and when it was not.
+* By taking a photo of a pill, the app's artificial intelligence identifies the medication.
+* It provides information about certain oral medications to help you understand them better.
+
 ## 팀 소개
 
 ### 팀 이름
