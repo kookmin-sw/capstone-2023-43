@@ -26,6 +26,10 @@
 * By taking a photo of a pill, the app's artificial intelligence identifies the medication.
 * It provides information about certain oral medications to help you understand them better.
 
+## 소개 영상
+
+[![소개영상](https://img.youtube.com/vi/l31WvqrPxOU/0.jpg)](https://youtu.be/l31WvqrPxOU)
+
 ## 팀 소개
 
 ### 팀 이름
